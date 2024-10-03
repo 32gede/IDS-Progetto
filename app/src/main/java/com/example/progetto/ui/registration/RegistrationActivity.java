@@ -23,13 +23,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.UserRepository;
 import com.example.progetto.databinding.ActivityRegistrationBinding;
 import com.example.progetto.ui.login.LoggedInUserView;
 import com.example.progetto.ui.login.LoginFormState;
 import com.example.progetto.ui.login.LoginResult;
 import com.example.progetto.ui.login.LoginViewModel;
 
-public class registrationActivity extends AppCompatActivity {
+public class RegistrationActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityRegistrationBinding binding;
@@ -41,7 +42,8 @@ public class registrationActivity extends AppCompatActivity {
         binding = ActivityRegistrationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        registrationViewModel = new ViewModelProvider(this, new RegistrationViewModelFactory())
+        UserRepository userRepository = new UserRepository();
+        RegistrationViewModel registrationViewModel = new ViewModelProvider(this, new RegistrationViewModelFactory(userRepository))
                 .get(RegistrationViewModel.class);
 
         final EditText usernameEditText = binding.username;

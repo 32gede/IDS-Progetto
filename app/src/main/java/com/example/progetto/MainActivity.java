@@ -10,7 +10,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.progetto.ui.login.loginActivity;
-import com.example.progetto.ui.registration.registrationActivity;
+import com.example.progetto.ui.registration.RegistrationActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.Registration).setOnClickListener(v -> {
-            Intent intent = new Intent(this, registrationActivity.class);
+            Intent intent = new Intent(this, RegistrationActivity.class);
             startActivity(intent);
         });
     }
