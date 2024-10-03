@@ -1,5 +1,7 @@
 package com.example.progetto.data.model;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.tasks.Task;
@@ -19,9 +21,11 @@ public class UserRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         userLiveData.setValue(mAuth.getCurrentUser());
+                        Log.e("UserRepository", "Registration successful", task.getException());
                     } else {
                         userLiveData.setValue(null);
                         // Log the error or handle it as needed
+                        Log.e("UserRepository", "Registration failed", task.getException());
                     }
                 });
 
@@ -38,6 +42,7 @@ public class UserRepository {
                     } else {
                         userLiveData.setValue(null);
                         // Log the error or handle it as needed
+                        Log.e("UserRepository", "Login failed", task.getException());
                     }
                 });
 

@@ -5,11 +5,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.UserRepository;
 
 public class RegistrationViewModel extends ViewModel {
 
+    private final UserRepository userRepository;
     private MutableLiveData<RegistrationFormState> registrationFormState = new MutableLiveData<>();
     private MutableLiveData<RegistrationResult> registrationResult = new MutableLiveData<>();
+
+    // Constructor that accepts a UserRepository
+    public RegistrationViewModel(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     // Getter per lo stato del form di registrazione
     public LiveData<RegistrationFormState> getRegistrationFormState() {
