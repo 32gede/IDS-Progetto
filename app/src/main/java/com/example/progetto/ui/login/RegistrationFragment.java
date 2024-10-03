@@ -21,14 +21,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.progetto.databinding.FragmentLoginBinding;
+import com.example.progetto.databinding.FragmentRegistrationBinding;
 
 import com.example.progetto.R;
 
-public class LoginFragment extends Fragment {
+public class RegistrationFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
-    private FragmentLoginBinding binding;
+    private FragmentRegistrationBinding binding;
 
     @Nullable
     @Override
@@ -36,7 +36,7 @@ public class LoginFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        binding = FragmentLoginBinding.inflate(inflater, container, false);
+        binding = FragmentRegistrationBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -47,9 +47,9 @@ public class LoginFragment extends Fragment {
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = binding.email;
+        final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
-        final Button loginButton = binding.login;
+        final Button loginButton = binding.registration;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
