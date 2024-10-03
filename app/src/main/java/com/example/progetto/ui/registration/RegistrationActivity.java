@@ -37,7 +37,7 @@ public class RegistrationActivity extends AppCompatActivity {
         registrationViewModel = new ViewModelProvider(this, new RegistrationViewModelFactory(userRepository))
                 .get(RegistrationViewModel.class);
 
-        final EditText usernameEditText = binding.username;
+        final EditText usernameEditText = binding.email;
         final EditText passwordEditText = binding.password;
         final Button registrationButton = binding.registration;
         final ProgressBar loadingProgressBar = binding.loading;
