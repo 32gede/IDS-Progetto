@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.example.progetto.R;
 import com.example.progetto.databinding.ActivityLoginBinding;
 
-public class loginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityLoginBinding binding;

@@ -9,7 +9,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.progetto.ui.login.loginActivity;
+import com.example.progetto.ui.login.LoginActivity;
 import com.example.progetto.ui.registration.RegistrationActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         });
         // Set up the login button that will open the LoginFragment
         findViewById(R.id.Login).setOnClickListener(v -> {
-            Intent intent = new Intent(this, loginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
 
