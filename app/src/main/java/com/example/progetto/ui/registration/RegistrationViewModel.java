@@ -1,11 +1,17 @@
 package com.example.progetto.ui.registration;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.progetto.R;
 import com.example.progetto.data.model.UserRepository;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class RegistrationViewModel extends ViewModel {
 
@@ -41,8 +47,19 @@ public class RegistrationViewModel extends ViewModel {
 
     // Funzione per effettuare la registrazione (da definire con la tua logica)
     public void register(String username, String password) {
-        // Aggiungi qui la logica di registrazione (come la chiamata a un server)
-        registrationResult.setValue(new RegistrationResult(new RegisteredUserView(username)));
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.createUserWithEmailAndPassword(username, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = auth.getCurrentUser();
+                            registrationResult.setValue(new RegistrationResult(new RegisteredUserView(user.getEmail())));
+                        } else {
+                            registrationResult.setValue(new RegistrationResult(R.string.registration_failed));
+                        }
+                    }
+                });
     }
 
     // Validazione del nome utente
