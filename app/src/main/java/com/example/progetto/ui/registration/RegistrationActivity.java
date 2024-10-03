@@ -57,8 +57,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (loginFormState == null) {
                     return;
                 }
+                assert loginButton != null;
                 loginButton.setEnabled(loginFormState.isDataValid());
                 if (loginFormState.getUsernameError() != null) {
+                    assert usernameEditText != null;
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
                 if (loginFormState.getPasswordError() != null) {
@@ -104,6 +106,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         };
+        assert usernameEditText != null;
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
