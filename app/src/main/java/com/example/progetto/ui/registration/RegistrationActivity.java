@@ -33,8 +33,8 @@ public class RegistrationActivity extends AppCompatActivity {
         binding = ActivityRegistrationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        UserRepository userRepository = new UserRepository();
-        registrationViewModel = new ViewModelProvider(this, new RegistrationViewModelFactory(userRepository))
+        UserRepository userRepository = new UserRepository(this);
+        registrationViewModel = new ViewModelProvider(this, new RegistrationViewModelFactory(userRepository, this))
                 .get(RegistrationViewModel.class);
 
         final EditText usernameEditText = binding.email;

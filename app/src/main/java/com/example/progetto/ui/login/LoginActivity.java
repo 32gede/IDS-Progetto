@@ -38,8 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        UserRepository userRepository = new UserRepository();
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(userRepository))
+        UserRepository userRepository = new UserRepository(this);
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(userRepository, this))
                 .get(LoginViewModel.class);
 
         final EditText usernameEditText = binding.email;

@@ -1,5 +1,6 @@
 package com.example.progetto.ui.login;
 
+import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,9 +20,11 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private UserRepository loginRepository;
+    private Context context;
 
-    LoginViewModel(UserRepository loginRepository) {
+    LoginViewModel(UserRepository loginRepository, Context context) {
         this.loginRepository = loginRepository;
+        this.context = context;
     }
 
     public LiveData<LoginFormState> getLoginFormState() {
@@ -33,7 +36,7 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        UserRepository userRepository = new UserRepository();
+        UserRepository userRepository = new UserRepository(context);
         userRepository.loginUser(username, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
