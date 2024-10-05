@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.UserRepository;
 import com.example.progetto.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {
@@ -37,7 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
+        UserRepository userRepository = new UserRepository();
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(userRepository))
                 .get(LoginViewModel.class);
 
         final EditText usernameEditText = binding.email;

@@ -1,23 +1,26 @@
 package com.example.progetto.ui.login;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.util.Log;
 import android.util.Patterns;
 
-import com.example.progetto.data.LoginRepository;
-import com.example.progetto.data.Result;
-import com.example.progetto.data.model.LoggedInUser;
 import com.example.progetto.R;
+import com.example.progetto.data.model.UserRepository;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
+    private UserRepository loginRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    LoginViewModel(UserRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
@@ -30,15 +33,18 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        UserRepository userRepository = new UserRepository();
+        userRepository.loginUser(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
+                } else {
+                    Log.e("LoginViewModel", "Login failed", task.getException());
+                    loginResult.setValue(new LoginResult(R.string.login_failed));
+                }
+            }
+        });
     }
 
     public void loginDataChanged(String username, String password) {
