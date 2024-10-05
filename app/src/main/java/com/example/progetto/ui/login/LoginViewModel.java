@@ -34,15 +34,12 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) {
         UserRepository userRepository = new UserRepository();
-        userRepository.loginUser(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
-                } else {
-                    Log.e("LoginViewModel", "Login failed", task.getException());
-                    loginResult.setValue(new LoginResult(R.string.login_failed));
-                }
+        userRepository.loginUser(username, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
+            } else {
+                Log.e("LoginViewModel", "Login failed", task.getException());
+                loginResult.setValue(new LoginResult(R.string.login_failed));
             }
         });
     }
