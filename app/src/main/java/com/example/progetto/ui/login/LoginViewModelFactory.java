@@ -15,7 +15,7 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
     private final UserRepository repository;
     private final Context context;
-
+    int a;
     public LoginViewModelFactory(UserRepository repository, Context context) {
         this.repository = repository;
         this.context = context;
