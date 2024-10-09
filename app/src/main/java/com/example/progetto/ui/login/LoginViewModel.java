@@ -1,47 +1,41 @@
 package com.example.progetto.ui.login;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Log;
-import android.util.Patterns;
-
 import com.example.progetto.R;
+import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 
 public class LoginViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private UserRepository loginRepository;
-    private Context context;
+    private final UserRepository userRepository;
+    private final Context context;
+    private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
 
-    LoginViewModel(UserRepository loginRepository, Context context) {
-        this.loginRepository = loginRepository;
+    public LoginViewModel(UserRepository userRepository, Context context) {
+        this.userRepository = userRepository;
         this.context = context;
-    }
-
-    public LiveData<LoginFormState> getLoginFormState() {
-        return loginFormState;
     }
 
     public LiveData<LoginResult> getLoginResult() {
         return loginResult;
     }
 
+    public LiveData<LoginFormState> getLoginFormState() {
+        return loginFormState;
+    }
+
     public void login(String username, String password) {
-        UserRepository userRepository = new UserRepository(context);
         userRepository.loginUser(username, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
+                String displayName = username.split("@")[0];
+                loginResult.setValue(new LoginResult(new LoggedInUserView(displayName)));
+                LoginUtils.saveLoginState(context, true, displayName); // Save login state
             } else {
-                Log.e("LoginViewModel", "Login failed", task.getException());
                 loginResult.setValue(new LoginResult(R.string.login_failed));
             }
         });
@@ -57,19 +51,10 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    // A placeholder username validation check
     private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return false;
-        }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        return username != null && username.trim().length() > 5;
     }
 
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }
