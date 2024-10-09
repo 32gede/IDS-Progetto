@@ -24,13 +24,12 @@ import com.example.progetto.databinding.ActivityRegistrationBinding;
 public class RegistrationActivity extends AppCompatActivity {
 
     private RegistrationViewModel registrationViewModel;
-    private ActivityRegistrationBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityRegistrationBinding.inflate(getLayoutInflater());
+        com.example.progetto.databinding.ActivityRegistrationBinding binding = ActivityRegistrationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         UserRepository userRepository = new UserRepository(this);
