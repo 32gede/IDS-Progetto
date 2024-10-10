@@ -39,12 +39,7 @@ public class MainActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.Registration);
         logoutButton = findViewById(R.id.Logout);
 
-        if (LoginUtils.isLoggedIn(this)) {
-            loginButton.setVisibility(View.GONE);
-            registerButton.setVisibility(View.GONE);
-        } else {
-            logoutButton.setVisibility(View.GONE);
-        }
+        updateUI();
 
         loginButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
