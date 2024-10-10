@@ -11,8 +11,8 @@
         android:id="@+id/Registration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="268dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="176dp"
         android:text="@string/action_registration"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,14 +21,28 @@
         android:id="@+id/Login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="141dp"
-        android:layout_marginTop="272dp"
-        android:layout_marginEnd="@dimen/fragment_horizontal_margin"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="176dp"
+        android:layout_marginEnd="38dp"
         android:text="@string/action_sign_in"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/Registration"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/googleSignInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="142dp"
+        android:layout_marginTop="114dp"
+        android:layout_marginEnd="142dp"
+        android:layout_marginBottom="69dp"
+        app:layout_constraintBottom_toTopOf="@+id/Logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Registration" />
 
     <Button
         android:id="@+id/Logout"
@@ -38,5 +52,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Registration" />
+        app:layout_constraintTop_toBottomOf="@+id/Registration"
+        app:layout_constraintVertical_bias="0.518" />
 </androidx.constraintlayout.widget.ConstraintLayout>
