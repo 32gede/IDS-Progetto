@@ -15,4 +15,5 @@
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="title_activity_registration" translatable="false">RegistrationActivity</string>
     <string name="registration_failed">Registration failed</string>
+    <string name="logout" translatable="false">Logout</string>
 </resources>
