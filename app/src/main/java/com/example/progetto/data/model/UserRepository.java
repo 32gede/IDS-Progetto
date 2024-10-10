@@ -11,6 +11,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Locale;
+
 public class UserRepository {
     private final FirebaseAuth mAuth;
     private final SharedPreferences sharedPreferences;
@@ -18,6 +20,14 @@ public class UserRepository {
     public UserRepository(Context context) {
         this.mAuth = FirebaseAuth.getInstance();
         this.sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+
+        // Set the locale for Firebase Auth
+        String locale = Locale.getDefault().toString();
+        if (locale != null && !locale.isEmpty()) {
+            mAuth.setLanguageCode(locale);
+        } else {
+            mAuth.setLanguageCode("en"); // Default to English if locale is null or empty
+        }
     }
 
     public Task<AuthResult> registerUser(String email, String password) {

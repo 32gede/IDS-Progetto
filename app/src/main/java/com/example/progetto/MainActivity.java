@@ -14,7 +14,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
+import com.example.progetto.ui.login.LoggedInUserView;
 import com.example.progetto.ui.login.LoginActivity;
+import com.example.progetto.ui.login.LoginResult;
 import com.example.progetto.ui.registration.RegistrationActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -67,11 +69,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         logoutButton.setOnClickListener(v -> {
-            LoginUtils.clearLoginState(MainActivity.this);
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            userRepository.logout();
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                LoginUtils.clearLoginState(MainActivity.this);
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
         });
 
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
@@ -100,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
                     userRepository.loginWithGoogle(account.getIdToken())
                             .addOnCompleteListener(this, task1 -> {
                                 if (task1.isSuccessful()) {
+                                    LoginUtils.saveGoogleLoginState(this, true);
                                     updateUI();
+                                    Log.w("MainActivity", "signInWithCredential:success");
                                 } else {
                                     Log.w("MainActivity", "signInWithCredential:failure", task1.getException());
                                 }
