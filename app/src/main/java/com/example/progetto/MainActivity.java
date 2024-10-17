@@ -6,7 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,7 +28,6 @@ import com.google.firebase.FirebaseApp;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private UserRepository userRepository;
     private Button loginButton;
@@ -35,11 +35,24 @@ public class MainActivity extends AppCompatActivity {
     private Button logoutButton;
     private SignInButton googleSignInButton;
 
+    // Step 1: Create the ActivityResultLauncher for Google Sign-In
+    private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    handleSignInResult(task);
+                } else {
+                    Log.w("MainActivity", "Google sign-in failed");
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -86,34 +99,30 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
+    // Step 2: Updated Google Sign-In method
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        googleSignInLauncher.launch(signInIntent);  // Launch using the new launcher
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                if (account != null) {
-                    userRepository.loginWithGoogle(account.getIdToken())
-                            .addOnCompleteListener(this, task1 -> {
-                                if (task1.isSuccessful()) {
-                                    LoginUtils.saveGoogleLoginState(this, true);
-                                    updateUI();
-                                    Log.w("MainActivity", "signInWithCredential:success");
-                                } else {
-                                    Log.w("MainActivity", "signInWithCredential:failure", task1.getException());
-                                }
-                            });
-                }
-            } catch (ApiException e) {
-                Log.w("MainActivity", "Google sign in failed", e);
+    // Step 3: Handle Google Sign-In result
+    private void handleSignInResult(Task<GoogleSignInAccount> task) {
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            if (account != null) {
+                userRepository.loginWithGoogle(account.getIdToken())
+                        .addOnCompleteListener(this, task1 -> {
+                            if (task1.isSuccessful()) {
+                                LoginUtils.saveGoogleLoginState(this, true);
+                                updateUI();
+                                Log.w("MainActivity", "signInWithCredential:success");
+                            } else {
+                                Log.w("MainActivity", "signInWithCredential:failure", task1.getException());
+                            }
+                        });
             }
+        } catch (ApiException e) {
+            Log.w("MainActivity", "Google sign in failed", e);
         }
     }
 
