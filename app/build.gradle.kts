@@ -36,16 +36,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.play.services.auth)
-    implementation(platform(libs.firebase.bom))
+    // Firebase e Google Play Services
+    implementation(platform(libs.firebase.bom))        // Firebase BOM per allineare le versioni
+    implementation (libs.google.firebase.firestore)  // Gestito dal BOM
+    implementation (libs.google.firebase.auth)      // Gestito dal BOM
+    implementation (libs.gms.play.services.auth)
+
+    // AndroidX e Material Design
     implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.annotation)
+    implementation(libs.material) // Scegli solo una versione della libreria Material
+
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
-    implementation(libs.firebase.auth)
+
+    // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
