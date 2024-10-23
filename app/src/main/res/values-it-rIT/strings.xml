@@ -13,12 +13,4 @@
     <string name="invalid_password">La Password deve avere 5 caratteri</string>
     <string name="login_failed">Login non riuscito</string>
     <string name="registration_failed">Registrazione Fallita</string>
-    <string-array name="food_categories">
-        <item>Frutta</item>
-        <item>Verdura</item>
-        <item>Latticini</item>
-        <item>Carne</item>
-        <item>Cereali</item>
-        <item>Altro</item>
-    </string-array>
 </resources>

@@ -25,9 +25,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
@@ -103,12 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        Button addFoodButton = findViewById(R.id.addFoodButton);
-        addFoodButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddFoodActivity.class);
-            startActivity(intent);
-        });
     }
 
     // Step 2: Updated Google Sign-In method
@@ -117,35 +108,26 @@ public class MainActivity extends AppCompatActivity {
         googleSignInLauncher.launch(signInIntent);  // Launch using the new launcher
     }
 
-    // Step 3: Handle Google Sign-In result with Firebase Authentication
+    // Step 3: Handle Google Sign-In result
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
             if (account != null) {
-                Log.d("MainActivity", "Google account: " + account.getEmail());
-
-                // Ottieni le credenziali di autenticazione per Firebase
-                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-
-                // Firebase Authentication con Google
-                FirebaseAuth.getInstance().signInWithCredential(credential)
+                userRepository.loginWithGoogle(account.getIdToken())
                         .addOnCompleteListener(this, task1 -> {
                             if (task1.isSuccessful()) {
-                                // Sign-in avvenuto con successo
-                                Log.d("MainActivity", "signInWithCredential:success");
                                 LoginUtils.saveGoogleLoginState(this, true);
                                 updateUI();
+                                Log.w("MainActivity", "signInWithCredential:success");
                             } else {
-                                // Gestisci il fallimento della sign-in
                                 Log.w("MainActivity", "signInWithCredential:failure", task1.getException());
                             }
                         });
             }
         } catch (ApiException e) {
-            Log.w("MainActivity", "Google sign in failed: " + e.getStatusCode(), e);
+            Log.w("MainActivity", "Google sign in failed", e);
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -166,5 +148,4 @@ public class MainActivity extends AppCompatActivity {
             googleSignInButton.setVisibility(View.VISIBLE);
         }
     }
-
 }
