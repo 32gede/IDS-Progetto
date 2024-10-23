@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,24 +31,25 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
+    private MainViewModel mainViewModel;
     private GoogleSignInClient mGoogleSignInClient;
-    private UserRepository userRepository;
+
     private Button loginButton;
     private Button registerButton;
     private Button logoutButton;
     private SignInButton googleSignInButton;
     private FirebaseFirestore db;
 
-    // Step 1: Create the ActivityResultLauncher for Google Sign-In
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                    handleSignInResult(task);
+                    mainViewModel.loginWithGoogle(task); // Usare il ViewModel per il login con Google
                 } else {
                     Log.w("MainActivity", "Google sign-in failed");
+                    showToast("Google sign-in failed");
                 }
             }
     );
@@ -63,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
         });
         db = FirebaseFirestore.getInstance();
 
-        userRepository = new UserRepository(this);
+        // Inizializzare il ViewModel
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         loginButton = findViewById(R.id.Login);
         registerButton = findViewById(R.id.Registration);
@@ -72,26 +76,11 @@ public class MainActivity extends AppCompatActivity {
 
         updateUI();
 
-        loginButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        });
+        loginButton.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
 
-        registerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RegistrationActivity.class);
-            startActivity(intent);
-        });
+        registerButton.setOnClickListener(v -> startActivity(new Intent(this, RegistrationActivity.class)));
 
-        logoutButton.setOnClickListener(v -> {
-            userRepository.logout();
-            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
-                LoginUtils.clearLoginState(MainActivity.this);
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
-        });
+        logoutButton.setOnClickListener(v -> mainViewModel.logout());
 
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
@@ -100,52 +89,33 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // Osservare i cambiamenti di login success/failure
+        mainViewModel.getLoginSuccess().observe(this, success -> {
+            if (success) {
+                showToast("Login successful");
+                LoginUtils.saveGoogleLoginState(this, true);
+                updateUI();
+            } else {
+                showToast("Login failed");
+            }
+        });
     }
 
-    // Step 2: Updated Google Sign-In method
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        googleSignInLauncher.launch(signInIntent);  // Launch using the new launcher
-    }
-
-    // Step 3: Handle Google Sign-In result
-    private void handleSignInResult(Task<GoogleSignInAccount> task) {
-        try {
-            GoogleSignInAccount account = task.getResult(ApiException.class);
-            if (account != null) {
-                userRepository.loginWithGoogle(account.getIdToken())
-                        .addOnCompleteListener(this, task1 -> {
-                            if (task1.isSuccessful()) {
-                                LoginUtils.saveGoogleLoginState(this, true);
-                                updateUI();
-                                Log.w("MainActivity", "signInWithCredential:success");
-                            } else {
-                                Log.w("MainActivity", "signInWithCredential:failure", task1.getException());
-                            }
-                        });
-            }
-        } catch (ApiException e) {
-            Log.w("MainActivity", "Google sign in failed", e);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateUI();
+        googleSignInLauncher.launch(signInIntent);
     }
 
     private void updateUI() {
-        if (LoginUtils.isLoggedIn(this)) {
-            loginButton.setVisibility(View.GONE);
-            registerButton.setVisibility(View.GONE);
-            logoutButton.setVisibility(View.VISIBLE);
-            googleSignInButton.setVisibility(View.GONE);
-        } else {
-            loginButton.setVisibility(View.VISIBLE);
-            registerButton.setVisibility(View.VISIBLE);
-            logoutButton.setVisibility(View.GONE);
-            googleSignInButton.setVisibility(View.VISIBLE);
-        }
+        boolean loggedIn = LoginUtils.isLoggedIn(this);
+        loginButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
+        registerButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
+        logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        googleSignInButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
