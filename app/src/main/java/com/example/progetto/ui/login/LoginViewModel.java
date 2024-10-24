@@ -25,11 +25,6 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<LoginResult> getLoginResult() {
-        if (LoginUtils.isLoggedIn(context)) {
-            loginResult.setValue(new LoginResult(new LoggedInUserView("User Display Name")));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
         return loginResult;
     }
 
