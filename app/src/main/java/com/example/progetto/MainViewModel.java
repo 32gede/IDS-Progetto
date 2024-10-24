@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
@@ -17,6 +18,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private UserRepository userRepository;
     private MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
+    private MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();  // Aggiunto per il logout
     private ExecutorService executor = Executors.newSingleThreadExecutor(); // Thread separato per operazioni lunghe
 
     public MainViewModel(Application application) {
@@ -27,6 +29,11 @@ public class MainViewModel extends AndroidViewModel {
     // LiveData per osservare il successo del login
     public LiveData<Boolean> getLoginSuccess() {
         return loginSuccess;
+    }
+
+    // LiveData per osservare il successo del logout
+    public LiveData<Boolean> getLogoutSuccess() {
+        return logoutSuccess;
     }
 
     // Metodo per gestire il login con Google (in un thread separato)
@@ -50,6 +57,8 @@ public class MainViewModel extends AndroidViewModel {
     public void logout() {
         executor.execute(() -> {
             userRepository.logout(); // Esegui il logout in un thread separato
+            LoginUtils.clearLoginState(getApplication()); // Cancella lo stato di login
+            logoutSuccess.postValue(true); // Notifica alla UI che il logout è avvenuto
         });
     }
 }
