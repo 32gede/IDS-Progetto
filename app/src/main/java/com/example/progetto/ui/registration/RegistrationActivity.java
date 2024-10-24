@@ -3,12 +3,15 @@ package com.example.progetto.ui.registration;
 import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,7 +20,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.progetto.R;
+import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
 import com.example.progetto.databinding.ActivityRegistrationBinding;
 
@@ -41,6 +46,7 @@ public class RegistrationActivity extends AppCompatActivity {
         final Button registrationButton = binding.registration;
         final ProgressBar loadingProgressBar = binding.loading;
 
+        // Osserva lo stato del form di registrazione
         registrationViewModel.getRegistrationFormState().observe(this, new Observer<RegistrationFormState>() {
             @Override
             public void onChanged(@Nullable RegistrationFormState registrationFormState) {
@@ -57,6 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
+        // Osserva il risultato della registrazione
         registrationViewModel.getRegistrationResult().observe(this, new Observer<RegistrationResult>() {
             @Override
             public void onChanged(@Nullable RegistrationResult registrationResult) {
@@ -64,26 +71,47 @@ public class RegistrationActivity extends AppCompatActivity {
                     return;
                 }
                 loadingProgressBar.setVisibility(View.GONE);
+
+                // Gestione errore nella registrazione
                 if (registrationResult.getError() != null) {
                     showRegistrationFailed(registrationResult.getError());
+                    return;  // Non proseguire se c'è stato un errore
                 }
+
+                // Gestione registrazione riuscita
                 if (registrationResult.getSuccess() != null) {
                     updateUiWithUser(registrationResult.getSuccess());
+
+                    // Log per verificare il login immediato dopo la registrazione
+                    Log.d("RegistrationActivity", "Tentativo di login automatico con: " + usernameEditText.getText().toString());
+
+
+                    Log.d("RegistrationActivity", "Utente loggato: " + userRepository.getLoggedInUser());
+
+                    // Salva lo stato di login
+                    LoginUtils.saveLoginState(RegistrationActivity.this, true, usernameEditText.getText().toString());
+
+                    // Imposta il risultato da restituire a chi ha avviato l'Activity
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("user_display_name", registrationResult.getSuccess().getDisplayName());
+                    setResult(Activity.RESULT_OK, resultIntent);
+
+                    // Chiudi la RegistrationActivity dopo una registrazione di successo
+                    finish();
                 }
-                setResult(Activity.RESULT_OK);
-                finish();
             }
         });
 
+        // Listener per aggiornamenti di testo
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
+                // Ignora
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
+                // Ignora
             }
 
             @Override
@@ -94,8 +122,9 @@ public class RegistrationActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+        // Listener per la pressione del tasto "Done" sulla tastiera
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -106,6 +135,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
+        // Listener per il pulsante di registrazione
         registrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +147,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(RegisteredUserView model) {
-        String welcome = getString(R.string.welcome) +" "+ model.getDisplayName();
+        String welcome = getString(R.string.welcome) + " " + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 

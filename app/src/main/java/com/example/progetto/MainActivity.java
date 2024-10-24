@@ -39,17 +39,17 @@ public class MainActivity extends AppCompatActivity {
     private SignInButton googleSignInButton;
     private FirebaseFirestore db;
 
-    // ActivityResultLauncher per gestire il ritorno da LoginActivity
-    private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
+    // Unifica ActivityResultLauncher per Login e Registrazione
+    private final ActivityResultLauncher<Intent> authLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    // Chiama updateUI quando torna dal login
+                    // Chiama updateUI quando torna dal login o registrazione
                     updateUI();
                 } else {
-                    // Gestisci il caso in cui il login non è riuscito
-                    Log.w("MainActivity", "Login fallito o annullato");
-                    showToast("Login fallito o annullato");
+                    // Gestisci il fallimento
+                    Log.w("MainActivity", "Autenticazione fallita o annullata");
+                    showToast("Autenticazione fallita o annullata");
                 }
             }
     );
@@ -104,13 +104,23 @@ public class MainActivity extends AppCompatActivity {
         updateUI();
 
         loginButton.setOnClickListener(v -> {
-            // Avvia LoginActivity utilizzando il launcher
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            loginLauncher.launch(loginIntent);  // Questo lancerà la LoginActivity
+            // Controlla se l'utente è già loggato
+            if (!LoginUtils.isLoggedIn(this)) {
+                // Avvia LoginActivity utilizzando authLauncher
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                authLauncher.launch(loginIntent);
+            }
         });
 
+        registerButton.setOnClickListener(v -> {
+            // Controlla se l'utente è già loggato
+            if (!LoginUtils.isLoggedIn(this)) {
+                // Avvia RegistrationActivity utilizzando authLauncher
+                Intent registrationIntent = new Intent(this, RegistrationActivity.class);
+                authLauncher.launch(registrationIntent);
+            }
+        });
 
-        registerButton.setOnClickListener(v -> startActivity(new Intent(this, RegistrationActivity.class)));
         logoutButton.setOnClickListener(v -> mainViewModel.logout());
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
