@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -72,16 +73,22 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
+                    return;  // Non impostare il risultato se il login fallisce
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
 
-                //Complete and destroy login activity once successful
-                finish();
+                    // Imposta il risultato con un Intent e con RESULT_OK
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("user_display_name", loginResult.getSuccess().getDisplayName());
+                    setResult(Activity.RESULT_OK, resultIntent);  // Imposta il risultato con un Intent
+
+                    // Chiudi la LoginActivity dopo il successo
+                    finish();
+                }
             }
         });
+
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override

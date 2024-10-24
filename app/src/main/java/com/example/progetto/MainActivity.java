@@ -39,6 +39,22 @@ public class MainActivity extends AppCompatActivity {
     private SignInButton googleSignInButton;
     private FirebaseFirestore db;
 
+    // ActivityResultLauncher per gestire il ritorno da LoginActivity
+    private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // Chiama updateUI quando torna dal login
+                    updateUI();
+                } else {
+                    // Gestisci il caso in cui il login non è riuscito
+                    Log.w("MainActivity", "Login fallito o annullato");
+                    showToast("Login fallito o annullato");
+                }
+            }
+    );
+
+    // ActivityResultLauncher per Google Sign-In
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -46,18 +62,15 @@ public class MainActivity extends AppCompatActivity {
                     Intent data = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     try {
-                        // Prova ad ottenere l'account Google
                         GoogleSignInAccount account = task.getResult(ApiException.class);
-                        mainViewModel.loginWithGoogle(task); // Usare il ViewModel per il login con Google
+                        mainViewModel.loginWithGoogle(task);  // Gestisci il login tramite Google
                     } catch (ApiException e) {
-                        // Log dell'errore di Google Sign-In
                         Log.e("MainActivity", "Google sign-in failed: " + e.getStatusCode());
-                        showToast("Google sign-in failed: " + e.getMessage());
+                        showToast("Google sign-in fallito: " + e.getMessage());
                     }
                 } else {
-                    // Fallimento nell'intent di Google Sign-In
-                    Log.w("MainActivity", "Google sign-in intent failed");
-                    showToast("Google sign-in intent failed");
+                    Log.w("MainActivity", "Google sign-in fallito");
+                    showToast("Google sign-in fallito");
                 }
             }
     );
@@ -75,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Inizializza Firebase Firestore (se usato)
+        // Inizializza Firebase Firestore
         db = FirebaseFirestore.getInstance();
 
         // Inizializza il ViewModel
@@ -90,8 +103,13 @@ public class MainActivity extends AppCompatActivity {
         // Aggiorna la UI in base allo stato di login
         updateUI();
 
-        // Listener per i bottoni
-        loginButton.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+        loginButton.setOnClickListener(v -> {
+            // Avvia LoginActivity utilizzando il launcher
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            loginLauncher.launch(loginIntent);  // Questo lancerà la LoginActivity
+        });
+
+
         registerButton.setOnClickListener(v -> startActivity(new Intent(this, RegistrationActivity.class)));
         logoutButton.setOnClickListener(v -> mainViewModel.logout());
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
@@ -103,21 +121,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Osserva i cambiamenti nello stato del login
-        mainViewModel.getLoginSuccess().observe(this, success -> {
-            if (success) {
-                // Aggiorna lo stato di login
-                LoginUtils.saveGoogleLoginState(this, true);
-                updateUI(); // Aggiorna l'UI per mostrare il logout
-                showToast("Login successful");
-            } else {
-                showToast("Login failed");
-            }
-        });
-
+        // Osserva i cambiamenti dello stato di logout
         mainViewModel.getLogoutSuccess().observe(this, success -> {
             if (success) {
-                showToast("Logout successful");
+                showToast("Logout avvenuto con successo");
                 LoginUtils.saveGoogleLoginState(this, false); // Aggiorna lo stato di logout
                 updateUI(); // Aggiorna l'UI per mostrare i bottoni di login
             }
@@ -133,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
     // Metodo per aggiornare l'UI in base allo stato di login
     private void updateUI() {
         boolean loggedIn = LoginUtils.isLoggedIn(this);
-        Log.d("MainActivity", "Stampa qualcosa");
         Log.d("MainActivity", "Logged in state: " + loggedIn); // Log dello stato di login
         loginButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
         registerButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);

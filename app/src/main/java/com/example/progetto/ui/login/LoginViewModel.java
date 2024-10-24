@@ -25,6 +25,11 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<LoginResult> getLoginResult() {
+        if (LoginUtils.isLoggedIn(context)) {
+            loginResult.setValue(new LoginResult(new LoggedInUserView("User Display Name")));
+        } else {
+            loginResult.setValue(new LoginResult(R.string.login_failed));
+        }
         return loginResult;
     }
 
@@ -45,6 +50,7 @@ public class LoginViewModel extends ViewModel {
                 // Salva lo stato di login
                 LoginUtils.saveLoginState(context, true, displayName);
                 Log.d(TAG, "Login successful, saved state for user: " + displayName); // Log per il successo
+
 
             } else {
                 loginResult.setValue(new LoginResult(R.string.login_failed)); // Login fallito
