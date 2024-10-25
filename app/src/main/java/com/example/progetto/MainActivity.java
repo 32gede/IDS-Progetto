@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.progetto.data.model.LoginUtils;
+import com.example.progetto.ui.AddRecipeActivity;
 import com.example.progetto.ui.login.LoginActivity;
 import com.example.progetto.ui.registration.RegistrationActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Button registerButton;
     private Button logoutButton;
     private SignInButton googleSignInButton;
+    private Button btnAddRecipe;
     private FirebaseFirestore db;
 
     // Unifica ActivityResultLauncher per Login e Registrazione
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.Registration);
         logoutButton = findViewById(R.id.Logout);
         googleSignInButton = findViewById(R.id.googleSignInButton);
+        btnAddRecipe = findViewById(R.id.btn_add_recipe);
 
         // Aggiorna la UI in base allo stato di login
         updateUI();
@@ -123,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
         logoutButton.setOnClickListener(v -> mainViewModel.logout());
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
+
+        btnAddRecipe.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddRecipeActivity.class);
+            startActivity(intent);
+        });
 
         // Configura GoogleSignInOptions
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         registerButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
         logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
         googleSignInButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
+        btnAddRecipe.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
     }
 
     // Metodo per mostrare un Toast

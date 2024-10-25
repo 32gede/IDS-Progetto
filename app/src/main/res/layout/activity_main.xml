@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="VisualLintButtonSize">
 
     <!-- Registration Button -->
     <Button
@@ -19,7 +20,8 @@
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintHorizontal_bias="0.5"
         android:layout_marginTop="64dp"
-        android:layout_marginHorizontal="16dp" />
+        android:layout_marginHorizontal="16dp"
+        tools:ignore="VisualLintButtonSize" />
 
     <!-- Login Button -->
     <Button
@@ -32,7 +34,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         android:layout_marginTop="64dp"
-        android:layout_marginHorizontal="16dp" />
+        android:layout_marginHorizontal="16dp"
+        tools:ignore="VisualLintButtonSize" />
 
     <!-- Google Sign-In Button -->
     <com.google.android.gms.common.SignInButton
@@ -51,10 +54,24 @@
         android:id="@+id/Logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="Logout"
-        app:layout_constraintTop_toBottomOf="@+id/googleSignInButton"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/googleSignInButton"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btn_add_recipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:text="Aggiungi Ricetta"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Logout"
+        tools:ignore="HardcodedText" /> <!-- di default nascosto -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
