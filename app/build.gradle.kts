@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -38,9 +40,9 @@ android {
 dependencies {
     // Firebase e Google Play Services
     implementation(platform(libs.firebase.bom))
-    implementation (libs.google.firebase.firestore)
-    implementation (libs.google.firebase.auth)
-    implementation (libs.gms.play.services.auth)
+    implementation(libs.google.firebase.firestore)
+    implementation(libs.google.firebase.auth)
+    implementation(libs.gms.play.services.auth)
 
     // AndroidX e Material Design
     implementation(libs.appcompat)
@@ -49,6 +51,10 @@ dependencies {
 
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
 
     // Test
     testImplementation(libs.junit)

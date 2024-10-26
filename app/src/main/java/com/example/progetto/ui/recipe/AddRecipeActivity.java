@@ -1,4 +1,4 @@
-package com.example.progetto.ui;
+package com.example.progetto.ui.recipe;
 
 import android.os.Bundle;
 import android.view.View;
