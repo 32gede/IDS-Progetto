@@ -1,6 +1,7 @@
 package com.example.progetto;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -10,16 +11,18 @@ import com.example.progetto.data.model.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.AuthResult;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainViewModel extends AndroidViewModel {
 
+    private static final String TAG = "MainViewModel";
     private UserRepository userRepository;
     private MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
-    private MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();  // Aggiunto per il logout
-    private ExecutorService executor = Executors.newSingleThreadExecutor(); // Thread separato per operazioni lunghe
+    private MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public MainViewModel(Application application) {
         super(application);
@@ -36,29 +39,38 @@ public class MainViewModel extends AndroidViewModel {
         return logoutSuccess;
     }
 
-    // Metodo per gestire il login con Google (in un thread separato)
-    public void loginWithGoogle(Task<GoogleSignInAccount> task) {
-        executor.execute(() -> {
-            try {
-                GoogleSignInAccount account = Tasks.await(task); // Blocca finché non otteniamo l'account
+    // Metodo per gestire il login con Google
+    // In MainViewModel
+    public Task<AuthResult> loginWithGoogle(Task<GoogleSignInAccount> task) {
+        MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
+        return task.continueWithTask(executor, completedTask -> {
+            if (completedTask.isSuccessful()) {
+                GoogleSignInAccount account = completedTask.getResult();
                 if (account != null) {
-                    // Effettua il login con l'ID Token dell'account Google
-                    userRepository.loginWithGoogle(account.getIdToken()).addOnCompleteListener(resultTask -> {
-                        loginSuccess.postValue(resultTask.isSuccessful()); // Aggiorna lo stato del login
-                    });
+                    // Restituisce il Task<AuthResult> per l'accesso con Google
+                    return userRepository.loginWithGoogle(account.getIdToken());
                 }
-            } catch (Exception e) {
-                loginSuccess.postValue(false); // Fallimento del login
             }
+            throw new Exception("Login con Google fallito");
         });
     }
+
+
 
     // Metodo per gestire il logout
     public void logout() {
         executor.execute(() -> {
-            userRepository.logout(); // Esegui il logout in un thread separato
-            LoginUtils.clearLoginState(getApplication()); // Cancella lo stato di login
-            logoutSuccess.postValue(true); // Notifica alla UI che il logout è avvenuto
+            userRepository.logout();
+            LoginUtils.clearLoginState(getApplication());
+            logoutSuccess.postValue(true);
+            Log.d(TAG, "Logout avvenuto con successo.");
         });
+    }
+
+    // Pulizia delle risorse quando il ViewModel viene distrutto
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdown();
     }
 }

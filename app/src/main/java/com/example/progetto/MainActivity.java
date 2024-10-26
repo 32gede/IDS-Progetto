@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
-    // ActivityResultLauncher per Google Sign-In
+// ActivityResultLauncher per Google Sign-In
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -65,17 +65,29 @@ public class MainActivity extends AppCompatActivity {
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     try {
                         GoogleSignInAccount account = task.getResult(ApiException.class);
-                        mainViewModel.loginWithGoogle(task);  // Gestisci il login tramite Google
+                        mainViewModel.loginWithGoogle(task)  // Gestione login tramite ViewModel
+                                .addOnCompleteListener(this, loginTask -> {
+                                    if (loginTask.isSuccessful()) {
+                                        Log.d("MainActivity", "Google sign-in riuscito.");
+                                        showToast("Login con Google effettuato con successo!");
+                                        updateUI(); // Aggiorna la UI automaticamente
+                                    } else {
+                                        Log.e("MainActivity", "Google sign-in fallito: " +
+                                                loginTask.getException().getMessage());
+                                        showToast("Login con Google fallito.");
+                                    }
+                                });
                     } catch (ApiException e) {
-                        Log.e("MainActivity", "Google sign-in failed: " + e.getStatusCode());
+                        Log.e("MainActivity", "Google sign-in failed: " + e.getStatusCode(), e);
                         showToast("Google sign-in fallito: " + e.getMessage());
                     }
                 } else {
-                    Log.w("MainActivity", "Google sign-in fallito");
-                    showToast("Google sign-in fallito");
+                    Log.w("MainActivity", "Google sign-in cancellato dall'utente o non riuscito.");
+                    showToast("Google sign-in cancellato o non riuscito.");
                 }
             }
     );
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

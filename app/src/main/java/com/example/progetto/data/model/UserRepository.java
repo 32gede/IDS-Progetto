@@ -62,15 +62,27 @@ public class UserRepository {
 
     public Task<AuthResult> loginWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        return mAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                FirebaseUser user = mAuth.getCurrentUser();
-                if (user != null) {
-                    saveUserToPreferences(user);
-                }
-            }
-        });
+        return mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            saveUserToPreferences(user);
+                            saveUserToFirestore(user);
+                            Log.d("UserRepository", "Login con Google riuscito per: " + user.getEmail());
+                        }
+                    } else {
+                        Exception e = task.getException();
+                        if (e != null) {
+                            Log.e("UserRepository", "Errore nel login con Google: " + e.getMessage());
+                        } else {
+                            Log.e("UserRepository", "Errore nel login con Google: task non completato con successo");
+                        }
+                    }
+                });
     }
+
+
     private void saveUserToFirestore(FirebaseUser user) {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", user.getUid());
