@@ -10,7 +10,6 @@ import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.concurrent.ExecutorService;
@@ -19,10 +18,10 @@ import java.util.concurrent.Executors;
 public class MainViewModel extends AndroidViewModel {
 
     private static final String TAG = "MainViewModel";
-    private UserRepository userRepository;
-    private MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
-    private MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final UserRepository userRepository;
+    private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public MainViewModel(Application application) {
         super(application);
