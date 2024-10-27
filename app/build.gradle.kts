@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.gms.play.services.auth)
 
     // AndroidX e Material Design
+    implementation (libs.material.v160) // versione da aggiornare in base al progetto
+
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)

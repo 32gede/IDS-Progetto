@@ -14,6 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.progetto.data.model.LoginUtils;
+import com.example.progetto.ui.item.AddItemActivity;
 import com.example.progetto.ui.recipe.AddRecipeActivity;
 import com.example.progetto.ui.login.LoginActivity;
 import com.example.progetto.ui.registration.RegistrationActivity;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Button logoutButton;
     private SignInButton googleSignInButton;
     private Button btnAddRecipe;
+    private Button btnAddItem;
     private FirebaseFirestore db;
 
     // Unifica ActivityResultLauncher per Login e Registrazione
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.Logout);
         googleSignInButton = findViewById(R.id.googleSignInButton);
         btnAddRecipe = findViewById(R.id.btn_add_recipe);
+        btnAddItem = findViewById(R.id.addItem);
 
         // Aggiorna la UI in base allo stato di login
         updateUI();
@@ -139,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
 
         btnAddRecipe.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddRecipeActivity.class);
+            startActivity(intent);
+        });
+        btnAddItem.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
             startActivity(intent);
         });
 
@@ -174,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
         googleSignInButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
         btnAddRecipe.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        btnAddItem.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
     }
 
     // Metodo per mostrare un Toast
