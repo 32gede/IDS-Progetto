@@ -1,8 +1,10 @@
 package com.example.progetto.ui.item;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -10,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
@@ -34,8 +37,11 @@ public class AddItemActivity extends AppCompatActivity {
         // Trova gli elementi UI
         etProductName = findViewById(R.id.etProductNameField);
         etQuantity = findViewById(R.id.etQuantityField);
-        etExpiryDate = findViewById(R.id.etExpiryDateField); // Aggiungi un campo data di scadenza personalizzato
+        etExpiryDate = findViewById(R.id.etExpiryDateField);
         btnSaveProduct = findViewById(R.id.btnSaveProduct);
+
+        // Listener per mostrare il DatePickerDialog quando si clicca su etExpiryDate
+        etExpiryDate.setOnClickListener(v -> showDatePickerDialog());
 
         // Listener per salvare il prodotto
         btnSaveProduct.setOnClickListener(new View.OnClickListener() {
@@ -46,10 +52,37 @@ public class AddItemActivity extends AppCompatActivity {
         });
     }
 
+    // Metodo per mostrare il DatePickerDialog e inserire la data selezionata
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
+                    // Formatta la data selezionata come "dd/MM/yyyy"
+                    String selectedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                    etExpiryDate.setText(selectedDate);
+                },
+                year, month, day
+        );
+
+        // Imposta la data minima a oggi per il selettore di data
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+
+        datePickerDialog.show();
+    }
+
+
     private void saveProduct() {
         String productName = etProductName.getText().toString().trim();
         String quantityText = etQuantity.getText().toString().trim();
         String expiryDateText = etExpiryDate.getText().toString().trim();
+
+        // Recupera l'UID dell'utente corrente
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         // Controlla se tutti i campi sono stati compilati
         if (productName.isEmpty() || quantityText.isEmpty() || expiryDateText.isEmpty()) {
@@ -71,7 +104,7 @@ public class AddItemActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             String[] parts = expiryDateText.split("/");
             int day = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]) - 1; // Mesi vanno da 0 a 11
+            int month = Integer.parseInt(parts[1]) - 1; // I mesi partono da 0
             int year = Integer.parseInt(parts[2]);
             calendar.set(year, month, day);
             expiryDate = calendar.getTime();
@@ -80,11 +113,12 @@ public class AddItemActivity extends AppCompatActivity {
             return;
         }
 
-        // Crea un oggetto prodotto da salvare in Firestore
+        // Crea un oggetto prodotto da salvare in Firestore, inclusivo di UID
         Map<String, Object> product = new HashMap<>();
         product.put("name", productName);
         product.put("quantity", quantity);
         product.put("expiryDate", expiryDate);
+        product.put("uid", uid); // Aggiungi l'UID dell'utente
 
         // Aggiungi il prodotto a Firebase Firestore
         db.collection("items")
@@ -97,4 +131,5 @@ public class AddItemActivity extends AppCompatActivity {
                     Toast.makeText(this, "Errore nell'aggiunta del prodotto: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 }
