@@ -5,13 +5,11 @@ import android.util.Log;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
 import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.data.model.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
