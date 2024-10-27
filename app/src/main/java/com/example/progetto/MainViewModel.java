@@ -48,6 +48,7 @@ public class MainViewModel extends AndroidViewModel {
                 GoogleSignInAccount account = completedTask.getResult();
                 if (account != null) {
                     // Restituisce il Task<AuthResult> per l'accesso con Google
+                    LoginUtils.saveGoogleLoginState(getApplication(), true);
                     return userRepository.loginWithGoogle(account.getIdToken());
                 }
             }
