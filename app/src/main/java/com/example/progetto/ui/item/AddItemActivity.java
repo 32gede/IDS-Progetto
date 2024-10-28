@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddItemActivity extends AppCompatActivity {
 
@@ -219,7 +220,7 @@ public class AddItemActivity extends AppCompatActivity {
         String productName = etProductName.getText().toString().trim();
         String quantityText = etQuantity.getText().toString().trim();
         String expiryDateText = etExpiryDate.getText().toString().trim();
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         if (productName.isEmpty() || quantityText.isEmpty() || expiryDateText.isEmpty()) {
             Toast.makeText(this, "Tutti i campi sono obbligatori", Toast.LENGTH_SHORT).show();
