@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddItemActivity extends AppCompatActivity {
 
@@ -82,7 +83,7 @@ public class AddItemActivity extends AppCompatActivity {
         String expiryDateText = etExpiryDate.getText().toString().trim();
 
         // Recupera l'UID dell'utente corrente
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         // Controlla se tutti i campi sono stati compilati
         if (productName.isEmpty() || quantityText.isEmpty() || expiryDateText.isEmpty()) {
