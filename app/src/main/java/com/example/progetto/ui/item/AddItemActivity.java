@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.example.progetto.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,15 +30,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AddItemActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_GALLERY = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 3;
     private static final int REQUEST_STORAGE_PERMISSION = 2;
+    private static final int REQUEST_CAMERA_PERMISSION = 4;
 
     private EditText etProductName, etQuantity, etExpiryDate;
     private ImageView ivProductImage;
@@ -44,31 +53,26 @@ public class AddItemActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private Uri imageUri;
     private String imageUrl;
+    private String currentPhotoPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
-        // Inizializza Firestore e Firebase Storage
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        // Trova gli elementi UI
         etProductName = findViewById(R.id.etProductNameField);
         etQuantity = findViewById(R.id.etQuantityField);
         etExpiryDate = findViewById(R.id.etExpiryDateField);
         ivProductImage = findViewById(R.id.ivProductImage);
-        btnSelectImage = findViewById(R.id.btnSelectImage);
+        btnSelectImage = findViewById(R.id.btnSelectImage); // Pulsante per scattare la foto
         btnSaveProduct = findViewById(R.id.btnSaveProduct);
 
-        // Listener per selezionare l'immagine
         btnSelectImage.setOnClickListener(v -> checkStoragePermission());
-
-        // Listener per mostrare il DatePickerDialog quando si clicca su etExpiryDate
         etExpiryDate.setOnClickListener(v -> showDatePickerDialog());
 
-        // Listener per salvare il prodotto
         btnSaveProduct.setOnClickListener(v -> {
             if (imageUri != null) {
                 uploadImageAndSaveProduct();
@@ -78,16 +82,16 @@ public class AddItemActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void checkStoragePermission() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            // Per Android 13 o successivi, usa permesso specifico per immagini
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_STORAGE_PERMISSION);
             } else {
                 openImagePicker();
             }
         } else {
-            // Per Android 12 o precedenti
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
             } else {
@@ -96,9 +100,46 @@ public class AddItemActivity extends AppCompatActivity {
         }
     }
 
+
     private void openImagePicker() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(galleryIntent, REQUEST_IMAGE_GALLERY);
+    }
+
+    private void openCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.e("AddItemActivity", "Errore durante la creazione del file immagine", ex);
+                Toast.makeText(this, "Errore durante la creazione del file immagine", Toast.LENGTH_SHORT).show();
+            }
+
+            if (photoFile != null) {
+                try {
+                    imageUri = FileProvider.getUriForFile(this, "com.example.progetto.fileprovider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                } catch (Exception e) {
+                    Log.e("AddItemActivity", "Errore durante l'apertura della fotocamera", e);
+                    Toast.makeText(this, "Errore durante l'apertura della fotocamera", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(null);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     private void showDatePickerDialog() {
@@ -127,11 +168,13 @@ public class AddItemActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openImagePicker();
             } else {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                    Toast.makeText(this, "Permesso negato permanentemente. Abilita i permessi dalle impostazioni dell'app.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, "Permesso negato per accedere alla memoria", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(this, "Permesso negato per accedere alla memoria", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(this, "Permesso negato per usare la fotocamera", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -140,14 +183,12 @@ public class AddItemActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == REQUEST_IMAGE_GALLERY) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_GALLERY && data != null) {
                 imageUri = data.getData();
-                if (imageUri != null) {
-                    ivProductImage.setImageURI(imageUri);
-                } else {
-                    Toast.makeText(this, "Errore nel selezionare l'immagine.", Toast.LENGTH_SHORT).show();
-                }
+                ivProductImage.setImageURI(imageUri);
+            } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                ivProductImage.setImageURI(imageUri);
             }
         }
     }
