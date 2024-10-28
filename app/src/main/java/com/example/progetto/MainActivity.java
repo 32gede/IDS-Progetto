@@ -111,10 +111,15 @@ public class MainActivity extends AppCompatActivity {
         // Inizializza i bottoni
         loginButton = findViewById(R.id.Login);
         registerButton = findViewById(R.id.Registration);
-        logoutButton = findViewById(R.id.Logout);
         googleSignInButton = findViewById(R.id.googleSignInButton);
-        btnAddRecipe = findViewById(R.id.btn_add_recipe);
-        btnAddItem = findViewById(R.id.addItem);
+
+        // Gonfia il layout aggiuntivo
+        View extraLayout = getLayoutInflater().inflate(R.layout.home, findViewById(R.id.extra_layout_container), true);
+
+        // Trova i bottoni nel layout aggiuntivo
+        logoutButton = extraLayout.findViewById(R.id.Logout);
+        btnAddRecipe = extraLayout.findViewById(R.id.btn_add_recipe);
+        btnAddItem = extraLayout.findViewById(R.id.addItem);
 
         // Aggiorna la UI in base allo stato di login
         updateUI();
