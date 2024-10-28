@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.google.firebase.firestore)
     implementation(libs.google.firebase.auth)
     implementation(libs.gms.play.services.auth)
+    implementation (libs.firebase.storage)
 
     // AndroidX e Material Design
     implementation (libs.material.v160) // versione da aggiornare in base al progetto
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+
 
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
