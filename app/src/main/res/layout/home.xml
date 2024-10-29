@@ -34,10 +34,10 @@
             android:id="@+id/notificationButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@android:drawable/ic_dialog_alert"
             android:layout_marginStart="8dp"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Notifiche"
-            android:background="?android:selectableItemBackgroundBorderless" />
+            android:src="@drawable/baseline_notifications_24" />
 
         <!-- Bottone Profilo in alto a destra -->
         <ImageButton
@@ -47,7 +47,7 @@
             android:layout_marginStart="8dp"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Profilo"
-            android:src="@android:drawable/ic_menu_myplaces" />
+            android:src="@drawable/baseline_person_24" />
     </LinearLayout>
 
     <!-- Titolo Frigo -->
@@ -71,9 +71,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_view"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Home"
-            android:background="?android:selectableItemBackgroundBorderless" />
+            android:src="@drawable/baseline_home_24" />
 
         <!-- Bottone per Ricerca -->
         <ImageButton
@@ -81,29 +81,29 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_search"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Ricerca"
-            android:background="?android:selectableItemBackgroundBorderless" />
+            android:src="@drawable/baseline_search_24" />
 
         <!-- Bottone per Lista -->
         <ImageButton
-            android:id="@+id/listButton"
+            android:id="@+id/fridgeButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_agenda"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Lista"
-            android:background="?android:selectableItemBackgroundBorderless" />
+            android:src="@drawable/baseline_storefront_24" />
 
         <!-- Bottone per Profilo in basso -->
         <ImageButton
-            android:id="@+id/profileButtonBottom"
+            android:id="@+id/recipeButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_myplaces"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Profilo"
-            android:background="?android:selectableItemBackgroundBorderless" />
+            android:src="@drawable/baseline_library_books_24" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
