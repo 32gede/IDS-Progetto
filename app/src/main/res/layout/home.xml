@@ -6,35 +6,104 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/Logout"
-        android:layout_width="wrap_content"
+    <!-- Layout superiore con barra di ricerca, notifiche e profilo -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Logout"
+        android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        tools:ignore="HardcodedText" />
+        android:layout_margin="16dp"
+        android:gravity="center_vertical"
+        android:weightSum="10">
 
-    <Button
-        android:id="@+id/addItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aggiungi Prodotto"
-        app:layout_constraintTop_toBottomOf="@+id/Logout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <!-- Barra di ricerca (SearchView nativa) -->
+        <SearchView
+            android:id="@+id/searchBar"
+            android:layout_width="245dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:background="@android:drawable/editbox_background"
+            android:iconifiedByDefault="false"
+            android:queryHint="Cerca nel frigo" />
 
-    <Button
-        android:id="@+id/btn_add_recipe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aggiungi Ricetta"
-        app:layout_constraintTop_toBottomOf="@+id/addItem"
+        <!-- Icona Notifiche -->
+        <ImageButton
+            android:id="@+id/notificationButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_dialog_alert"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Notifiche"
+            android:background="?android:selectableItemBackgroundBorderless" />
+
+        <!-- Bottone Profilo in alto a destra -->
+        <ImageButton
+            android:id="@+id/profileButtonTop"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="Profilo"
+            android:src="@android:drawable/ic_menu_myplaces" />
+    </LinearLayout>
+
+    <!-- Titolo Frigo -->
+
+    <!-- Testo con messaggio e lista frigo -->
+
+    <!-- Barra di navigazione in basso -->
+    <LinearLayout
+        android:id="@+id/navBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#E0E0E0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Bottone per Home -->
+        <ImageButton
+            android:id="@+id/homeButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_view"
+            android:contentDescription="Home"
+            android:background="?android:selectableItemBackgroundBorderless" />
+
+        <!-- Bottone per Ricerca -->
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_search"
+            android:contentDescription="Ricerca"
+            android:background="?android:selectableItemBackgroundBorderless" />
+
+        <!-- Bottone per Lista -->
+        <ImageButton
+            android:id="@+id/listButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_agenda"
+            android:contentDescription="Lista"
+            android:background="?android:selectableItemBackgroundBorderless" />
+
+        <!-- Bottone per Profilo in basso -->
+        <ImageButton
+            android:id="@+id/profileButtonBottom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_myplaces"
+            android:contentDescription="Profilo"
+            android:background="?android:selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

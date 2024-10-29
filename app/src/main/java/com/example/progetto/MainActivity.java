@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity {
         View extraLayout = getLayoutInflater().inflate(R.layout.home, findViewById(R.id.extra_layout_container), true);
 
         // Trova i bottoni nel layout aggiuntivo
-        logoutButton = extraLayout.findViewById(R.id.Logout);
-        btnAddRecipe = extraLayout.findViewById(R.id.btn_add_recipe);
-        btnAddItem = extraLayout.findViewById(R.id.addItem);
+        //logoutButton = extraLayout.findViewById(R.id.Logout);
+        //btnAddRecipe = extraLayout.findViewById(R.id.btn_add_recipe);
+        //btnAddItem = extraLayout.findViewById(R.id.addItem);
 
         // Aggiorna la UI in base allo stato di login
         updateUI();
