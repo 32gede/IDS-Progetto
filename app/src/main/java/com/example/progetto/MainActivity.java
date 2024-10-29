@@ -35,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
     private Button loginButton;
     private Button registerButton;
-    private Button logoutButton;
+    //private Button logoutButton;
     private SignInButton googleSignInButton;
-    private Button btnAddRecipe;
-    private Button btnAddItem;
+    //private Button btnAddRecipe;
+    //private Button btnAddItem;
     private FirebaseFirestore db;
 
     // Unifica ActivityResultLauncher per Login e Registrazione
@@ -142,10 +142,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        logoutButton.setOnClickListener(v -> mainViewModel.logout());
+       // logoutButton.setOnClickListener(v -> mainViewModel.logout());
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
-        btnAddRecipe.setOnClickListener(view -> {
+       /* btnAddRecipe.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddRecipeActivity.class);
             startActivity(intent);
         });
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
             startActivity(intent);
         });
-
+*/
         // Configura GoogleSignInOptions
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -162,13 +162,13 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Osserva i cambiamenti dello stato di logout
-        mainViewModel.getLogoutSuccess().observe(this, success -> {
+       /* mainViewModel.getLogoutSuccess().observe(this, success -> {
             if (success) {
                 showToast("Logout avvenuto con successo");
                 LoginUtils.saveGoogleLoginState(this, false); // Aggiorna lo stato di logout
                 updateUI(); // Aggiorna l'UI per mostrare i bottoni di login
             }
-        });
+        });*/
     }
 
     // Metodo per avviare il processo di Google Sign-In
@@ -183,10 +183,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Logged in state: " + loggedIn); // Log dello stato di login
         loginButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
         registerButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
-        logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        //logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
         googleSignInButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
-        btnAddRecipe.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
-        btnAddItem.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        //btnAddRecipe.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        //btnAddItem.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
     }
 
     // Metodo per mostrare un Toast
