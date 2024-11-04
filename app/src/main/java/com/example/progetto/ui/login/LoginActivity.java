@@ -28,6 +28,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
@@ -35,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityLoginBinding binding;
-    private GoogleSignInClient mGoogleSignInClient;  // Define GoogleSignInClient
+    private GoogleSignInClient mGoogleSignInClient;
 
     // Define launcher for Google sign-in intent
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
@@ -44,23 +45,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                    try {
-                        GoogleSignInAccount account = task.getResult(ApiException.class);
-                        loginViewModel.loginWithGoogle(account)  // Assumes loginWithGoogle exists in LoginViewModel
-                                .addOnCompleteListener(this, loginTask -> {
-                                    if (loginTask.isSuccessful()) {
-                                        Log.d("LoginActivity", "Google sign-in succeeded.");
-                                        showToast("Login with Google successful!");
-                                    } else {
-                                        Log.e("LoginActivity", "Google sign-in failed: " +
-                                                loginTask.getException().getMessage());
-                                        showToast("Login with Google failed.");
-                                    }
-                                });
-                    } catch (ApiException e) {
-                        Log.e("LoginActivity", "Google sign-in failed: " + e.getStatusCode(), e);
-                        showToast("Google sign-in failed: " + e.getMessage());
-                    }
+                    handleGoogleSignInResult(task);
                 } else {
                     Log.w("LoginActivity", "Google sign-in cancelled or failed.");
                     showToast("Google sign-in cancelled or failed.");
@@ -69,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     );
 
     private void signInWithGoogle() {
+        Log.d("LoginActivity", "Initiating Google sign-in");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         googleSignInLauncher.launch(signInIntent);
     }
@@ -90,22 +76,9 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = binding.login;
         final ProgressBar loadingProgressBar = binding.loading;
 
-        // Observe LoginFormState to handle form validation
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
-            @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
-            }
-        });
+        // Google sign-in button setup
+        SignInButton googleSignInButton = binding.googleSignInButton;
+        googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
         // Configure Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -114,24 +87,33 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Observe LoginFormState to handle form validation
+        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
+            if (loginFormState == null) return;
+
+            loginButton.setEnabled(loginFormState.isDataValid());
+            if (loginFormState.getUsernameError() != null) {
+                usernameEditText.setError(getString(loginFormState.getUsernameError()));
+            }
+            if (loginFormState.getPasswordError() != null) {
+                passwordEditText.setError(getString(loginFormState.getPasswordError()));
+            }
+        });
+
         // Observe LoginResult to handle login feedback
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("user_display_name", loginResult.getSuccess().getDisplayName());
-                    setResult(Activity.RESULT_OK, resultIntent);
-                    finish(); // Close LoginActivity after successful login
-                }
+        loginViewModel.getLoginResult().observe(this, loginResult -> {
+            if (loginResult == null) return;
+
+            loadingProgressBar.setVisibility(View.GONE);
+            if (loginResult.getError() != null) {
+                showLoginFailed(loginResult.getError());
+            }
+            if (loginResult.getSuccess() != null) {
+                updateUiWithUser(loginResult.getSuccess());
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("user_display_name", loginResult.getSuccess().getDisplayName());
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish(); // Close LoginActivity after successful login
             }
         });
 
@@ -166,6 +148,27 @@ public class LoginActivity extends AppCompatActivity {
                     usernameEditText.getText().toString(),
                     passwordEditText.getText().toString());
         });
+    }
+
+    private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            Log.d("LoginActivity", "Google sign-in succeeded for: " + account.getEmail());
+            loginViewModel.loginWithGoogle(account)
+                    .addOnCompleteListener(this, loginTask -> {
+                        if (loginTask.isSuccessful()) {
+                            Log.d("LoginActivity", "Google sign-in authentication succeeded.");
+                            showToast("Login with Google successful!");
+                        } else {
+                            Log.e("LoginActivity", "Google sign-in failed: " +
+                                    loginTask.getException().getMessage());
+                            showToast("Login with Google failed.");
+                        }
+                    });
+        } catch (ApiException e) {
+            Log.e("LoginActivity", "Google sign-in failed with error code: " + e.getStatusCode(), e);
+            showToast("Google sign-in failed: " + e.getMessage());
+        }
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
