@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.progetto.HomeActivity;
 import com.example.progetto.R;
 import com.example.progetto.data.model.UserRepository;
 import com.example.progetto.databinding.ActivityLoginBinding;
@@ -110,10 +112,11 @@ public class LoginActivity extends AppCompatActivity {
             }
             if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("user_display_name", loginResult.getSuccess().getDisplayName());
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish(); // Close LoginActivity after successful login
+                // Directly navigate to HomeActivity on successful login
+                Intent homeIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(homeIntent);
+                finish(); // Close LoginActivity after starting HomeActivity
             }
         });
 
@@ -159,12 +162,20 @@ public class LoginActivity extends AppCompatActivity {
                         if (loginTask.isSuccessful()) {
                             Log.d("LoginActivity", "Google sign-in authentication succeeded.");
                             showToast("Login with Google successful!");
+
+                            // Navigate to HomeActivity directly
+                            Intent homeIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(homeIntent);
+                            finish(); // Close LoginActivity after starting HomeActivity
+
                         } else {
                             Log.e("LoginActivity", "Google sign-in failed: " +
                                     loginTask.getException().getMessage());
                             showToast("Login with Google failed.");
                         }
                     });
+
         } catch (ApiException e) {
             Log.e("LoginActivity", "Google sign-in failed with error code: " + e.getStatusCode(), e);
             showToast("Google sign-in failed: " + e.getMessage());

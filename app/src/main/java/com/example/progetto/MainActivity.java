@@ -84,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(LoginUtils.isLoggedIn(this)) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
 
