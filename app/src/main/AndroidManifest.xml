@@ -19,9 +19,6 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" /> <!-- Ensure this file exists in res/xml -->
         </provider>
 
         <!-- Activity Definitions -->
@@ -38,7 +35,7 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
-            android:label="@string/home_activity_label" /> <!-- Use string resource for better localization -->
+            android:label="Home" /> <!-- Use string resource for better localization -->
 
         <!-- Main Activity with LAUNCHER intent -->
         <activity
