@@ -35,11 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button loginButton;
     private Button registerButton;
-    private Button logoutButton;
-    private SignInButton googleSignInButton;
-    private Button btnAddRecipe;
-    private Button btnAddItem;
-    private FirebaseFirestore db;
 
     // Unifica ActivityResultLauncher per Login e Registrazione
     private final ActivityResultLauncher<Intent> authLauncher = registerForActivityResult(
@@ -102,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Inizializza Firebase Firestore
-        db = FirebaseFirestore.getInstance();
 
         // Inizializza il ViewModel
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
@@ -111,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         // Inizializza i bottoni
         loginButton = findViewById(R.id.Login);
         registerButton = findViewById(R.id.Registration);
-        googleSignInButton = findViewById(R.id.googleSignInButton);
 
         // Gonfia il layout aggiuntivo
         View extraLayout = getLayoutInflater().inflate(R.layout.home, findViewById(R.id.extra_layout_container), true);
@@ -142,17 +134,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        logoutButton.setOnClickListener(v -> mainViewModel.logout());
-        googleSignInButton.setOnClickListener(v -> signInWithGoogle());
-
-        btnAddRecipe.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddRecipeActivity.class);
-            startActivity(intent);
-        });
-        btnAddItem.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
-            startActivity(intent);
-        });
 
         // Configura GoogleSignInOptions
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -183,10 +164,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Logged in state: " + loggedIn); // Log dello stato di login
         loginButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
         registerButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
-        logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
-        googleSignInButton.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
-        btnAddRecipe.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
-        btnAddItem.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
     }
 
     // Metodo per mostrare un Toast
