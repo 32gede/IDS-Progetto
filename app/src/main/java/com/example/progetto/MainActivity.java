@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
 import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.ui.item.AddItemActivity;
 import com.example.progetto.ui.recipe.AddRecipeActivity;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
-// ActivityResultLauncher per Google Sign-In
+    // ActivityResultLauncher per Google Sign-In
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -88,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
+
         setContentView(R.layout.activity_main);
+
 
         // Gestione dei margini di sistema per Android 12+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -104,14 +108,6 @@ public class MainActivity extends AppCompatActivity {
         // Inizializza i bottoni
         loginButton = findViewById(R.id.Login);
         registerButton = findViewById(R.id.Registration);
-
-        // Gonfia il layout aggiuntivo
-        View extraLayout = getLayoutInflater().inflate(R.layout.home, findViewById(R.id.extra_layout_container), true);
-
-        // Trova i bottoni nel layout aggiuntivo
-        //logoutButton = extraLayout.findViewById(R.id.Logout);
-        //btnAddRecipe = extraLayout.findViewById(R.id.btn_add_recipe);
-        //btnAddItem = extraLayout.findViewById(R.id.addItem);
 
         // Aggiorna la UI in base allo stato di login
         updateUI();
@@ -133,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
                 authLauncher.launch(registrationIntent);
             }
         });
-
 
 
         // Configura GoogleSignInOptions

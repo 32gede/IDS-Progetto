@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".HomeActivity">
 
     <!-- Layout superiore con barra di ricerca, notifiche e profilo -->
     <LinearLayout
@@ -48,62 +48,6 @@
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Profilo"
             android:src="@drawable/baseline_person_24" />
-    </LinearLayout>
-
-    <!-- Titolo Frigo -->
-
-    <!-- Testo con messaggio e lista frigo -->
-
-    <!-- Barra di navigazione in basso -->
-    <LinearLayout
-        android:id="@+id/navBar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:background="#E0E0E0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Bottone per Home -->
-        <ImageButton
-            android:id="@+id/homeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Home"
-            android:src="@drawable/baseline_home_24" />
-
-        <!-- Bottone per Ricerca -->
-        <ImageButton
-            android:id="@+id/searchButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Ricerca"
-            android:src="@drawable/baseline_search_24" />
-
-        <!-- Bottone per Lista -->
-        <ImageButton
-            android:id="@+id/fridgeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Lista"
-            android:src="@drawable/baseline_storefront_24" />
-
-        <!-- Bottone per Profilo in basso -->
-        <ImageButton
-            android:id="@+id/recipeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Profilo"
-            android:src="@drawable/baseline_library_books_24" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
