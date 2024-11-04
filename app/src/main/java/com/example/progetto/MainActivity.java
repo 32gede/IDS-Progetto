@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.progetto.data.model.LoginUtils;
+import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.login.LoginActivity;
 import com.example.progetto.ui.registration.RegistrationActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;

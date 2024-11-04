@@ -30,6 +30,10 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:label="HomeActivity" />
 
         <activity
             android:name=".MainActivity"
