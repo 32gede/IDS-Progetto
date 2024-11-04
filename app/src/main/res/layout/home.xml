@@ -14,51 +14,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Layout superiore con barra di ricerca, notifiche e profilo -->
+        <!-- Top bar with search, notifications, and profile -->
         <LinearLayout
             android:id="@+id/topBar"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp"
-            android:gravity="center_vertical"
-            android:weightSum="10">
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp">
 
-            <!-- Barra di ricerca -->
+            <!-- Search Bar -->
             <SearchView
                 android:id="@+id/searchBar"
-                android:layout_width="245dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:background="@android:drawable/editbox_background"
+                android:layout_weight="7"
                 android:iconifiedByDefault="false"
-                android:queryHint="Cerca nel frigo" />
+                android:queryHint="Cerca nel frigo"
+                android:padding="4dp"/>
 
-            <!-- Icona Notifiche -->
+            <!-- Notifications Icon -->
             <ImageButton
                 android:id="@+id/notificationButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:contentDescription="Notifiche"
-                android:src="@drawable/baseline_notifications_24" />
+                android:src="@drawable/baseline_notifications_24"
+                android:padding="8dp" />
 
-            <!-- Bottone Profilo -->
+            <!-- Profile Button -->
             <ImageButton
                 android:id="@+id/profileButtonTop"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:contentDescription="Profilo"
-                android:src="@drawable/baseline_person_24" />
+                android:src="@drawable/baseline_person_24"
+                android:padding="8dp" />
         </LinearLayout>
 
-        <!-- Contenuto principale, che deve adattarsi tra la topBar e la navBar -->
+        <!-- Main content frame between topBar and navBar -->
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="0dp"
@@ -67,17 +70,17 @@
             app:layout_constraintBottom_toTopOf="@id/navBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <!-- Qui va il contenuto principale della tua activity -->
+            <!-- Main content of the activity goes here -->
         </FrameLayout>
 
-        <!-- NavBar ancorata al fondo -->
+        <!-- Bottom Navbar anchored to the bottom of the screen -->
         <include
             android:id="@+id/navBar"
             layout="@layout/nav_bar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            android:elevation="4dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->
