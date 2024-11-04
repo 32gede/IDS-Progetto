@@ -13,14 +13,18 @@
         android:theme="@style/Theme.Progetto"
         tools:targetApi="31">
 
+        <!-- FileProvider for securely sharing files -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" /> <!-- Ensure this file exists in res/xml -->
         </provider>
-        <!-- Definizioni delle attività -->
+
+        <!-- Activity Definitions -->
         <activity
             android:name=".ui.registration.RegistrationActivity"
             android:exported="false"
@@ -30,11 +34,13 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
-            android:label="HomeActivity" />
+            android:label="@string/home_activity_label" /> <!-- Use string resource for better localization -->
 
+        <!-- Main Activity with LAUNCHER intent -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -44,15 +50,19 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.recipe.AddRecipeActivity" />
-        <activity android:name=".ui.item.AddItemActivity" />
+        <!-- Other Activities -->
+        <activity android:name=".ui.recipe.AddRecipeActivity" android:exported="false" />
+        <activity android:name=".ui.item.AddItemActivity" android:exported="false" />
     </application>
 
-    <!-- Permissions necessari per l'accesso a immagini e memoria su dispositivi Android -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Specifico per Android 13+ -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> <!-- Necessario solo per Android 9 e precedenti -->
+    <!-- Permissions for Storage Access and Camera -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Android 13+ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- For Android 12 and below -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/> <!-- For Android 9 and below -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Camera hardware feature (optional) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 </manifest>
