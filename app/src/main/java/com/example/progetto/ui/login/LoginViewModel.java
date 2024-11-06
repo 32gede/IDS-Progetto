@@ -41,7 +41,6 @@ public class LoginViewModel extends ViewModel {
         // Log per debugging
         Log.d(TAG, "Attempting login with Google for account: " + account.getEmail());
 
-        // Effettua l'accesso usando il token dell'account Google
         LoginUtils.saveGoogleLoginState(context, true); // Salva lo stato di login
         return userRepository.loginWithGoogle(account.getIdToken());
     }

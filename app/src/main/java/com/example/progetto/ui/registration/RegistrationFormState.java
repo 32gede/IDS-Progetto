@@ -1,11 +1,15 @@
 package com.example.progetto.ui.registration;
 
+import androidx.annotation.Nullable;
+
 public class RegistrationFormState {
+    @Nullable
     private Integer usernameError;
+    @Nullable
     private Integer passwordError;
     private boolean isDataValid;
 
-    RegistrationFormState(Integer usernameError, Integer passwordError) {
+    RegistrationFormState(@Nullable Integer usernameError, @Nullable Integer passwordError) {
         this.usernameError = usernameError;
         this.passwordError = passwordError;
         this.isDataValid = false;
@@ -17,10 +21,12 @@ public class RegistrationFormState {
         this.isDataValid = isDataValid;
     }
 
+    @Nullable
     public Integer getUsernameError() {
         return usernameError;
     }
 
+    @Nullable
     public Integer getPasswordError() {
         return passwordError;
     }
