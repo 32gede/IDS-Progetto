@@ -26,7 +26,7 @@ public class RegistrationViewModelFactory implements ViewModelProvider.Factory {
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(RegistrationViewModel.class)) {
-            return (T) new RegistrationViewModel(repository, context);
+            return (T) new RegistrationViewModel();
         } else {
             throw new IllegalArgumentException("Unknown ViewModel class");
         }
