@@ -50,6 +50,8 @@
         <!-- Other Activities -->
         <activity android:name=".ui.recipe.AddRecipeActivity" android:exported="false" />
         <activity android:name=".ui.item.AddItemActivity" android:exported="false" />
+        <activity android:name=".ui.profile.ProfileActivity" />
+
     </application>
 
     <!-- Permissions for Storage Access and Camera -->
