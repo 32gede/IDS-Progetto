@@ -17,14 +17,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- FrameLayout per il pulsante Home con sfondo circolare -->
+        <!-- FrameLayout per il pulsante Home -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"> <!-- Aggiunto il centro per entrambe le dimensioni -->
+            android:gravity="center">
 
-            <!-- Sfondo circolare (di default nascosto) -->
+            <!-- Sfondo circolare per Home -->
             <ImageView
                 android:id="@+id/homeBackgroundCircle"
                 android:layout_width="48dp"
@@ -44,37 +44,88 @@
                 android:src="@drawable/baseline_home_24" />
         </FrameLayout>
 
-        <!-- Bottone per Ricerca -->
-        <ImageButton
-            android:id="@+id/searchButton"
+        <!-- FrameLayout per il pulsante Ricerca -->
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Ricerca"
-            android:src="@drawable/baseline_search_24" />
+            android:gravity="center">
 
-        <!-- Bottone per Lista -->
-        <ImageButton
-            android:id="@+id/fridgeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Lista"
-            android:src="@drawable/baseline_storefront_24" />
+            <!-- Sfondo circolare per Ricerca -->
+            <ImageView
+                android:id="@+id/searchBackgroundCircle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/selected_nav_item_background"
+                android:visibility="gone" /> <!-- Inizialmente nascosto -->
 
-        <!-- Bottone per Profilo -->
-        <ImageButton
-            android:id="@+id/recipeButton"
+            <!-- Icona Ricerca -->
+            <ImageButton
+                android:id="@+id/searchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Ricerca"
+                android:src="@drawable/baseline_search_24" />
+        </FrameLayout>
+
+        <!-- FrameLayout per il pulsante Lista -->
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Profilo"
-            android:src="@drawable/baseline_library_books_24" />
+            android:gravity="center">
+
+            <!-- Sfondo circolare per Lista -->
+            <ImageView
+                android:id="@+id/fridgeBackgroundCircle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/selected_nav_item_background"
+                android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+            <!-- Icona Lista -->
+            <ImageButton
+                android:id="@+id/fridgeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Lista"
+                android:src="@drawable/baseline_storefront_24" />
+        </FrameLayout>
+
+        <!-- FrameLayout per il pulsante Profilo -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <!-- Sfondo circolare per Profilo -->
+            <ImageView
+                android:id="@+id/recipeBackgroundCircle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/selected_nav_item_background"
+                android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+            <!-- Icona Profilo -->
+            <ImageButton
+                android:id="@+id/recipeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Profilo"
+                android:src="@drawable/baseline_library_books_24" />
+        </FrameLayout>
+
     </LinearLayout>
-
 
     <!-- Vincola gli altri elementi al top della NavBar -->
     <androidx.constraintlayout.widget.Guideline
