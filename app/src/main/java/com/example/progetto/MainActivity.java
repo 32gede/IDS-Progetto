@@ -141,14 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Osserva i cambiamenti dello stato di logout
-        mainViewModel.getLogoutSuccess().observe(this, success -> {
-            if (success) {
-                showToast("Logout avvenuto con successo");
-                LoginUtils.saveGoogleLoginState(this, false); // Aggiorna lo stato di logout
-                updateUI(); // Aggiorna l'UI per mostrare i bottoni di login
-            }
-        });
+
     }
 
     // Metodo per avviare il processo di Google Sign-In
