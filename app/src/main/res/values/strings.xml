@@ -26,4 +26,5 @@
     <string name="categoria" translatable="false">Categoria</string>
     <string name="tempo_di_preparazione" translatable="false">Tempo di preparazione</string>
     <string name="aggiungi_ricetta" translatable="false">Aggiungi Ricetta</string>
+    <string name="gif" translatable="false">gs://device-streaming-b22f1c9d.appspot.com/decepcao-pensativo.gif</string>
 </resources>
