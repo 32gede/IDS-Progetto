@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#4B0082" /> <!-- Viola scuro -->
+    <corners android:radius="50dp" /> <!-- Renderlo circolare -->
+    <size
+        android:width="48dp"
+        android:height="48dp" /> <!-- Dimensioni del cerchio -->
+</shape>

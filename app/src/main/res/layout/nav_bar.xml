@@ -14,23 +14,40 @@
         android:background="#E0E0E0"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Bottone per Home -->
-        <ImageButton
-            android:id="@+id/homeButton"
-            android:layout_width="match_parent"
+        <!-- FrameLayout per il pulsante Home con sfondo circolare -->
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Home"
-            android:src="@drawable/baseline_home_24" />
+            android:gravity="center"> <!-- Aggiunto il centro per entrambe le dimensioni -->
+
+            <!-- Sfondo circolare (di default nascosto) -->
+            <ImageView
+                android:id="@+id/homeBackgroundCircle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/selected_nav_item_background"
+                android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+            <!-- Icona Home -->
+            <ImageButton
+                android:id="@+id/homeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Home"
+                android:src="@drawable/baseline_home_24" />
+        </FrameLayout>
 
         <!-- Bottone per Ricerca -->
         <ImageButton
             android:id="@+id/searchButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackgroundBorderless"
@@ -40,23 +57,24 @@
         <!-- Bottone per Lista -->
         <ImageButton
             android:id="@+id/fridgeButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Lista"
             android:src="@drawable/baseline_storefront_24" />
 
-        <!-- Bottone per Profilo in basso -->
+        <!-- Bottone per Profilo -->
         <ImageButton
             android:id="@+id/recipeButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Profilo"
             android:src="@drawable/baseline_library_books_24" />
     </LinearLayout>
+
 
     <!-- Vincola gli altri elementi al top della NavBar -->
     <androidx.constraintlayout.widget.Guideline
