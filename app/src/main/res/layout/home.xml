@@ -1,109 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.home.HomeActivity">
 
-    <!-- Layout superiore con barra di ricerca, notifiche e profilo -->
-    <LinearLayout
-        android:id="@+id/topBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"
-        android:gravity="center_vertical"
-        android:weightSum="10">
+    <!-- Main content view -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <!-- Barra di ricerca (SearchView nativa) -->
-        <SearchView
-            android:id="@+id/searchBar"
-            android:layout_width="245dp"
+        <!-- Top bar with search, notifications, and profile -->
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:background="@android:drawable/editbox_background"
-            android:iconifiedByDefault="false"
-            android:queryHint="Cerca nel frigo" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp">
 
-        <!-- Icona Notifiche -->
-        <ImageButton
-            android:id="@+id/notificationButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Notifiche"
-            android:src="@drawable/baseline_notifications_24" />
+            <!-- Search Bar -->
+            <SearchView
+                android:id="@+id/searchBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:iconifiedByDefault="false"
+                android:queryHint="Cerca nel frigo"
+                android:padding="4dp"/>
 
-        <!-- Bottone Profilo in alto a destra -->
-        <ImageButton
-            android:id="@+id/profileButtonTop"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Profilo"
-            android:src="@drawable/baseline_person_24" />
-    </LinearLayout>
+            <!-- Notifications Icon -->
+            <ImageButton
+                android:id="@+id/notificationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Notifiche"
+                android:src="@drawable/baseline_notifications_24"
+                android:padding="8dp" />
 
-    <!-- Titolo Frigo -->
+            <!-- Profile Button -->
+            <ImageButton
+                android:id="@+id/profileButtonTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Profilo"
+                android:src="@drawable/baseline_person_24"
+                android:padding="8dp" />
+        </LinearLayout>
 
-    <!-- Testo con messaggio e lista frigo -->
-
-    <!-- Barra di navigazione in basso -->
-    <LinearLayout
-        android:id="@+id/navBar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:background="#E0E0E0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Bottone per Home -->
-        <ImageButton
-            android:id="@+id/homeButton"
+        <!-- Main content frame between topBar and navBar -->
+        <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Home"
-            android:src="@drawable/baseline_home_24" />
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintBottom_toTopOf="@id/navBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <!-- Main content of the activity goes here -->
+        </FrameLayout>
 
-        <!-- Bottone per Ricerca -->
-        <ImageButton
-            android:id="@+id/searchButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Ricerca"
-            android:src="@drawable/baseline_search_24" />
+        <!-- Bottom Navbar anchored to the bottom of the screen -->
+        <include
+            android:id="@+id/navBar"
+            layout="@layout/nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:elevation="4dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Bottone per Lista -->
-        <ImageButton
-            android:id="@+id/fridgeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Lista"
-            android:src="@drawable/baseline_storefront_24" />
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_drawer_menu" />
 
-        <!-- Bottone per Profilo in basso -->
-        <ImageButton
-            android:id="@+id/recipeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Profilo"
-            android:src="@drawable/baseline_library_books_24" />
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
