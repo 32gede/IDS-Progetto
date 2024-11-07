@@ -1,20 +1,24 @@
 package com.example.progetto;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.progetto.data.model.LoginUtils;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.login.LoginActivity;
@@ -24,8 +28,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -95,6 +103,26 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         setContentView(R.layout.activity_main);
+
+        ImageView imageView = findViewById(R.id.imageViewGif);
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("decepcao-pensativo.gif");
+
+        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Carica la GIF nel `ImageView` usando Glide
+                Glide.with(MainActivity.this)
+                        .asGif()  // Indichiamo che vogliamo caricare una GIF
+                        .load(uri)
+                        .into(imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Gestisci eventuali errori
+                exception.printStackTrace();
+            }
+        });
 
 
         // Gestione dei margini di sistema per Android 12+
