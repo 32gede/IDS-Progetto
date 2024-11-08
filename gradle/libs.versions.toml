@@ -18,6 +18,7 @@ lifecycleViewmodelKtx = "2.8.7"
 firebaseAuth = "23.0.0"
 materialVersion = "1.9.0"
 playServicesAuth = "21.2.0"
+firebaseDatabase = "21.0.0"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -41,6 +42,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 material-v160 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

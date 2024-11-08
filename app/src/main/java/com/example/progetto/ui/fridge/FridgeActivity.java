@@ -17,17 +17,22 @@ import com.example.progetto.R;
 import com.example.progetto.data.model.NavigationUtils;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.search.SearchActivity;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class FridgeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, searchButton, fridgeButton, recipeButton;
     private TextView titleText;
+    DatabaseReference databaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home); // Ensure the layout file name is correct
+        databaseReference = FirebaseDatabase.getInstance().getReference("items");
 
         // Find view references
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
