@@ -40,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:contentDescription="Home"
-                android:src="@drawable/baseline_home_24" />
+                android:src="@drawable/icons8_casa_24" />
         </FrameLayout>
 
         <!-- FrameLayout per il pulsante Ricerca -->
