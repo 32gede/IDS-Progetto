@@ -43,6 +43,11 @@
             android:label="@string/search" />
 
         <activity
+            android:name=".ui.fridge.AddProductActivity"
+            android:exported="false"
+            android:label="AddProduct" />
+
+        <activity
             android:name=".ui.recipe.RecipeActivity"
             android:exported="false"
             android:label="@string/recipe" />

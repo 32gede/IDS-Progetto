@@ -9,13 +9,15 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.progetto.R;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.search.SearchActivity;
 
-public class RecipeActivity extends Activity {
+public class RecipeActivity extends AppCompatActivity {
 
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;

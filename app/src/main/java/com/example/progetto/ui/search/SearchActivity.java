@@ -17,7 +17,7 @@ import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;

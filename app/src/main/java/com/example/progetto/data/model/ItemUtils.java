@@ -4,14 +4,12 @@ import java.util.Date;
 
 public class ItemUtils {
     private String name;
-    private int quantity;
-    private Date expiryDate;
+    private String url;
 
     // Costruttore
-    public ItemUtils(String name, int quantity, Date expiryDate) {
+    public ItemUtils(String name, String url) {
         this.name = name;
-        this.quantity = quantity;
-        this.expiryDate = expiryDate;
+        this.url = url;
     }
 
     // Getter e Setter
@@ -23,19 +21,12 @@ public class ItemUtils {
         this.name = name;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getUrl() {
+        return url;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
 }
