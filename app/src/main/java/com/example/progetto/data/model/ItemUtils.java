@@ -1,14 +1,14 @@
-package com.example.progetto.ui.item;
+package com.example.progetto.data.model;
 
 import java.util.Date;
 
-public class Item {
+public class ItemUtils {
     private String name;
     private int quantity;
     private Date expiryDate;
 
     // Costruttore
-    public Item(String name, int quantity, Date expiryDate) {
+    public ItemUtils(String name, int quantity, Date expiryDate) {
         this.name = name;
         this.quantity = quantity;
         this.expiryDate = expiryDate;
