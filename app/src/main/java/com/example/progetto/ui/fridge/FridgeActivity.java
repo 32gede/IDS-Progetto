@@ -14,6 +14,8 @@ import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.R;
 import com.example.progetto.data.model.NavigationUtils;
+import com.example.progetto.ui.recipe.RecipeActivity;
+import com.example.progetto.ui.search.SearchActivity;
 
 public class FridgeActivity extends AppCompatActivity {
 
@@ -59,6 +61,24 @@ public class FridgeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FridgeActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+        // Listener per il pulsante Fridge
+        recipeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Naviga a FridgeActivity
+                Intent intent = new Intent(FridgeActivity.this, RecipeActivity.class);
+                startActivity(intent);
+            }
+        });
+        // Listener per il pulsante Recipe
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Naviga a RecipeActivity
+                Intent intent = new Intent(FridgeActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });

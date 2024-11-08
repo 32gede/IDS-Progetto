@@ -41,7 +41,7 @@ public class SearchActivity extends Activity {
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
             // Imposta il cerchio di sfondo solo per il pulsante Home
-            updateNavSelection(R.id.searchButton, homeBackgroundCircle, null, null, null);
+            updateNavSelection(R.id.searchButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
         } else {
             // Log per il debug (opzionale)
             System.out.println("homeBackgroundCircle o homeButton non trovati nel layout.");

@@ -33,6 +33,21 @@
             android:label="@string/title_activity_login" />
 
         <activity
+            android:name=".ui.fridge.FridgeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_fridge" />
+
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false"
+            android:label="@string/title_activity_search" />
+
+        <activity
+            android:name=".ui.recipe.RecipeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_recipe" />
+        <!-- Home Activity -->
+        <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
             android:label="Home" /> <!-- Use string resource for better localization -->
