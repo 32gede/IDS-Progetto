@@ -62,6 +62,8 @@ public class FridgeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FridgeActivity.this, HomeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
@@ -72,6 +74,8 @@ public class FridgeActivity extends AppCompatActivity {
                 // Naviga a FridgeActivity
                 Intent intent = new Intent(FridgeActivity.this, RecipeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
@@ -82,6 +86,8 @@ public class FridgeActivity extends AppCompatActivity {
                 // Naviga a RecipeActivity
                 Intent intent = new Intent(FridgeActivity.this, SearchActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });

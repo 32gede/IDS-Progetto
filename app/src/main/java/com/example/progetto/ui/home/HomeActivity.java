@@ -55,13 +55,14 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        // Listener per il pulsante Home
+        // Listener per il pulsante Search
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Naviga a HomeActivity
                 Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
         });
@@ -72,6 +73,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Naviga a FridgeActivity
                 Intent intent = new Intent(HomeActivity.this, FridgeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
         });
@@ -82,6 +84,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Naviga a RecipeActivity
                 Intent intent = new Intent(HomeActivity.this, RecipeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
         });

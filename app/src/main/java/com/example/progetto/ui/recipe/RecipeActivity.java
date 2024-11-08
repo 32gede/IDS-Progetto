@@ -53,6 +53,7 @@ public class RecipeActivity extends Activity {
                 // Naviga a ProfileActivity
                 Intent intent = new Intent(com.example.progetto.ui.recipe.RecipeActivity.this, ProfileActivity.class);
                 startActivity(intent);
+
             }
         });
         // Listener per il pulsante Home
@@ -62,6 +63,7 @@ public class RecipeActivity extends Activity {
                 // Naviga a HomeActivity
                 Intent intent = new Intent(com.example.progetto.ui.recipe.RecipeActivity.this, HomeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
         });
@@ -72,6 +74,8 @@ public class RecipeActivity extends Activity {
                 // Naviga a FridgeActivity
                 Intent intent = new Intent(com.example.progetto.ui.recipe.RecipeActivity.this, FridgeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
@@ -82,6 +86,8 @@ public class RecipeActivity extends Activity {
                 // Naviga a RecipeActivity
                 Intent intent = new Intent(com.example.progetto.ui.recipe.RecipeActivity.this, SearchActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });

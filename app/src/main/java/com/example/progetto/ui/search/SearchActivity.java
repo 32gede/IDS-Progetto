@@ -63,6 +63,8 @@ public class SearchActivity extends Activity {
                 // Naviga a HomeActivity
                 Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, HomeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
@@ -73,6 +75,8 @@ public class SearchActivity extends Activity {
                 // Naviga a FridgeActivity
                 Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, FridgeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
@@ -83,6 +87,8 @@ public class SearchActivity extends Activity {
                 // Naviga a RecipeActivity
                 Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, RecipeActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                 finish();
             }
         });
