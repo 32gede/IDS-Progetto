@@ -62,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Naviga a HomeActivity
                 Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
                 startActivity(intent);
+
             }
         });
         // Listener per il pulsante Fridge
@@ -71,6 +72,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Naviga a FridgeActivity
                 Intent intent = new Intent(HomeActivity.this, FridgeActivity.class);
                 startActivity(intent);
+
             }
         });
         // Listener per il pulsante Recipe
@@ -80,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Naviga a RecipeActivity
                 Intent intent = new Intent(HomeActivity.this, RecipeActivity.class);
                 startActivity(intent);
+
             }
         });
     }
