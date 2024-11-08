@@ -16,8 +16,11 @@
     <string name="title_activity_registration" translatable="false">RegistrationActivity</string>
     <string name="registration_failed">Registration failed</string>
     <string name="fridge">Fridge</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="recipe">Recipe</string>
     <string name="logout" translatable="false">Logout</string>
-    <string name="default_web_client_id">69630220301-7kuoiisiqn4bn0cf55k74htn0acns9o0.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">69630220301-7kuoiisiqn4bn0cf55k74htn0acns9o0.apps.googleusercontent.com</string>
     <string name="nome_della_ricetta" translatable="false">Nome della ricetta</string>
     <string name="descrizione_della_ricetta" translatable="false">Descrizione della ricetta</string>
     <string name="ingredienti" translatable="false">Ingredienti</string>
@@ -28,7 +31,4 @@
     <string name="tempo_di_preparazione" translatable="false">Tempo di preparazione</string>
     <string name="aggiungi_ricetta" translatable="false">Aggiungi Ricetta</string>
     <string name="gif" translatable="false">gs://device-streaming-b22f1c9d.appspot.com/decepcao-pensativo.gif</string>
-    <string name="title_activity_fridge">Fridge\n</string>
-    <string name="title_activity_search">Search\n</string>
-    <string name="title_activity_recipe">Recipe</string>
 </resources>

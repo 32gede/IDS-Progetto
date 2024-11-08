@@ -26,7 +26,7 @@
             android:gravity="center"
             android:letterSpacing="0.15"
             android:padding="8dp"
-            android:text="Home"
+            android:text="@string/home"
             android:textColor="#4B0082"
             android:textSize="32sp" />
 

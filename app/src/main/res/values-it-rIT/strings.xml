@@ -13,4 +13,8 @@
     <string name="invalid_password">La Password deve avere 5 caratteri</string>
     <string name="login_failed">Login non riuscito</string>
     <string name="registration_failed">Registrazione Fallita</string>
+    <string name="fridge">Frigo</string>
+    <string name="home">Home</string>
+    <string name="search">Cerca</string>
+    <string name="recipe">Ricette</string>
 </resources>
