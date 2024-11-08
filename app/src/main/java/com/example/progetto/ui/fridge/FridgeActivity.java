@@ -54,6 +54,7 @@ public class FridgeActivity extends AppCompatActivity {
                 // Navigate to ProfileActivity
                 Intent intent = new Intent(FridgeActivity.this, ProfileActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         // Listener for Home button
