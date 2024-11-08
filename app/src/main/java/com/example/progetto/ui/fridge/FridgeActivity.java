@@ -39,7 +39,7 @@ public class FridgeActivity extends AppCompatActivity {
         // Check if views were found
         if (homeBackgroundCircle != null && homeButton != null) {
             // Set background circle only for the Home button
-            updateNavSelection(R.id.homeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
+            updateNavSelection(R.id.fridgeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
         } else {
             // Log for debugging
             Log.e("FridgeActivity", "One or more views (homeBackgroundCircle or homeButton) not found in the layout.");
