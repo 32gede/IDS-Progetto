@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,6 +22,7 @@ public class FridgeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, searchButton, fridgeButton, recipeButton;
+    private TextView titleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class FridgeActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
+        titleText = findViewById(R.id.title);
+        titleText.setText(getString(R.string.fridge));
 
         // Check if views were found
         if (homeBackgroundCircle != null && homeButton != null) {

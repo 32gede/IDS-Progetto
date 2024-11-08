@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;
+    private TextView titleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +37,8 @@ public class HomeActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
-
-
+        titleText = findViewById(R.id.title);
+        titleText.setText(getString(R.string.home));
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
             // Imposta il cerchio di sfondo solo per il pulsante Home

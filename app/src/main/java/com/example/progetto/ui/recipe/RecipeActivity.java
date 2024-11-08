@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.progetto.R;
 import com.example.progetto.ui.fridge.FridgeActivity;
@@ -19,6 +20,7 @@ public class RecipeActivity extends Activity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;
+    private TextView titleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,8 @@ public class RecipeActivity extends Activity {
         searchButton = findViewById(R.id.searchButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
+        titleText = findViewById(R.id.title);
+        titleText.setText(getString(R.string.recipe));
 
 
         // Verifica che le viste siano state trovate

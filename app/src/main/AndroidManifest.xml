@@ -35,17 +35,17 @@
         <activity
             android:name=".ui.fridge.FridgeActivity"
             android:exported="false"
-            android:label="@string/title_activity_fridge" />
+            android:label="@string/fridge" />
 
         <activity
             android:name=".ui.search.SearchActivity"
             android:exported="false"
-            android:label="@string/title_activity_search" />
+            android:label="@string/search" />
 
         <activity
             android:name=".ui.recipe.RecipeActivity"
             android:exported="false"
-            android:label="@string/title_activity_recipe" />
+            android:label="@string/recipe" />
         <!-- Home Activity -->
         <activity
             android:name=".ui.home.HomeActivity"
