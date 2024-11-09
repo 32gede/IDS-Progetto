@@ -5,65 +5,25 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fridge.FridgeActivity">
+    tools:context=".ui.home.HomeActivity">
 
     <!-- Main content view -->
+
+    <!-- Navigation Drawer -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <!-- Top bar with search, notifications, and profile -->
-        <LinearLayout
-            android:id="@+id/topBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+        <include
+            android:id="@+id/navHeader"
+            layout="@layout/nav_header"
             android:elevation="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!-- Search Bar -->
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                android:fontFamily="@font/poppins_bold"
-                android:gravity="center"
-                android:letterSpacing="0.15"
-                android:padding="8dp"
-                android:text="@string/fridge"
-                android:textColor="#4B0082"
-                android:textSize="32sp" />
-
-
-            <!-- Notifications Icon -->
-            <ImageButton
-                android:id="@+id/notificationButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:contentDescription="Notifiche"
-                android:padding="8dp"
-                android:src="@drawable/baseline_notifications_24" />
-
-            <!-- Profile Button -->
-            <ImageButton
-                android:id="@+id/profileButtonTop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:contentDescription="Profilo"
-                android:padding="8dp"
-                android:src="@drawable/baseline_person_24" />
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Main content frame between topBar and navBar -->
         <FrameLayout
@@ -73,8 +33,9 @@
             app:layout_constraintBottom_toTopOf="@id/navBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar">
-            <!-- Main content of the activity goes here -->
+            app:layout_constraintTop_toBottomOf="@id/navHeader">
+
+            <!-- New button with "+" icon at the top-left corner -->
         </FrameLayout>
 
         <!-- Bottom Navbar anchored to the bottom of the screen -->
@@ -85,9 +46,46 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/addButton"
+            android:layout_width="41dp"
+            android:layout_height="41dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="Add"
+            android:src="@drawable/baseline_add_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.136" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top"
+            app:constraint_referenced_ids="main_content" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top"
+            app:constraint_referenced_ids="main_content" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="left"
+            app:constraint_referenced_ids="main_content" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

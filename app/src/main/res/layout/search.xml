@@ -14,56 +14,13 @@
         android:layout_height="match_parent">
 
         <!-- Top bar with search, notifications, and profile -->
-        <LinearLayout
-            android:id="@+id/topBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+        <include
+            android:id="@+id/navHeader"
+            layout="@layout/nav_header"
             android:elevation="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!-- Search Bar -->
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                android:fontFamily="@font/poppins_bold"
-                android:gravity="center"
-                android:letterSpacing="0.15"
-                android:padding="8dp"
-                android:text="Home"
-                android:textColor="#4B0082"
-                android:textSize="32sp" />
-
-
-            <!-- Notifications Icon -->
-            <ImageButton
-                android:id="@+id/notificationButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:contentDescription="Notifiche"
-                android:padding="8dp"
-                android:src="@drawable/baseline_notifications_24" />
-
-            <!-- Profile Button -->
-            <ImageButton
-                android:id="@+id/profileButtonTop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:contentDescription="Profilo"
-                android:padding="8dp"
-                android:src="@drawable/baseline_person_24" />
-        </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Main content frame between topBar and navBar -->
         <FrameLayout
@@ -72,8 +29,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/navBar"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar">
+            app:layout_constraintStart_toStartOf="parent">
             <!-- Main content of the activity goes here -->
         </FrameLayout>
 
