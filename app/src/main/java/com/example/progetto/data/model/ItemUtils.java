@@ -1,18 +1,21 @@
 package com.example.progetto.data.model;
 
-import java.util.Date;
-
 public class ItemUtils {
     private String name;
     private String url;
 
-    // Costruttore
+    // No-argument constructor required for Firebase deserialization
+    public ItemUtils() {
+        // Default constructor
+    }
+
+    // Parameterized constructor if needed
     public ItemUtils(String name, String url) {
         this.name = name;
         this.url = url;
     }
 
-    // Getter e Setter
+    // Getters and setters for Firebase to access fields
     public String getName() {
         return name;
     }
@@ -28,5 +31,4 @@ public class ItemUtils {
     public void setUrl(String url) {
         this.url = url;
     }
-
 }
