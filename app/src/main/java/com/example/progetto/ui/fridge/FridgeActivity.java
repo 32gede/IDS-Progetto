@@ -34,6 +34,7 @@ public class FridgeActivity extends AppCompatActivity {
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, searchButton, fridgeButton, recipeButton, addButton;
     private TextView titleText;
+    private List<ItemUtils> filteredList = new ArrayList<>();
 
     // Firestore instance and collection reference
     private FirebaseFirestore firestore;
@@ -117,44 +118,55 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void loadItemsFromFirestore() {
-        // Supponiamo di avere un ID utente (es. userId) per filtrare i prodotti specifici dell'utente
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+    // Supponiamo di avere un ID utente (es. userId) per filtrare i prodotti specifici dell'utente
+    String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+    Log.d("FridgeActivity", "User ID: " + userId);
 
-        // Primo passo: recuperare i prodotti associati all'utente
-        firestore.collection("user_products")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<String> userProductIds = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserProductUtils userProduct = document.toObject(UserProductUtils.class);
-                        userProductIds.add(userProduct.getProductId());
-                    }
-
-                    // Secondo passo: recuperare i dettagli dei prodotti basati sugli ID
-                    if (!userProductIds.isEmpty()) {
-                        itemsCollection.whereIn("id", userProductIds)
-                                .get()
-                                .addOnSuccessListener(productSnapshots -> {
-                                    fridgeProductList.clear();
-                                    for (QueryDocumentSnapshot productDoc : productSnapshots) {
-                                        ItemUtils product = productDoc.toObject(ItemUtils.class);
-                                        product.setId(productDoc.getId()); // Assicurati che l'ID sia impostato
-                                        fridgeProductList.add(product);
-                                    }
-                                    // Aggiornare la RecyclerView con i dati recuperati
-                                    productAdapter.updateProductList(fridgeProductList);
-                                    Log.d("FridgeActivity", "Items loaded successfully from Firestore.");
-                                })
-                                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load product details: " + e.getMessage()));
-                    } else {
-                        // Gestisci il caso in cui non ci sono prodotti per l'utente
-                        fridgeProductList.clear();
-                        productAdapter.updateProductList(fridgeProductList);
-                        Log.d("FridgeActivity", "No products found for the user.");
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
+    if (userId == null) {
+        Log.e("FridgeActivity", "User ID is null. Cannot load items.");
+        return;
     }
+
+    // Primo passo: recuperare i prodotti associati all'utente
+    firestore.collection("user_products")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                List<String> userProductIds = new ArrayList<>();
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    UserProductUtils userProduct = document.toObject(UserProductUtils.class);
+                    userProductIds.add(userProduct.getProductId());
+                }
+                Log.d("FridgeActivity", "User Product IDs: " + userProductIds);
+
+                // Secondo passo: recuperare i dettagli dei prodotti basati sugli ID
+                if (!userProductIds.isEmpty()) {
+                    itemsCollection.get()
+                            .addOnSuccessListener(productSnapshots -> {
+                                fridgeProductList.clear();
+                                for (QueryDocumentSnapshot productDoc : productSnapshots) {
+                                    if (!userProductIds.contains(productDoc.getId())) {
+                                        continue; // Salta questo prodotto se non è associato all'utente
+                                    }
+                                    ItemUtils product = productDoc.toObject(ItemUtils.class);
+                                    product.setId(productDoc.getId()); // Assicurati che l'ID sia impostato
+                                    fridgeProductList.add(product);
+                                }
+                                filteredList.clear();
+                                filteredList.addAll(fridgeProductList);
+                                // Aggiornare la RecyclerView con i dati recuperati
+                                productAdapter.updateProductList(filteredList);
+                                Log.d("FridgeActivity", "Items loaded successfully from Firestore.");
+                            })
+                            .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load product details: " + e.getMessage()));
+                } else {
+                    // Gestisci il caso in cui non ci sono prodotti per l'utente
+                    fridgeProductList.clear();
+                    productAdapter.updateProductList(fridgeProductList);
+                    Log.d("FridgeActivity", "No products found for the user.");
+                }
+            })
+            .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
+}
 
 }
