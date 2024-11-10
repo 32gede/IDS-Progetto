@@ -3,6 +3,7 @@ package com.example.progetto.ui.fridge;
 import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,7 +64,11 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
 
         // Set up back button
         ImageView backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> onBackPressed());
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AddProductActivity.this, FridgeActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
         // Setup search bar
         EditText searchBar = findViewById(R.id.search_bar);

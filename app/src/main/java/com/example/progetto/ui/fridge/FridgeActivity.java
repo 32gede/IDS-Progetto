@@ -119,55 +119,59 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void loadItemsFromFirestore() {
-    // Supponiamo di avere un ID utente (es. userId) per filtrare i prodotti specifici dell'utente
-    String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
-    Log.d("FridgeActivity", "User ID: " + userId);
+        // Supponiamo di avere un ID utente (es. userId) per filtrare i prodotti specifici dell'utente
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+        Log.d("FridgeActivity", "User ID: " + userId);
 
-    if (userId == null) {
-        Log.e("FridgeActivity", "User ID is null. Cannot load items.");
-        return;
-    }
+        if (userId == null) {
+            Log.e("FridgeActivity", "User ID is null. Cannot load items.");
+            return;
+        }
 
-    // Primo passo: recuperare i prodotti associati all'utente
-    firestore.collection("user_products")
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener(queryDocumentSnapshots -> {
-                List<String> userProductIds = new ArrayList<>();
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    UserProductUtils userProduct = document.toObject(UserProductUtils.class);
-                    userProductIds.add(userProduct.getProductId());
-                }
-                Log.d("FridgeActivity", "User Product IDs: " + userProductIds);
+        // Primo passo: recuperare i prodotti associati all'utente
+        firestore.collection("user_products")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> userProductIds = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserProductUtils userProduct = document.toObject(UserProductUtils.class);
+                        userProductIds.add(userProduct.getProductId());
+                    }
+                    Log.d("FridgeActivity", "User Product IDs: " + userProductIds);
 
-                // Secondo passo: recuperare i dettagli dei prodotti basati sugli ID
-                if (!userProductIds.isEmpty()) {
-                    itemsCollection.get()
-                            .addOnSuccessListener(productSnapshots -> {
-                                fridgeProductList.clear();
-                                for (QueryDocumentSnapshot productDoc : productSnapshots) {
-                                    if (!userProductIds.contains(productDoc.getId())) {
-                                        continue; // Salta questo prodotto se non è associato all'utente
+                    // Retrieve product details based on IDs
+                    if (!userProductIds.isEmpty()) {
+                        itemsCollection.get()
+                                .addOnSuccessListener(productSnapshots -> {
+                                    fridgeProductList.clear();
+                                    for (QueryDocumentSnapshot productDoc : productSnapshots) {
+                                        String productId = productDoc.getId();
+                                        Log.d("FridgeActivity", "Checking product ID: " + productId);
+
+                                        if (userProductIds.contains(productId)) {
+                                            // Only add the product if it's in userProductIds
+                                            ItemUtils product = productDoc.toObject(ItemUtils.class);
+                                            product.setId(productId); // Set ID explicitly
+                                            fridgeProductList.add(product);
+                                        }
                                     }
-                                    ItemUtils product = productDoc.toObject(ItemUtils.class);
-                                    product.setId(productDoc.getId()); // Assicurati che l'ID sia impostato
-                                    fridgeProductList.add(product);
-                                }
-                                filteredList.clear();
-                                filteredList.addAll(fridgeProductList);
-                                // Aggiornare la RecyclerView con i dati recuperati
-                                productAdapter.updateProductList(filteredList);
-                                Log.d("FridgeActivity", "Items loaded successfully from Firestore.");
-                            })
-                            .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load product details: " + e.getMessage()));
-                } else {
-                    // Gestisci il caso in cui non ci sono prodotti per l'utente
-                    fridgeProductList.clear();
-                    productAdapter.updateProductList(fridgeProductList);
-                    Log.d("FridgeActivity", "No products found for the user.");
-                }
-            })
-            .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
-}
+
+                                    // Update the filtered list and RecyclerView
+                                    filteredList.clear();
+                                    filteredList.addAll(fridgeProductList);
+                                    productAdapter.updateProductList(filteredList);
+                                    Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
+                                })
+                                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load product details: " + e.getMessage()));
+                    } else {
+                        // Handle case where there are no products for the user
+                        fridgeProductList.clear();
+                        productAdapter.updateProductList(fridgeProductList);
+                        Log.d("FridgeActivity", "No products found for the user.");
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
+    }
 
 }
