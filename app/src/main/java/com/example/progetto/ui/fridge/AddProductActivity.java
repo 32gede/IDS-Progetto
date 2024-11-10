@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,9 +51,10 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         mAuth = FirebaseAuth.getInstance();
         itemsCollection = firestore.collection("items");
 
+
         // Setup RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductAdapter(this, filteredList, this);
         recyclerView.setAdapter(productAdapter);
 

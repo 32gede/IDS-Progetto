@@ -7,96 +7,201 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeActivity">
 
-    <!-- Main content view -->
-
-    <!-- Navigation Drawer -->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewFridge"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_toolbar" />
-
+    <!-- Layout principale -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Top bar with search, notifications, and profile -->
-        <include
-            android:id="@+id/navHeader"
-            layout="@layout/nav_header"
+        <!-- Top Bar ancorata in alto -->
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:elevation="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Main content frame between topBar and navBar -->
-        <FrameLayout
-            android:id="@+id/content_frame"
+            <!-- Titolo della Top Bar -->
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:letterSpacing="0.15"
+                android:padding="8dp"
+                android:text="@string/home"
+                android:textColor="#4B0082"
+                android:textSize="32sp" />
+
+            <!-- Icona Notifiche -->
+            <ImageButton
+                android:id="@+id/notificationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Notifiche"
+                android:padding="8dp"
+                android:src="@drawable/baseline_notifications_24" />
+
+            <!-- Icona Profilo -->
+            <ImageButton
+                android:id="@+id/profileButtonTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Profilo"
+                android:padding="8dp"
+                android:src="@drawable/baseline_person_24" />
+        </LinearLayout>
+
+        <!-- RecyclerView sostituita e ancorata alla NavBar -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewFridge"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintBottom_toTopOf="@id/navBar"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/navHeader">
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- New button with "+" icon at the top-left corner -->
-        </FrameLayout>
+        <!-- Sfondo circolare dietro l'addButton -->
+        <ImageView
+            android:id="@+id/addButtonBackgroundCircle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/selected_nav_item_background"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="@id/recyclerViewFridge"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Bottom Navbar anchored to the bottom of the screen -->
-        <include
-            android:id="@+id/navBar"
-            layout="@layout/nav_bar"
-            android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
+        <!-- ImageButton per l'icona di aggiunta in alto a destra sopra il cerchio -->
         <ImageButton
             android:id="@+id/addButton"
-            android:layout_width="41dp"
-            android:layout_height="41dp"
-            android:layout_gravity="top|start"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="16dp"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Add"
             android:src="@drawable/baseline_add_24"
+            app:layout_constraintTop_toTopOf="@id/recyclerViewFridge"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Bottom Navbar ancorata al fondo -->
+        <LinearLayout
+            android:id="@+id/navBar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#E0E0E0"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.136" />
+            app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="top"
-            app:constraint_referenced_ids="main_content" />
+            <!-- Pulsante Home -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/homeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/homeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Home"
+                    android:src="@drawable/icons8_casa_24" />
+            </FrameLayout>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="top"
-            app:constraint_referenced_ids="main_content" />
+            <!-- Pulsante Ricerca -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/searchBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Ricerca"
+                    android:src="@drawable/baseline_search_24" />
+            </FrameLayout>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="left"
-            app:constraint_referenced_ids="main_content" />
+            <!-- Pulsante Lista -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/fridgeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/fridgeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Lista"
+                    android:src="@drawable/baseline_storefront_24" />
+            </FrameLayout>
+
+            <!-- Pulsante Profilo -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/recipeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/recipeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Profilo"
+                    android:src="@drawable/baseline_library_books_24" />
+            </FrameLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

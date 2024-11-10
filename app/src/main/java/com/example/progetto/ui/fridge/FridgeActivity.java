@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,21 +50,20 @@ public class FridgeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fridge); // Ensure the layout file name is correct
+        setContentView(R.layout.fridge); // Assicurati che il nome del file di layout sia corretto
 
-        // Initialize Firestore and reference the "items" collection
+        // Inizializza Firestore e riferimento alla collezione "items"
         firestore = FirebaseFirestore.getInstance();
         itemsCollection = firestore.collection("items");
         mAuth = FirebaseAuth.getInstance();
 
-
-        // Initialize RecyclerView and Adapter
+        // Inizializza RecyclerView
         recyclerViewFridge = findViewById(R.id.recyclerViewFridge);
-        recyclerViewFridge.setLayoutManager(new LinearLayoutManager(this));
-        productAdapter = new ProductAdapter(this, fridgeProductList, null); // No selection listener needed in FridgeActivity
+        recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2)); // Imposta il layout manager come griglia a 2 colonne
+        productAdapter = new ProductAdapter(this, fridgeProductList, null); // Non serve un listener di selezione in FridgeActivity
         recyclerViewFridge.setAdapter(productAdapter);
 
-        // Find and set up other view references
+        // Trova e configura i riferimenti alle altre view
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
         homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
         searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
@@ -77,15 +77,16 @@ public class FridgeActivity extends AppCompatActivity {
         titleText = findViewById(R.id.title);
         titleText.setText(getString(R.string.fridge));
 
-        // Highlight the fridge button in the navigation bar
+        // Evidenzia il pulsante "fridge" nella navbar
         updateNavSelection(R.id.fridgeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
 
-        // Set listeners for navigation buttons
+        // Imposta i listener per i pulsanti di navigazione
         setNavigationListeners(profileButtonTop);
 
-        // Load items from Firestore
+        // Carica gli elementi da Firestore
         loadItemsFromFirestore();
     }
+
 
     private void setNavigationListeners(ImageButton profileButtonTop) {
         // Listener for Add button to open AddProductActivity
