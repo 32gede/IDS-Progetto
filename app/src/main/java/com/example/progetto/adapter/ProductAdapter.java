@@ -30,10 +30,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     private final Context context;
     private final List<ItemUtils> products;
+    private final OnProductSelectedListener listener;
 
-    public ProductAdapter(Context context, List<ItemUtils> products) {
+    // Define the listener interface
+    public interface OnProductSelectedListener {
+        void onProductSelected(ItemUtils product);
+    }
+
+    // Modify constructor to accept the listener
+    public ProductAdapter(Context context, List<ItemUtils> products, OnProductSelectedListener listener) {
         this.context = context;
         this.products = new ArrayList<>(products);
+        this.listener = listener;
     }
 
     @NonNull
@@ -47,16 +55,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         ItemUtils product = products.get(position);
         holder.productName.setText(product.getName());
+
+        // Load product image with Glide
         Glide.with(context)
                 .load(product.getImageUrl())
-                .apply(new RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                )
+                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         Log.e("Glide", "Error loading image", e);
-                        return false; // Lascia Glide gestire l'errore
+                        return false; // Let Glide handle the error
                     }
 
                     @Override
@@ -66,6 +74,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 })
                 .into(holder.productImage);
 
+        // Set click listener on each item
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onProductSelected(product);
+            }
+        });
     }
 
     @Override

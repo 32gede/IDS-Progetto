@@ -1,6 +1,7 @@
 package com.example.progetto.data.model;
 
 public class ItemUtils {
+    private String id;        // New field for Firestore document ID
     private String name;
     private String imageUrl;
 
@@ -10,12 +11,22 @@ public class ItemUtils {
     }
 
     // Parameterized constructor if needed
-    public ItemUtils(String name, String url) {
+    public ItemUtils(String id, String name, String imageUrl) {
+        this.id = id;
         this.name = name;
-        this.imageUrl = url;
+        this.imageUrl = imageUrl;
     }
 
-    // Getters and setters for Firebase to access fields
+    // Getter and setter for id
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    // Getters and setters for other fields
     public String getName() {
         return name;
     }
