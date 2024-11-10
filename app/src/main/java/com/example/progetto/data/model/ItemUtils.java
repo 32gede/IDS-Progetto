@@ -2,7 +2,7 @@ package com.example.progetto.data.model;
 
 public class ItemUtils {
     private String name;
-    private String url;
+    private String imageUrl;
 
     // No-argument constructor required for Firebase deserialization
     public ItemUtils() {
@@ -12,7 +12,7 @@ public class ItemUtils {
     // Parameterized constructor if needed
     public ItemUtils(String name, String url) {
         this.name = name;
-        this.url = url;
+        this.imageUrl = url;
     }
 
     // Getters and setters for Firebase to access fields
@@ -24,11 +24,11 @@ public class ItemUtils {
         this.name = name;
     }
 
-    public String getUrl() {
-        return url;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
