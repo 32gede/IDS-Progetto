@@ -8,56 +8,80 @@
     tools:context=".ui.fridge.AddProductActivity">
 
     <!-- Main content view -->
-
-    <!-- Navigation Drawer -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Top bar with search, notifications, and profile -->
-        <include
-            android:id="@+id/navHeader"
-            layout="@layout/nav_header"
-            android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <!-- Top bar with back arrow and search bar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/top_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Main content frame between topBar and navBar -->
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/navBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            <!-- Linear layout for back button and search bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <!-- Main content of the activity goes here -->
-        </FrameLayout>
+                <!-- Back arrow button -->
+                <ImageView
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/baseline_arrow_back_ios_new_24" />
 
-        <!-- Bottom Navbar anchored to the bottom of the screen -->
-        <include
-            android:id="@+id/navBar"
-            layout="@layout/nav_bar"
-            android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+                <!-- Search bar with rounded corners inside a TextInputLayout -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="32dp"
+                    app:boxCornerRadiusTopEnd="32dp"
+                    app:boxCornerRadiusBottomStart="32dp"
+                    app:boxCornerRadiusBottomEnd="32dp"
+                    app:boxStrokeColor="@color/gray">
 
+                    <!-- EditText inside TextInputLayout -->
+                    <EditText
+                        android:id="@+id/search_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:hint="Search"
+                        android:inputType="text"
+                        android:padding="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/gray"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- RecyclerView setup -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_width="409dp"
-            android:layout_height="585dp"
-            android:layout_margin="8dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/top_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.545"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.605" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp"
+            android:clipToPadding="false" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

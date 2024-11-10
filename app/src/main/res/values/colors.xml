@@ -5,4 +5,5 @@
     <color name="white">#FFFFFF</color><!-- res/values/colors.xml -->
     <color name="selected_nav_color">#FF5722</color> <!-- Highlight color -->
     <color name="unselected_nav_color">#BDBDBD</color> <!-- Default gray color -->
+    <color name="gray">#808080</color>
 </resources>
