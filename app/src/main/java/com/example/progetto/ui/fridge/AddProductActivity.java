@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -171,6 +172,8 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
+
+
     }
 
 
@@ -180,7 +183,18 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
 
         firestore.collection(userProductsCollectionPath)
                 .add(product)
-                .addOnSuccessListener(aVoid -> Log.d("AddProductActivity", "Product details saved successfully with user-specific details."))
-                .addOnFailureListener(e -> Log.e("AddProductActivity", "Failed to save product details: " + e.getMessage()));
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("AddProductActivity", "Product details saved successfully with user-specific details.");
+
+                    // Show a success Toast notification
+                    Toast.makeText(AddProductActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("AddProductActivity", "Failed to save product details: " + e.getMessage());
+
+                    // Show a failure Toast notification
+                    Toast.makeText(AddProductActivity.this, "Failed to add product. Please try again.", Toast.LENGTH_SHORT).show();
+                });
     }
+
 }
