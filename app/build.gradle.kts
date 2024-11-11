@@ -62,6 +62,7 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.database)
+    implementation(libs.swiperefreshlayout)
     kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")  // Aggiungi questa riga
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")  // Aggiungi anche questa per il supporto dell'annotation processor

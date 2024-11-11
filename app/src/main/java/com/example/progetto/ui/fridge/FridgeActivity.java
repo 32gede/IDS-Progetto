@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.adapter.UserProductAdapter;
 import com.example.progetto.data.model.UserProductUtils;
@@ -43,6 +44,9 @@ public class FridgeActivity extends AppCompatActivity {
     private List<UserProductUtils> fridgeProductList = new ArrayList<>();
     private List<UserProductUtils> filteredList = new ArrayList<>();
 
+    // SwipeRefreshLayout for pull-to-refresh functionality
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +57,7 @@ public class FridgeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         // Initialize RecyclerView and Adapter
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         recyclerViewFridge = findViewById(R.id.recyclerViewFridge);
         recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new UserProductAdapter(this, fridgeProductList, null);
@@ -67,7 +72,10 @@ public class FridgeActivity extends AppCompatActivity {
         // Set navigation listeners
         setNavigationListeners();
 
-        // Load items from Firestore
+        // Set up SwipeRefreshLayout to refresh on swipe down
+        swipeRefreshLayout.setOnRefreshListener(this::loadItemsFromFirestore);
+
+        // Load items from Firestore initially
         loadItemsFromFirestore();
     }
 
@@ -102,12 +110,16 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void loadItemsFromFirestore() {
+        // Start refreshing animation if not already started
+        swipeRefreshLayout.setRefreshing(true);
+
         // Retrieve user ID to filter specific products
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
         Log.d("FridgeActivity", "User ID: " + userId);
 
         if (userId == null) {
             Log.e("FridgeActivity", "User ID is null. Cannot load items.");
+            swipeRefreshLayout.setRefreshing(false);
             return;
         }
 
@@ -129,7 +141,13 @@ public class FridgeActivity extends AppCompatActivity {
                     filteredList.addAll(fridgeProductList);
                     productAdapter.updateProductList(filteredList);
                     Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
+
+                    // Stop the refreshing animation
+                    swipeRefreshLayout.setRefreshing(false);
                 })
-                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage());
+                    swipeRefreshLayout.setRefreshing(false); // Stop refreshing animation on failure
+                });
     }
 }

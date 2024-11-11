@@ -19,6 +19,7 @@ firebaseAuth = "23.0.0"
 materialVersion = "1.9.0"
 playServicesAuth = "21.2.0"
 firebaseDatabase = "21.0.0"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -43,6 +44,7 @@ material-v160 = { module = "com.google.android.material:material", version.ref =
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
