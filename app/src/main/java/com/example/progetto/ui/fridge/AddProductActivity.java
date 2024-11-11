@@ -1,7 +1,5 @@
 package com.example.progetto.ui.fridge;
 
-import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.adapter.ProductAdapter;
@@ -92,7 +89,7 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
                     productList.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         ItemUtils product = document.toObject(ItemUtils.class);
-                        product.setId(document.getId()); // Set ID to the document name
+                        product.setProductId(document.getId()); // Set ID to the document name
                         productList.add(product);
                     }
 
@@ -124,8 +121,8 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
     public void onProductSelected(ItemUtils product) {
         // Initialize UserProductUtils with details from ItemUtils and user ID
         UserProductUtils userProduct = new UserProductUtils();
-        userProduct.setProductId(product.getId());
-        userProduct.setTitle(product.getName());
+        userProduct.setUrl(product.getImageUrl());
+        userProduct.setName(product.getName());
 
         // Get the current user's ID
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;

@@ -11,19 +11,16 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.progetto.adapter.ProductAdapter;
-import com.example.progetto.data.model.ItemUtils;
-import com.example.progetto.R;
+import com.example.progetto.adapter.UserProductAdapter;
 import com.example.progetto.data.model.UserProductUtils;
+import com.example.progetto.R;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.search.SearchActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -35,35 +32,46 @@ public class FridgeActivity extends AppCompatActivity {
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, searchButton, fridgeButton, recipeButton, addButton;
     private TextView titleText;
-    private List<ItemUtils> filteredList = new ArrayList<>();
 
-    // Firestore instance and collection reference
+    // Firebase Firestore and Authentication
     private FirebaseFirestore firestore;
-    private CollectionReference itemsCollection;
-    private FirebaseAuth mAuth;  // Firebase Authentication instance
+    private FirebaseAuth mAuth;
 
-    // RecyclerView and Adapter for displaying products
+    // RecyclerView and Adapter for displaying user products
     private RecyclerView recyclerViewFridge;
-    private ProductAdapter productAdapter;
-    private List<ItemUtils> fridgeProductList = new ArrayList<>();
+    private UserProductAdapter productAdapter;
+    private List<UserProductUtils> fridgeProductList = new ArrayList<>();
+    private List<UserProductUtils> filteredList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fridge); // Assicurati che il nome del file di layout sia corretto
+        setContentView(R.layout.fridge);
 
-        // Inizializza Firestore e riferimento alla collezione "items"
+        // Initialize Firestore and Authentication
         firestore = FirebaseFirestore.getInstance();
-        itemsCollection = firestore.collection("items");
         mAuth = FirebaseAuth.getInstance();
 
-        // Inizializza RecyclerView
+        // Initialize RecyclerView and Adapter
         recyclerViewFridge = findViewById(R.id.recyclerViewFridge);
-        recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2)); // Imposta il layout manager come griglia a 2 colonne
-        productAdapter = new ProductAdapter(this, fridgeProductList, null); // Non serve un listener di selezione in FridgeActivity
+        recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2));
+        productAdapter = new UserProductAdapter(this, fridgeProductList, null);
         recyclerViewFridge.setAdapter(productAdapter);
 
-        // Trova e configura i riferimenti alle altre view
+        // Initialize view references
+        initializeViews();
+
+        // Highlight "fridge" button in the navbar
+        updateNavSelection(R.id.fridgeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
+
+        // Set navigation listeners
+        setNavigationListeners();
+
+        // Load items from Firestore
+        loadItemsFromFirestore();
+    }
+
+    private void initializeViews() {
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
         homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
         searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
@@ -76,38 +84,13 @@ public class FridgeActivity extends AppCompatActivity {
         addButton = findViewById(R.id.addButton);
         titleText = findViewById(R.id.title);
         titleText.setText(getString(R.string.fridge));
-
-        // Evidenzia il pulsante "fridge" nella navbar
-        updateNavSelection(R.id.fridgeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
-
-        // Imposta i listener per i pulsanti di navigazione
-        setNavigationListeners(profileButtonTop);
-
-        // Carica gli elementi da Firestore
-        loadItemsFromFirestore();
+        profileButtonTop.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, ProfileActivity.class)));
     }
 
-
-    private void setNavigationListeners(ImageButton profileButtonTop) {
-        // Listener for Add button to open AddProductActivity
-        addButton.setOnClickListener(v -> {
-            Intent intent = new Intent(FridgeActivity.this, AddProductActivity.class);
-            startActivity(intent);
-        });
-
-        // Listener for Profile button
-        profileButtonTop.setOnClickListener(v -> {
-            Intent intent = new Intent(FridgeActivity.this, ProfileActivity.class);
-            startActivity(intent);
-        });
-
-        // Listener for Home button
+    private void setNavigationListeners() {
+        addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
-
-        // Listener for Recipe button
         recipeButton.setOnClickListener(v -> navigateToActivity(RecipeActivity.class));
-
-        // Listener for Search button
         searchButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
     }
 
@@ -119,7 +102,7 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void loadItemsFromFirestore() {
-        // Supponiamo di avere un ID utente (es. userId) per filtrare i prodotti specifici dell'utente
+        // Retrieve user ID to filter specific products
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
         Log.d("FridgeActivity", "User ID: " + userId);
 
@@ -128,50 +111,25 @@ public class FridgeActivity extends AppCompatActivity {
             return;
         }
 
-        // Primo passo: recuperare i prodotti associati all'utente
+        // Query to "user_products" collection to get only products associated with the user
         firestore.collection("user_products")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<String> userProductIds = new ArrayList<>();
+                    fridgeProductList.clear(); // Clear current product list
+
+                    // Populate the list with UserProductUtils objects
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         UserProductUtils userProduct = document.toObject(UserProductUtils.class);
-                        userProductIds.add(userProduct.getProductId());
+                        fridgeProductList.add(userProduct);
                     }
-                    Log.d("FridgeActivity", "User Product IDs: " + userProductIds);
 
-                    // Retrieve product details based on IDs
-                    if (!userProductIds.isEmpty()) {
-                        itemsCollection.get()
-                                .addOnSuccessListener(productSnapshots -> {
-                                    fridgeProductList.clear();
-                                    for (QueryDocumentSnapshot productDoc : productSnapshots) {
-                                        String productId = productDoc.getId();
-                                        Log.d("FridgeActivity", "Checking product ID: " + productId);
-
-                                        if (userProductIds.contains(productId)) {
-                                            // Only add the product if it's in userProductIds
-                                            ItemUtils product = productDoc.toObject(ItemUtils.class);
-                                            product.setId(productId); // Set ID explicitly
-                                            fridgeProductList.add(product);
-                                        }
-                                    }
-
-                                    // Update the filtered list and RecyclerView
-                                    filteredList.clear();
-                                    filteredList.addAll(fridgeProductList);
-                                    productAdapter.updateProductList(filteredList);
-                                    Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
-                                })
-                                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load product details: " + e.getMessage()));
-                    } else {
-                        // Handle case where there are no products for the user
-                        fridgeProductList.clear();
-                        productAdapter.updateProductList(fridgeProductList);
-                        Log.d("FridgeActivity", "No products found for the user.");
-                    }
+                    // Update the filtered list and RecyclerView
+                    filteredList.clear();
+                    filteredList.addAll(fridgeProductList);
+                    productAdapter.updateProductList(filteredList);
+                    Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
                 })
                 .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage()));
     }
-
 }

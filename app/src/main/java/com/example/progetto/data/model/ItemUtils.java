@@ -1,7 +1,7 @@
 package com.example.progetto.data.model;
 
 public class ItemUtils {
-    private String id;        // New field for Firestore document ID
+    private String productId;        // New field for Firestore document ID
     private String name;
     private String imageUrl;
 
@@ -11,19 +11,22 @@ public class ItemUtils {
     }
 
     // Parameterized constructor if needed
-    public ItemUtils(String id, String name, String imageUrl) {
-        this.id = id;
+    public ItemUtils(String productId, String name, String imageUrl) {
+        this.productId = productId;
         this.name = name;
         this.imageUrl = imageUrl;
     }
 
     // Getter and setter for id
-    public String getId() {
-        return id;
+    public String getProductId() {
+        return productId;
+    }
+    public void setId(String productId) {
+        this.productId = productId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     // Getters and setters for other fields
