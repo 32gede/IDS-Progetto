@@ -92,7 +92,7 @@
                 android:layout_height="match_parent"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:contentDescription="Lista"
-                android:src="@drawable/baseline_storefront_24" />
+                android:src="@drawable/fridge__1_" />
         </FrameLayout>
 
         <!-- FrameLayout per il pulsante Profilo -->
