@@ -46,26 +46,20 @@ dependencies {
     implementation(libs.google.firebase.firestore)
     implementation(libs.google.firebase.auth)
     implementation(libs.gms.play.services.auth)
-    implementation (libs.firebase.storage)
+    implementation(libs.firebase.storage)
 
     // AndroidX e Material Design
-    implementation (libs.material.v160) // versione da aggiornare in base al progetto
+    implementation(libs.material) // Usa l'ultima versione disponibile
 
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
-    implementation(libs.material)
-
-
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation(libs.firebase.database)
-    implementation(libs.swiperefreshlayout)
     kapt("com.github.bumptech.glide:compiler:4.16.0")
-    implementation ("com.github.bumptech.glide:glide:4.15.1")  // Aggiungi questa riga
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")  // Aggiungi anche questa per il supporto dell'annotation processor
+
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
