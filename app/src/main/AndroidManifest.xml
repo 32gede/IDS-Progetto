@@ -2,6 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Android 13+ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- For Android 12 and below -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/> <!-- For Android 9 and below -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Camera hardware feature (optional) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -44,18 +56,17 @@
 
         <activity
             android:name=".ui.fridge.AddProductActivity"
-            android:exported="false"
-            android:label="AddProduct" />
+            android:exported="false" />
 
         <activity
             android:name=".ui.recipe.RecipeActivity"
             android:exported="false"
             android:label="@string/recipe" />
-        <!-- Home Activity -->
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
-            android:label="Home" /> <!-- Use string resource for better localization -->
+            android:label="@string/home" />
 
         <!-- Main Activity with LAUNCHER intent -->
         <activity
@@ -68,19 +79,12 @@
         </activity>
 
         <!-- Other Activities -->
-        <activity android:name=".ui.recipe.AddRecipeActivity" android:exported="false" />
-        <activity android:name=".ui.profile.ProfileActivity" />
+        <activity
+            android:name=".ui.recipe.AddRecipeActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" />
 
     </application>
-
-    <!-- Permissions for Storage Access and Camera -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Android 13+ -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" /> <!-- For Android 12 and below -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28"/> <!-- For Android 9 and below -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- Camera hardware feature (optional) -->
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
 </manifest>

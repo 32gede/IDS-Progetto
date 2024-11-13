@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
