@@ -21,17 +21,28 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+        <!-- Sfondo circolare dietro l'addButton -->
+        <ImageView
+            android:id="@+id/addButtonBackgroundCircle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/selected_nav_item_background"
+            app:layout_constraintTop_toTopOf="@id/navHeader"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Button to add a new recipe -->
-        <Button
+        <!-- ImageButton per l'icona di aggiunta in alto a destra sopra il cerchio -->
+        <ImageButton
             android:id="@+id/btn_add_recipe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/aggiungi_ricetta"
-            app:layout_constraintTop_toBottomOf="@id/navHeader"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="Add"
+            android:src="@drawable/baseline_add_24"
+            app:layout_constraintTop_toTopOf="@id/navHeader"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <!-- Main content frame between topBar and navBar -->
         <FrameLayout
