@@ -3,14 +3,17 @@ package com.example.progetto.ui.recipe;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.progetto.data.model.NavigationUtils;
 
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
@@ -28,6 +31,7 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView titleRecipe;
     private RecyclerView recyclerViewRecipe;
     private RecipeAdapter recipeAdapter;
+    private ImageButton recipeButtonRecipe;
     private RecipeViewModel recipeViewModel;
 
     @Override
@@ -37,18 +41,19 @@ public class RecipeActivity extends AppCompatActivity {
 
         // Find view references
         profileButtonRecipe = findViewById(R.id.profileButtonRecipe);
+        recipeButtonRecipe = findViewById(R.id.recipeButton);
         homeBackgroundCircleRecipe = findViewById(R.id.homeBackgroundCircleRecipe);
         searchBackgroundCircleRecipe = findViewById(R.id.searchBackgroundCircleRecipe);
         fridgeBackgroundCircleRecipe = findViewById(R.id.fridgeBackgroundCircleRecipe);
         recipeBackgroundCircleRecipe = findViewById(R.id.recipeBackgroundCircleRecipe);
-        homeButtonRecipe = findViewById(R.id.homeButtonRecipe);
-        searchButtonRecipe = findViewById(R.id.searchButtonRecipe);
-        fridgeButtonRecipe = findViewById(R.id.fridgeButtonRecipe);
-        recipeButtonProfile = findViewById(R.id.recipeButtonProfile);
+        homeButtonRecipe = findViewById(R.id.homeButton);
+        searchButtonRecipe = findViewById(R.id.searchButton);
+        fridgeButtonRecipe = findViewById(R.id.fridgeButton);
         titleRecipe = findViewById(R.id.titleRecipe);
         titleRecipe.setText(getString(R.string.recipe));
         addButtonRecipe = findViewById(R.id.addButtonRecipe);
         recyclerViewRecipe = findViewById(R.id.recyclerViewRecipe);
+        NavigationUtils.updateNavSelection(R.id.recipeButton, homeBackgroundCircleRecipe, searchBackgroundCircleRecipe, fridgeBackgroundCircleRecipe, recipeBackgroundCircleRecipe);
 
         // Set up RecyclerView
         recyclerViewRecipe.setLayoutManager(new LinearLayoutManager(this));
