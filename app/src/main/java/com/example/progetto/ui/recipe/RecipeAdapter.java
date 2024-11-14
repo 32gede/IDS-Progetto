@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
+import com.example.progetto.data.model.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;

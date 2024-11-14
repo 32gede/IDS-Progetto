@@ -1,82 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/drawer_layout_recipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.recipe.RecipeActivity">
 
-    <!-- Main content view -->
+    <!-- Main content layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_content"
+        android:id="@+id/main_content_recipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Top bar with search, notifications, and profile -->
-        <include
-            android:id="@+id/navHeader"
-            layout="@layout/nav_header"
+        <!-- Top Bar anchored at the top -->
+        <LinearLayout
+            android:id="@+id/topBarRecipe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-        <!-- Sfondo circolare dietro l'addButton -->
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Title in Top Bar -->
+            <TextView
+                android:id="@+id/titleRecipe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:letterSpacing="0.15"
+                android:padding="8dp"
+                android:text="@string/recipe"
+                android:textColor="#4B0082"
+                android:textSize="32sp" />
+
+            <!-- Notification Icon -->
+            <ImageButton
+                android:id="@+id/notificationButtonRecipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Notifiche"
+                android:padding="8dp"
+                android:src="@drawable/baseline_notifications_24" />
+
+            <!-- Profile Icon -->
+            <ImageButton
+                android:id="@+id/profileButtonRecipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Profilo"
+                android:padding="8dp"
+                android:src="@drawable/baseline_person_24" />
+        </LinearLayout>
+
+        <!-- RecyclerView with SwipeRefreshLayout -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayoutRecipe"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topBarRecipe"
+            app:layout_constraintBottom_toTopOf="@id/navBarRecipe"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewRecipe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:padding="8dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Background circle behind the add button -->
         <ImageView
-            android:id="@+id/addButtonBackgroundCircle"
+            android:id="@+id/addButtonBackgroundCircleRecipe"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:src="@drawable/selected_nav_item_background"
-            app:layout_constraintTop_toTopOf="@id/navHeader"
+            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutRecipe"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- ImageButton per l'icona di aggiunta in alto a destra sopra il cerchio -->
+        <!-- Add button on top right of the circle -->
         <ImageButton
-            android:id="@+id/btn_add_recipe"
+            android:id="@+id/addButtonRecipe"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="Add"
             android:src="@drawable/baseline_add_24"
-            app:layout_constraintTop_toTopOf="@id/navHeader"
+            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutRecipe"
             app:layout_constraintEnd_toEndOf="parent" />
 
-
-        <!-- Main content frame between topBar and navBar -->
-        <FrameLayout
-            android:id="@+id/content_frame"
+        <!-- Bottom Navbar anchored at the bottom -->
+        <LinearLayout
+            android:id="@+id/navBarRecipe"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/btn_add_recipe"
-            app:layout_constraintBottom_toTopOf="@id/navBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <!-- RecyclerView to display recipes -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recipe_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone" />
-        </FrameLayout>
-
-        <!-- Bottom Navbar anchored to the bottom of the screen -->
-        <include
-            android:id="@+id/navBar"
-            layout="@layout/nav_bar"
-            android:elevation="4dp"
+            android:layout_height="56dp"
+            android:background="#E0E0E0"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Home Button -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/homeBackgroundCircleRecipe"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/homeButtonRecipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Home"
+                    android:src="@drawable/icons8_casa_24" />
+            </FrameLayout>
+
+            <!-- Search Button -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/searchBackgroundCircleRecipe"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/searchButtonRecipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Ricerca"
+                    android:src="@drawable/baseline_search_24" />
+            </FrameLayout>
+
+            <!-- List Button -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/fridgeBackgroundCircleRecipe"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/fridgeButtonRecipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Lista"
+                    android:src="@drawable/fridge__1_" />
+            </FrameLayout>
+
+            <!-- Profile Button -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/recipeBackgroundCircleRecipe"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/recipeButtonProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Profilo"
+                    android:src="@drawable/baseline_library_books_24" />
+            </FrameLayout>
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
+        android:id="@+id/nav_view_recipe"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

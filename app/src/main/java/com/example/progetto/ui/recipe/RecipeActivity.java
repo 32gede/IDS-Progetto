@@ -1,11 +1,8 @@
 package com.example.progetto.ui.recipe;
 
-import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.Recipe;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
@@ -25,11 +23,10 @@ import java.util.List;
 
 public class RecipeActivity extends AppCompatActivity {
 
-    private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;
-    private TextView titleText;
-    private Button btnAddRecipe;
-    private RecyclerView recipeRecyclerView;
+    private View homeBackgroundCircleRecipe, searchBackgroundCircleRecipe, fridgeBackgroundCircleRecipe, recipeBackgroundCircleRecipe;
+    private ImageButton homeButtonRecipe, profileButtonRecipe, searchButtonRecipe, fridgeButtonRecipe, recipeButtonProfile, addButtonRecipe;
+    private TextView titleRecipe;
+    private RecyclerView recyclerViewRecipe;
     private RecipeAdapter recipeAdapter;
     private RecipeViewModel recipeViewModel;
 
@@ -38,38 +35,38 @@ public class RecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
-        // Trova i riferimenti delle viste
-        profileButtonTop = findViewById(R.id.profileButtonTop);
-        homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
-        searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
-        fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
-        recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
-        homeButton = findViewById(R.id.homeButton);
-        searchButton = findViewById(R.id.searchButton);
-        fridgeButton = findViewById(R.id.fridgeButton);
-        recipeButton = findViewById(R.id.recipeButton);
-        titleText = findViewById(R.id.title);
-        titleText.setText(getString(R.string.recipe));
-        btnAddRecipe = findViewById(R.id.btn_add_recipe);
-        recipeRecyclerView = findViewById(R.id.recipe_recycler_view);
+        // Find view references
+        profileButtonRecipe = findViewById(R.id.profileButtonRecipe);
+        homeBackgroundCircleRecipe = findViewById(R.id.homeBackgroundCircleRecipe);
+        searchBackgroundCircleRecipe = findViewById(R.id.searchBackgroundCircleRecipe);
+        fridgeBackgroundCircleRecipe = findViewById(R.id.fridgeBackgroundCircleRecipe);
+        recipeBackgroundCircleRecipe = findViewById(R.id.recipeBackgroundCircleRecipe);
+        homeButtonRecipe = findViewById(R.id.homeButtonRecipe);
+        searchButtonRecipe = findViewById(R.id.searchButtonRecipe);
+        fridgeButtonRecipe = findViewById(R.id.fridgeButtonRecipe);
+        recipeButtonProfile = findViewById(R.id.recipeButtonProfile);
+        titleRecipe = findViewById(R.id.titleRecipe);
+        titleRecipe.setText(getString(R.string.recipe));
+        addButtonRecipe = findViewById(R.id.addButtonRecipe);
+        recyclerViewRecipe = findViewById(R.id.recyclerViewRecipe);
 
-        // Imposta il RecyclerView
-        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Set up RecyclerView
+        recyclerViewRecipe.setLayoutManager(new LinearLayoutManager(this));
         recipeAdapter = new RecipeAdapter();
-        recipeRecyclerView.setAdapter(recipeAdapter);
+        recyclerViewRecipe.setAdapter(recipeAdapter);
 
-        // Inizializza il ViewModel
+        // Initialize ViewModel
         recipeViewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
         recipeViewModel.getRecipeListLiveData().observe(this, new Observer<List<Recipe>>() {
             @Override
             public void onChanged(List<Recipe> recipes) {
                 recipeAdapter.setRecipes(recipes);
-                recipeRecyclerView.setVisibility(View.VISIBLE);
+                recyclerViewRecipe.setVisibility(View.VISIBLE);
             }
         });
 
-        // Listener per il bottone Aggiungi Ricetta
-        btnAddRecipe.setOnClickListener(new View.OnClickListener() {
+        // Add Recipe Button Listener
+        addButtonRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, AddRecipeActivity.class);
@@ -77,8 +74,8 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
 
-        // Listener per il pulsante Profilo
-        profileButtonTop.setOnClickListener(new View.OnClickListener() {
+        // Profile Button Listener
+        profileButtonRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, ProfileActivity.class);
@@ -86,8 +83,8 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
 
-        // Listener per il pulsante Home
-        homeButton.setOnClickListener(new View.OnClickListener() {
+        // Home Button Listener
+        homeButtonRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, HomeActivity.class);
@@ -97,8 +94,8 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
 
-        // Listener per il pulsante Fridge
-        fridgeButton.setOnClickListener(new View.OnClickListener() {
+        // Fridge Button Listener
+        fridgeButtonRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, FridgeActivity.class);
@@ -108,8 +105,8 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
 
-        // Listener per il pulsante Recipe
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        // Search Button Listener
+        searchButtonRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, SearchActivity.class);

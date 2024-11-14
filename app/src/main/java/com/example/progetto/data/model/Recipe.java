@@ -1,4 +1,4 @@
-package com.example.progetto.ui.recipe;
+package com.example.progetto.data.model;
 
 import com.google.firebase.firestore.PropertyName;
 
