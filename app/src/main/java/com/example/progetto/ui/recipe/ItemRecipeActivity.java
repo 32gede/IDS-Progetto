@@ -43,14 +43,14 @@ public class ItemRecipeActivity extends AppCompatActivity {
         db.collection("recipes").document(recipeId).get().addOnSuccessListener(documentSnapshot -> {
             Recipe recipe = documentSnapshot.toObject(Recipe.class);
             if (recipe != null) {
-                titleTextView.setText(recipe.getTitle());
+                titleTextView.setText(recipe.getName());
                 descriptionTextView.setText(recipe.getDescription());
                 ingredientsTextView.setText(recipe.getIngredients());
                 stepsTextView.setText(recipe.getSteps());
                 difficultyTextView.setText(recipe.getDifficulty());
                 categoryTextView.setText(recipe.getCategory());
                 preparationTimeTextView.setText(recipe.getPreparationTime());
-                Glide.with(this).load(recipe.getImageUrl()).into(recipeImageView);
+                Glide.with(this).load(recipe.getImage()).into(recipeImageView);
             }
         });
     }

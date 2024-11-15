@@ -1,6 +1,7 @@
 package com.example.progetto.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,12 @@ public class savedRecipe extends Fragment {
         recipeViewModel.getRecipeListLiveData().observe(getViewLifecycleOwner(), new Observer<List<Recipe>>() {
             @Override
             public void onChanged(List<Recipe> recipes) {
-                recipeAdapter.setRecipes(recipes); // Aggiorna l'adapter con la lista di ricette
+                if (recipes != null && !recipes.isEmpty()) {
+                    Log.d("savedRecipe", "Numero di ricette ricevute: " + recipes.size());
+                    recipeAdapter.setRecipes(recipes);
+                } else {
+                    Log.d("savedRecipe", "Nessuna ricetta trovata");
+                }
                 recyclerViewRecipe.setVisibility(View.VISIBLE);
             }
         });

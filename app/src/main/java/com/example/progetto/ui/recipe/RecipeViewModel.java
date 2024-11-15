@@ -36,6 +36,7 @@ public class RecipeViewModel extends ViewModel {
                             recipes.add(recipe);
                         }
                         recipeListLiveData.setValue(recipes);
+                        Log.d("RecipeViewModel", "Ricette recuperate: " + recipes.size());
                     } else {
                         Log.e("RecipeViewModel", "Error getting documents: ", task.getException());
                     }
