@@ -93,16 +93,18 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- ImageButton per l'icona di aggiunta in alto a destra sopra il cerchio -->
-        <ImageButton
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:contentDescription="Add"
+            android:contentDescription="Aggiungi"
             android:src="@drawable/baseline_add_24"
-            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayout"
-            app:layout_constraintEnd_toEndOf="parent" />
+
+            app:backgroundTint="#4B0082"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayout" />
 
         <!-- Bottom Navbar ancorata al fondo -->
         <LinearLayout

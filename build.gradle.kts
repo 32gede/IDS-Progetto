@@ -5,7 +5,7 @@ plugins {
 }
 
 buildscript {
-    val kotlin_version = "1.8.21" // Imposta la versione che stai usando
+    val kotlin_version = "1.9.10" // Imposta la versione che stai usando
     repositories {
         google()
         mavenCentral()
