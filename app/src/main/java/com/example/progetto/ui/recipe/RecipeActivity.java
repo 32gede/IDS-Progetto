@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.example.progetto.data.model.NavigationUtils;
 
 import com.example.progetto.R;
@@ -21,6 +23,8 @@ import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.search.SearchActivity;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
@@ -33,6 +37,8 @@ public class RecipeActivity extends AppCompatActivity {
     private RecipeAdapter recipeAdapter;
     private ImageButton recipeButtonRecipe;
     private RecipeViewModel recipeViewModel;
+    ViewPager2 viewPagerRecipe;
+    TabLayout tabLayoutRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +58,24 @@ public class RecipeActivity extends AppCompatActivity {
         titleRecipe = findViewById(R.id.titleRecipe);
         titleRecipe.setText(getString(R.string.recipe));
         addButtonRecipe = findViewById(R.id.addButtonRecipe);
-        recyclerViewRecipe = findViewById(R.id.recyclerViewRecipe);
+
+        tabLayoutRecipe = findViewById(R.id.tabLayoutRecipe);
+        viewPagerRecipe = findViewById(R.id.viewPagerRecipe);
         NavigationUtils.updateNavSelection(R.id.recipeButton, homeBackgroundCircleRecipe, searchBackgroundCircleRecipe, fridgeBackgroundCircleRecipe, recipeBackgroundCircleRecipe);
+
+        new TabLayoutMediator(tabLayoutRecipe, viewPagerRecipe, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(TabLayout.Tab tab, int position) {
+                switch (position) {
+                    case 0:
+                        tab.setText("Salte"); // Titolo per il primo tab
+                        break;
+                    case 1:
+                        tab.setText("Globali"); // Titolo per il secondo tab
+                        break;
+                }
+            }
+        }).attach();
 
         // Set up RecyclerView
         recyclerViewRecipe.setLayoutManager(new LinearLayoutManager(this));
