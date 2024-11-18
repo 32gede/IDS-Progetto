@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class RecipeActivity extends AppCompatActivity {
     private FloatingActionButton addButton;
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     // Firebase and Adapter
     private FirebaseFirestore firestore;
@@ -64,6 +68,9 @@ public class RecipeActivity extends AppCompatActivity {
         // Setup navigation buttons
         setNavigationListeners();
 
+        // Setup SwipeRefreshLayout
+        setupSwipeRefresh();
+
         // Update navigation UI
         updateNavSelection(
                 R.id.recipeButton,
@@ -78,6 +85,7 @@ public class RecipeActivity extends AppCompatActivity {
         // Find UI components
         tabLayout = findViewById(R.id.tabLayoutRecipe);
         recyclerView = findViewById(R.id.recyclerViewRecipes);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutRecipe);
         homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
         searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
         fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
@@ -121,6 +129,9 @@ public class RecipeActivity extends AppCompatActivity {
                         globalRecipes.add(recipe);
                     }
                     Log.d("RecipeActivity", "Loaded " + globalRecipes.size() + " recipes from Firestore.");
+                    if (tabLayout.getSelectedTabPosition() == 1) {
+                        adapter.setRecipes(globalRecipes);
+                    }
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
 
@@ -161,6 +172,22 @@ public class RecipeActivity extends AppCompatActivity {
         // Default tab
         tabLayout.selectTab(tabLayout.getTabAt(0));
         adapter.setRecipes(savedRecipes);
+    }
+
+    private void setupSwipeRefresh() {
+        if (swipeRefreshLayout == null) {
+            Log.e("RecipeActivity", "SwipeRefreshLayout is null. Check R.id.swipeRefreshLayoutRecipe in recipe.xml.");
+            return;
+        }
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Reload data
+            setupSampleData();
+            Toast.makeText(this, "Dati aggiornati!", Toast.LENGTH_SHORT).show();
+
+            // Stop refresh animation
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
     private void setNavigationListeners() {
