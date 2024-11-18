@@ -42,5 +42,23 @@ public class RecipeViewModel extends ViewModel {
                     }
                 });
     }
+
+    public LiveData<List<Recipe>> getAllRecipesLiveData() {
+        MutableLiveData<List<Recipe>> liveData = new MutableLiveData<>();
+        FirebaseFirestore.getInstance()
+                .collection("recipes")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        List<Recipe> recipes = queryDocumentSnapshots.toObjects(Recipe.class);
+                        liveData.setValue(recipes);
+                    } else {
+                        liveData.setValue(null);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("RecipeViewModel", "Errore nel recupero delle ricette globali: " + e.getMessage()));
+        return liveData;
+    }
+
 }
 
