@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
-import com.example.progetto.ui.recipe.RecipeAdapter;
+import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.ui.recipe.RecipeViewModel;
 
 import java.util.List;
