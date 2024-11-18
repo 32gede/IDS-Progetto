@@ -26,11 +26,6 @@ public class ItemRecipeActivity extends AppCompatActivity {
         // Trova gli elementi UI
         titleTextView = findViewById(R.id.titleTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
-        ingredientsTextView = findViewById(R.id.ingredientsTextView);
-        stepsTextView = findViewById(R.id.stepsTextView);
-        difficultyTextView = findViewById(R.id.difficultyTextView);
-        categoryTextView = findViewById(R.id.categoryTextView);
-        preparationTimeTextView = findViewById(R.id.preparationTimeTextView);
         recipeImageView = findViewById(R.id.recipeImageView);
 
         // Inizializza Firestore

@@ -32,30 +32,27 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return new RecipeViewHolder(view);
     }
 
+    // RecipeAdapter.java
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
 
-        // Verifica e log dei dati della ricetta
         Log.d("RecipeAdapter", "Popolamento card posizione: " + position);
         Log.d("RecipeAdapter", "Nome ricetta: " + recipe.getName());
         Log.d("RecipeAdapter", "Descrizione ricetta: " + recipe.getDescription());
         Log.d("RecipeAdapter", "Immagine URL: " + recipe.getImage());
 
-        // Imposta i dati nella ViewHolder
         holder.titleTextView.setText(recipe.getName());
         holder.descriptionTextView.setText(recipe.getDescription());
 
-        // Carica l'immagine con Glide e gestisce eventuali errori
         Glide.with(holder.itemView.getContext())
-                .load(recipe.getImage())   // Immagine mostrata in caso di errore
+                .load(recipe.getImage())
                 .into(holder.recipeImageView);
 
-        // Click per aprire l'ItemRecipeActivity
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
             Intent intent = new Intent(context, ItemRecipeActivity.class);
-            intent.putExtra("recipeId", recipe.getId()); // Passa l'ID della ricetta
+            intent.putExtra("recipeId", recipe.getId());
             context.startActivity(intent);
         });
     }
