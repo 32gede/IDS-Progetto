@@ -8,7 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.progetto.fragment.globalRecipe;
 import com.example.progetto.fragment.savedRecipe;
 
-public class RecipePagerAdapter extends FragmentStateAdapter{
+public class RecipePagerAdapter extends FragmentStateAdapter {
 
     public RecipePagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -23,7 +23,7 @@ public class RecipePagerAdapter extends FragmentStateAdapter{
             case 1:
                 return new globalRecipe(); // Secondo tab
             default:
-                return new savedRecipe(); // Terzo tab
+                throw new IllegalArgumentException("Invalid position: " + position);
         }
     }
 
@@ -32,4 +32,3 @@ public class RecipePagerAdapter extends FragmentStateAdapter{
         return 2; // Numero di tab
     }
 }
-

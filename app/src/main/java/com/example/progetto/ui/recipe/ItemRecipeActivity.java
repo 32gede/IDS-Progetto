@@ -40,11 +40,6 @@ public class ItemRecipeActivity extends AppCompatActivity {
             if (recipe != null) {
                 titleTextView.setText(recipe.getName());
                 descriptionTextView.setText(recipe.getDescription());
-                ingredientsTextView.setText(recipe.getIngredients());
-                stepsTextView.setText(recipe.getSteps());
-                difficultyTextView.setText(recipe.getDifficulty());
-                categoryTextView.setText(recipe.getCategory());
-                preparationTimeTextView.setText(recipe.getPreparationTime());
                 Glide.with(this).load(recipe.getImage()).into(recipeImageView);
             }
         });
