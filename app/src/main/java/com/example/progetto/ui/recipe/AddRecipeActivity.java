@@ -18,7 +18,6 @@ import com.example.progetto.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,50 +73,58 @@ public class AddRecipeActivity extends AppCompatActivity {
         String category = recipeCategory.getText().toString().trim();
         String preparationTime = recipePreparationTime.getText().toString().trim();
 
-        if (name.isEmpty() || description.isEmpty() || ingredients.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty() || selectedImageUri == null) {
-            Toast.makeText(this, "Tutti i campi sono obbligatori e devi selezionare un'immagine!", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || description.isEmpty() || ingredients.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()) {
+            Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Mostra la ProgressBar
         progressBar.setVisibility(View.VISIBLE);
 
-        // Carica l'immagine su Firebase Storage
-        StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
-        fileRef.putFile(selectedImageUri)
-                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String imageUrl = uri.toString();
-
-                    // Crea un oggetto ricetta
-                    Map<String, Object> recipe = new HashMap<>();
-                    recipe.put("name", name);
-                    recipe.put("description", description);
-                    recipe.put("ingredients", ingredients);
-                    recipe.put("steps", steps);
-                    recipe.put("image", imageUrl);
-                    recipe.put("difficulty", difficulty);
-                    recipe.put("category", category);
-                    recipe.put("preparationTime", preparationTime);
-
-                    // Salva la ricetta in Firestore
-                    db.collection("recipes")
-                            .add(recipe)
-                            .addOnSuccessListener(documentReference -> {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
-                                finish(); // Chiude l'activity
-                            })
-                            .addOnFailureListener(e -> {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                }))
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        if (selectedImageUri != null) {
+            // Carica l'immagine su Firebase Storage
+            StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
+            fileRef.putFile(selectedImageUri)
+                    .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String imageUrl = uri.toString();
+                        saveRecipeToFirestore(name, description, ingredients, steps, difficulty, category, preparationTime, imageUrl);
+                    }))
+                    .addOnFailureListener(e -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            // Salva la ricetta senza immagine
+            saveRecipeToFirestore(name, description, ingredients, steps, difficulty, category, preparationTime, null);
+        }
     }
 
+    private void saveRecipeToFirestore(String name, String description, String ingredients, String steps,
+                                       String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
+        // Crea un oggetto ricetta
+        Map<String, Object> recipe = new HashMap<>();
+        recipe.put("name", name);
+        recipe.put("description", description);
+        recipe.put("ingredients", ingredients);
+        recipe.put("steps", steps);
+        recipe.put("image", imageUrl); // Può essere null
+        recipe.put("difficulty", difficulty);
+        recipe.put("category", category);
+        recipe.put("preparationTime", preparationTime);
+
+        // Salva la ricetta in Firestore
+        db.collection("recipes")
+                .add(recipe)
+                .addOnSuccessListener(documentReference -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
+                    finish(); // Chiude l'activity
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 
     private void openImageChooser() {
         Intent intent = new Intent(Intent.ACTION_PICK);

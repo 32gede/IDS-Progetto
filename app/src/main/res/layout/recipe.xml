@@ -55,7 +55,7 @@
 
                 <!-- Profile Icon -->
                 <ImageButton
-                    android:id="@+id/profileButtonRecipe"
+                    android:id="@+id/profileButtonTop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -146,7 +146,7 @@
                     android:layout_weight="1"
                     android:gravity="center">
                     <ImageView
-                        android:id="@+id/homeBackgroundCircleRecipe"
+                        android:id="@+id/homeBackgroundCircle"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -168,7 +168,7 @@
                     android:layout_weight="1"
                     android:gravity="center">
                     <ImageView
-                        android:id="@+id/searchBackgroundCircleRecipe"
+                        android:id="@+id/searchBackgroundCircle"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -190,7 +190,7 @@
                     android:layout_weight="1"
                     android:gravity="center">
                     <ImageView
-                        android:id="@+id/fridgeBackgroundCircleRecipe"
+                        android:id="@+id/fridgeBackgroundCircle"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -212,7 +212,7 @@
                     android:layout_weight="1"
                     android:gravity="center">
                     <ImageView
-                        android:id="@+id/recipeBackgroundCircleRecipe"
+                        android:id="@+id/recipeBackgroundCircle"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
