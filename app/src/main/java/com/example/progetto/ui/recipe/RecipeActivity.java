@@ -24,6 +24,7 @@ import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.search.SearchActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -134,10 +135,24 @@ public class RecipeActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
+        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+        firestore.collection("recipes_user")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    savedRecipes.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Recipe recipe = document.toObject(Recipe.class);
+                        savedRecipes.add(recipe);
+                    }
+                    Log.d("RecipeActivity", "Loaded " + savedRecipes.size() + " recipes from Firestore.");
+                    if (tabLayout.getSelectedTabPosition() == 0) {
+                        adapter.setRecipes(savedRecipes);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
 
-        // Sample saved recipes
-        savedRecipes.add(new Recipe("Pasta Carbonara", "A classic Italian recipe", "Description", ""));
-        savedRecipes.add(new Recipe("Tiramisu", "A delicious coffee dessert", "Description", ""));
     }
 
     private void setupTabLayout() {
