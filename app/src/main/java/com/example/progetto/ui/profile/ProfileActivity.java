@@ -47,8 +47,22 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Set current user info
         if (currentUser != null) {
-            userNameEditText.setText(currentUser.getDisplayName());
-            userEmailEditText.setText(currentUser.getEmail());
+            String displayName = currentUser.getDisplayName();
+            String email = currentUser.getEmail();
+
+            if (displayName != null) {
+                userNameEditText.setText(displayName);
+            } else {
+                userNameEditText.setText("No display name set");
+            }
+
+            if (email != null) {
+                userEmailEditText.setText(email);
+            } else {
+                userEmailEditText.setText("No email set");
+            }
+        } else {
+            showToast("No authenticated user. Please log in first.");
         }
 
         // Set click listeners

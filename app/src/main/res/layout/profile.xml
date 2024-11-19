@@ -8,8 +8,6 @@
     tools:context=".ui.profile.ProfileActivity"
     android:padding="16dp">
 
-
-
     <!-- User Name Input -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/userNameLayout"
@@ -17,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:hint="Nome Utente"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -47,17 +46,6 @@
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Password Input -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userPasswordLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="Password"
-        app:layout_constraintTop_toBottomOf="@id/userEmailLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
     <!-- Buttons -->
     <Button
         android:id="@+id/saveChangesButton"
@@ -65,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="Save Changes"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/userPasswordLayout"
+        app:layout_constraintTop_toBottomOf="@id/userEmailLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
