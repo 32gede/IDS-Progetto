@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
+import com.example.progetto.data.model.UserRecipeUtils;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
@@ -30,9 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RecipeActivity extends AppCompatActivity {
 
@@ -49,8 +48,8 @@ public class RecipeActivity extends AppCompatActivity {
     private RecipeAdapter adapter;
 
     // Recipe Data
-    private List<Recipe> savedRecipes;
     private List<Recipe> globalRecipes;
+    private List<UserRecipeUtils> savedRecipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +63,7 @@ public class RecipeActivity extends AppCompatActivity {
         setupRecyclerView();
 
         // Load data and configure tabs
-        setupSampleData();
+        loadRecipesFromFirestore();
         setupTabLayout();
 
         // Setup navigation buttons
@@ -84,7 +83,6 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        // Find UI components
         tabLayout = findViewById(R.id.tabLayoutRecipe);
         recyclerView = findViewById(R.id.recyclerViewRecipes);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutRecipe);
@@ -98,7 +96,6 @@ public class RecipeActivity extends AppCompatActivity {
         recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButtonRecipe);
 
-        // Profile button
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
         if (profileButtonTop != null) {
             profileButtonTop.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
@@ -112,46 +109,25 @@ public class RecipeActivity extends AppCompatActivity {
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize the adapter with a bookmark click listener
-        adapter = new RecipeAdapter(new ArrayList<>(), recipe -> {
-            // Save the recipe to Firebase Firestore
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
-
-            Map<String, Object> recipe1 = new HashMap<>();
-            recipe1.put("name", recipe.getName());
-            recipe1.put("description", recipe.getDescription());
-            recipe1.put("ingredients", recipe.getIngredients());
-            recipe1.put("steps", recipe.getSteps());
-            recipe1.put("image", recipe.getImage()); // Può essere null
-            recipe1.put("difficulty", recipe.getDifficulty());
-            recipe1.put("category", recipe.getCategory());
-            recipe1.put("preparationTime", recipe.getPreparationTime());
-            if (userId != null) {
-                recipe1.put("userId", userId);
-                firestore.collection("recipes_user")
-                        .add(recipe1)
-                        .addOnSuccessListener(documentReference -> {
-                            Toast.makeText(this, "Ricetta Utente aggiunta con successo!", Toast.LENGTH_SHORT).show();
-                            finish(); // Chiude l'activity
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+        adapter = new RecipeAdapter(new ArrayList<>(), (recipe, isSaved) -> {
+            if (isSaved) {
+                saveRecipeToUserCollection(recipe);
             } else {
-                Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+                removeRecipeFromUserCollection(recipe);
             }
         });
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupSampleData() {
-        // Initialize lists
-        savedRecipes = new ArrayList<>();
+    private void loadRecipesFromFirestore() {
         globalRecipes = new ArrayList<>();
-
-        // Firebase setup
+        savedRecipes = new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+
+        // Load global recipes
         firestore.collection("recipes")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -160,30 +136,53 @@ public class RecipeActivity extends AppCompatActivity {
                         Recipe recipe = document.toObject(Recipe.class);
                         globalRecipes.add(recipe);
                     }
-                    Log.d("RecipeActivity", "Loaded " + globalRecipes.size() + " recipes from Firestore.");
                     if (tabLayout.getSelectedTabPosition() == 1) {
                         adapter.setRecipes(globalRecipes);
                     }
                 })
-                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
+                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load global recipes: " + e.getMessage()));
 
+        // Load user-saved recipes
+        if (userId != null) {
+            firestore.collection("recipes_user")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        savedRecipes.clear();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            UserRecipeUtils recipe = document.toObject(UserRecipeUtils.class);
+                            savedRecipes.add(recipe);
+                        }
+                        if (tabLayout.getSelectedTabPosition() == 0) {
+                            adapter.setRecipes(new ArrayList<>(savedRecipes));
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage()));
+        }
+    }
+
+    private void saveRecipeToUserCollection(Recipe recipe) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+
+        if (userId != null) {
+            UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
+            firestore.collection("recipes_user")
+                    .document(recipe.getId())
+                    .set(userRecipe)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta salvata con successo!", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(this, "Errore nel salvataggio: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(this, "Utente non autenticato!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void removeRecipeFromUserCollection(Recipe recipe) {
         firestore.collection("recipes_user")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    savedRecipes.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        Recipe recipe = document.toObject(Recipe.class);
-                        savedRecipes.add(recipe);
-                    }
-                    Log.d("RecipeActivity", "Loaded " + savedRecipes.size() + " recipes from Firestore.");
-                    if (tabLayout.getSelectedTabPosition() == 0) {
-                        adapter.setRecipes(savedRecipes);
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
+                .document(recipe.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta rimossa con successo!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(this, "Errore nella rimozione: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void setupTabLayout() {
@@ -192,32 +191,28 @@ public class RecipeActivity extends AppCompatActivity {
             return;
         }
 
-        // Add tabs
         tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
         tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
 
-        // Handle tab selection
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
-                int position = tab.getPosition();
-                if (position == 0) {
-                    adapter.setRecipes(savedRecipes);
-                } else if (position == 1) {
+                if (tab.getPosition() == 0) {
+                    adapter.setRecipes(new ArrayList<>(savedRecipes));
+                } else {
                     adapter.setRecipes(globalRecipes);
                 }
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
+            public void onTabUnselected(TabLayout.Tab tab) {}
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // Default tab
         tabLayout.selectTab(tabLayout.getTabAt(0));
-        adapter.setRecipes(savedRecipes);
+        adapter.setRecipes(new ArrayList<>(savedRecipes));
     }
 
     private void setupSwipeRefresh() {
@@ -227,39 +222,17 @@ public class RecipeActivity extends AppCompatActivity {
         }
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            // Reload data
-            setupSampleData();
-            Toast.makeText(this, "Data updated!", Toast.LENGTH_SHORT).show();
-
-            // Stop refresh animation
+            loadRecipesFromFirestore();
+            Toast.makeText(this, "Dati aggiornati!", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         });
     }
 
     private void setNavigationListeners() {
-        if (homeButton != null) {
-            homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
-        } else {
-            Log.e("RecipeActivity", "homeButton is null. Check R.id.homeButton in recipe.xml.");
-        }
-
-        if (fridgeButton != null) {
-            fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
-        } else {
-            Log.e("RecipeActivity", "fridgeButton is null. Check R.id.fridgeButton in recipe.xml.");
-        }
-
-        if (searchButton != null) {
-            searchButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
-        } else {
-            Log.e("RecipeActivity", "searchButton is null. Check R.id.searchButton in recipe.xml.");
-        }
-
-        if (addButton != null) {
-            addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
-        } else {
-            Log.e("RecipeActivity", "addButton is null. Check R.id.addButtonRecipe in recipe.xml.");
-        }
+        homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
+        fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
+        searchButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
+        addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
     }
 
     private void navigateToActivity(Class<?> targetActivity) {

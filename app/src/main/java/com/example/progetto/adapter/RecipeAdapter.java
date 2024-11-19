@@ -9,14 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private List<Recipe> recipes;
-    private OnBookmarkClickListener bookmarkClickListener;
+    private final Set<String> savedRecipeIds = new HashSet<>(); // Tracks saved recipes
+    private final OnBookmarkClickListener bookmarkClickListener;
 
-    // Constructor updated to include the bookmark listener
     public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener) {
         this.recipes = recipes;
         this.bookmarkClickListener = bookmarkClickListener;
@@ -41,10 +43,29 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.titleTextView.setText(recipe.getName());
         holder.descriptionTextView.setText(recipe.getDescription());
 
+        // Check if the recipe is already saved and set the bookmark icon
+        if (savedRecipeIds.contains(recipe.getId())) {
+            holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_24);
+        } else {
+            holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_border_24);
+        }
+
         // Set the listener for the bookmark button
         holder.bookmarkButton.setOnClickListener(v -> {
+            boolean isSaved = savedRecipeIds.contains(recipe.getId());
+            if (isSaved) {
+                // Remove from saved and update icon
+                savedRecipeIds.remove(recipe.getId());
+                holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_border_24);
+            } else {
+                // Add to saved and update icon
+                savedRecipeIds.add(recipe.getId());
+                holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_24);
+            }
+
+            // Notify activity about the change
             if (bookmarkClickListener != null) {
-                bookmarkClickListener.onBookmarkClick(recipe);
+                bookmarkClickListener.onBookmarkClick(recipe, !isSaved);
             }
         });
     }
@@ -70,6 +91,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     // Interface to handle bookmark button clicks
     public interface OnBookmarkClickListener {
-        void onBookmarkClick(Recipe recipe);
+        void onBookmarkClick(Recipe recipe, boolean isSaved);
     }
 }

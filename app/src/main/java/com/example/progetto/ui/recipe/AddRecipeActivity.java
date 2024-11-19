@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
-import com.example.progetto.data.model.RecipeUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,6 +47,16 @@ public class AddRecipeActivity extends AppCompatActivity {
         storageRef = FirebaseStorage.getInstance().getReference("recipe_images");
 
         // Trova gli elementi UI
+        initializeViews();
+
+        // Listener per selezionare l'immagine
+        btnSelectImage.setOnClickListener(v -> openImageChooser());
+
+        // Listener per salvare la ricetta
+        btnSubmitRecipe.setOnClickListener(v -> saveRecipe());
+    }
+
+    private void initializeViews() {
         recipeName = findViewById(R.id.recipe_name);
         recipeDescription = findViewById(R.id.recipe_description);
         recipeIngredients = findViewById(R.id.recipe_ingredients);
@@ -59,12 +68,6 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipePreparationTime = findViewById(R.id.recipe_preparation_time);
         btnSubmitRecipe = findViewById(R.id.btn_submit_recipe);
         progressBar = findViewById(R.id.progressBar);
-
-        // Listener per selezionare l'immagine
-        btnSelectImage.setOnClickListener(v -> openImageChooser());
-
-        // Listener per salvare la ricetta
-        btnSubmitRecipe.setOnClickListener(v -> saveRecipe());
     }
 
     private void saveRecipe() {
@@ -86,63 +89,75 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         if (selectedImageUri != null) {
             // Carica l'immagine su Firebase Storage
-            StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
-            fileRef.putFile(selectedImageUri)
-                    .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String imageUrl = uri.toString();
-                        saveRecipeToFirestore(name, description, ingredients, steps, difficulty, category, preparationTime, imageUrl);
-                    }))
-                    .addOnFailureListener(e -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            uploadImageAndSaveRecipe(name, description, ingredients, steps, difficulty, category, preparationTime);
         } else {
             // Salva la ricetta senza immagine
             saveRecipeToFirestore(name, description, ingredients, steps, difficulty, category, preparationTime, null);
         }
     }
 
+    private void uploadImageAndSaveRecipe(String name, String description, String ingredients, String steps,
+                                          String difficulty, String category, String preparationTime) {
+        StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
+        fileRef.putFile(selectedImageUri)
+                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String imageUrl = uri.toString();
+                    saveRecipeToFirestore(name, description, ingredients, steps, difficulty, category, preparationTime, imageUrl);
+                }))
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void saveRecipeToFirestore(String name, String description, String ingredients, String steps,
                                        String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
-        // Crea un oggetto ricetta
-        Recipe appo = new Recipe(name, description, ingredients, steps, difficulty, category, preparationTime, imageUrl);
+        // Genera un ID univoco
+        String recipeId = db.collection("recipes").document().getId();
+
+        // Crea una mappa per Firestore
         Map<String, Object> recipe = new HashMap<>();
+        recipe.put("id", recipeId); // Imposta l'ID come il nome del documento
         recipe.put("name", name);
         recipe.put("description", description);
         recipe.put("ingredients", ingredients);
         recipe.put("steps", steps);
-        recipe.put("image", imageUrl); // Può essere null
+        recipe.put("image", imageUrl);
         recipe.put("difficulty", difficulty);
         recipe.put("category", category);
         recipe.put("preparationTime", preparationTime);
 
-        // Salva la ricetta in Firestore
-        db.collection("recipes")
-                .add(recipe)
-                .addOnSuccessListener(documentReference -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
-                    finish(); // Chiude l'activity
-                })
+        // Salva nella collezione "recipes"
+        db.collection("recipes").document(recipeId)
+                .set(recipe)
+                .addOnSuccessListener(aVoid -> saveRecipeForUser(recipeId, recipe))
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+    }
+
+    private void saveRecipeForUser(String recipeId, Map<String, Object> recipe) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
-        recipe.put("userId", userId);
-        db.collection("recipes_user")
-                .add(recipe)
-                .addOnSuccessListener(documentReference -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Ricetta Utente aggiunta con successo!", Toast.LENGTH_SHORT).show();
-                    finish(); // Chiude l'activity
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        if (userId != null) {
+            recipe.put("userId", userId);
+            db.collection("recipes_user").document(recipeId)
+                    .set(recipe)
+                    .addOnSuccessListener(aVoid -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(this, "Errore nell'aggiunta della ricetta per l'utente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Errore: Utente non autenticato!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openImageChooser() {

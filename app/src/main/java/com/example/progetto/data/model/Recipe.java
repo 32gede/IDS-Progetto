@@ -1,6 +1,7 @@
 package com.example.progetto.data.model;
 
 public class Recipe {
+    private String id; // Unique identifier for the recipe
     private String name;
     private String description;
     private String image;
@@ -11,10 +12,11 @@ public class Recipe {
     private String preparationTime;
 
     // No-argument constructor required for Firestore
-    public Recipe() {
-    }
+    public Recipe() {}
 
-    public Recipe( String name, String description, String image, String ingredients, String steps, String difficulty, String category, String preparationTime) {
+    public Recipe(String id, String name, String description, String image, String ingredients,
+                  String steps, String difficulty, String category, String preparationTime) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
@@ -25,42 +27,33 @@ public class Recipe {
         this.preparationTime = preparationTime;
     }
 
-
-    public String getPreparationTime() {
-        return preparationTime;
+    // Getters and Setters
+    public String getId() {
+        return id;
     }
 
-    public void setPreparationTime(String preparationTime) {
-        this.preparationTime = preparationTime;
+    public void setId(String id) {
+        this.id = id;
     }
-
 
     public String getName() {
         return name;
     }
 
-    public String getCategory() {
-        return category;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public String getDescription() {
+        return description;
     }
 
-    public String getDifficulty() {
-        return difficulty;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public String getSteps() {
-        return steps;
-    }
-
-    public void setSteps(String steps) {
-        this.steps = steps;
+    public String getImage() {
+        return image;
     }
 
     public void setImage(String image) {
@@ -75,19 +68,35 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getSteps() {
+        return steps;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSteps(String steps) {
+        this.steps = steps;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDifficulty() {
+        return difficulty;
     }
 
-    public String getImage() {
-        return image;
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getPreparationTime() {
+        return preparationTime;
+    }
+
+    public void setPreparationTime(String preparationTime) {
+        this.preparationTime = preparationTime;
     }
 }
