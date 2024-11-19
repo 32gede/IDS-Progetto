@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
-import com.example.progetto.ui.fridge.AddProductActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
@@ -31,7 +30,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeActivity extends AppCompatActivity {
 
@@ -110,7 +111,37 @@ public class RecipeActivity extends AppCompatActivity {
             return;
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecipeAdapter(new ArrayList<>()); // Initialize adapter with an empty list
+
+        // Initialize the adapter with a bookmark click listener
+        adapter = new RecipeAdapter(new ArrayList<>(), recipe -> {
+            // Save the recipe to Firebase Firestore
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+
+            Map<String, Object> recipe1 = new HashMap<>();
+            recipe1.put("name", recipe.getName());
+            recipe1.put("description", recipe.getDescription());
+            recipe1.put("ingredients", recipe.getIngredients());
+            recipe1.put("steps", recipe.getSteps());
+            recipe1.put("image", recipe.getImage()); // Può essere null
+            recipe1.put("difficulty", recipe.getDifficulty());
+            recipe1.put("category", recipe.getCategory());
+            recipe1.put("preparationTime", recipe.getPreparationTime());
+            if (userId != null) {
+                recipe1.put("userId", userId);
+                firestore.collection("recipes_user")
+                        .add(recipe1)
+                        .addOnSuccessListener(documentReference -> {
+                            Toast.makeText(this, "Ricetta Utente aggiunta con successo!", Toast.LENGTH_SHORT).show();
+                            finish(); // Chiude l'activity
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setAdapter(adapter);
     }
 
@@ -135,7 +166,8 @@ public class RecipeActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
         firestore.collection("recipes_user")
                 .whereEqualTo("userId", userId)
@@ -152,7 +184,6 @@ public class RecipeActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load recipes: " + e.getMessage()));
-
     }
 
     private void setupTabLayout() {
@@ -198,7 +229,7 @@ public class RecipeActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // Reload data
             setupSampleData();
-            Toast.makeText(this, "Dati aggiornati!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Data updated!", Toast.LENGTH_SHORT).show();
 
             // Stop refresh animation
             swipeRefreshLayout.setRefreshing(false);
