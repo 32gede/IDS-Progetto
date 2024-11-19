@@ -19,7 +19,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class ProfileActivity extends AppCompatActivity {
 
-
     private MainViewModel mainViewModel;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
