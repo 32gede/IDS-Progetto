@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
@@ -27,8 +28,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,13 +126,17 @@ public class RecipeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
-        // Load global recipes
+        // Carica le ricette globali
         firestore.collection("recipes")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     globalRecipes.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Recipe recipe = document.toObject(Recipe.class);
+
+                        // Imposta l'ID del documento come l'ID della ricetta
+                        recipe.setId(document.getId());
+
                         globalRecipes.add(recipe);
                     }
                     if (tabLayout.getSelectedTabPosition() == 1) {
@@ -142,7 +145,7 @@ public class RecipeActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load global recipes: " + e.getMessage()));
 
-        // Load user-saved recipes
+        // Carica le ricette salvate dall'utente
         if (userId != null) {
             firestore.collection("recipes_user")
                     .whereEqualTo("userId", userId)
@@ -150,8 +153,12 @@ public class RecipeActivity extends AppCompatActivity {
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         savedRecipes.clear();
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            UserRecipeUtils recipe = document.toObject(UserRecipeUtils.class);
-                            savedRecipes.add(recipe);
+                            UserRecipeUtils userRecipe = document.toObject(UserRecipeUtils.class);
+
+                            // Imposta l'ID del documento come l'ID della ricetta
+                            userRecipe.setId(document.getId());
+
+                            savedRecipes.add(userRecipe);
                         }
                         if (tabLayout.getSelectedTabPosition() == 0) {
                             adapter.setRecipes(new ArrayList<>(savedRecipes));
@@ -161,14 +168,21 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
+
     private void saveRecipeToUserCollection(Recipe recipe) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
+        if (recipe == null || recipe.getId() == null) {
+            Log.e("RecipeActivity", "Recipe o ID della ricetta è nullo. Salvataggio annullato.");
+            Toast.makeText(this, "Errore: la ricetta non è valida.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (userId != null) {
             UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
             firestore.collection("recipes_user")
-                    .document(recipe.getId())
+                    .document(recipe.getId()) // Usa l'ID della ricetta come nome del documento
                     .set(userRecipe)
                     .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta salvata con successo!", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(this, "Errore nel salvataggio: " + e.getMessage(), Toast.LENGTH_SHORT).show());
@@ -176,6 +190,7 @@ public class RecipeActivity extends AppCompatActivity {
             Toast.makeText(this, "Utente non autenticato!", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void removeRecipeFromUserCollection(Recipe recipe) {
         firestore.collection("recipes_user")
@@ -186,11 +201,6 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void setupTabLayout() {
-        if (tabLayout == null) {
-            Log.e("RecipeActivity", "TabLayout is null. Check R.id.tabLayoutRecipe in recipe.xml.");
-            return;
-        }
-
         tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
         tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
 
@@ -216,14 +226,8 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void setupSwipeRefresh() {
-        if (swipeRefreshLayout == null) {
-            Log.e("RecipeActivity", "SwipeRefreshLayout is null. Check R.id.swipeRefreshLayoutRecipe in recipe.xml.");
-            return;
-        }
-
         swipeRefreshLayout.setOnRefreshListener(() -> {
             loadRecipesFromFirestore();
-            Toast.makeText(this, "Dati aggiornati!", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         });
     }
