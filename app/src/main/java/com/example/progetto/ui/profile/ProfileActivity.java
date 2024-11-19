@@ -2,8 +2,6 @@ package com.example.progetto.ui.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,8 +21,8 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    private EditText userNameEditText, userEmailEditText, userPasswordEditText;
-    private Button saveChangesButton, logoutButton, resetPasswordButton;
+    private EditText userNameEditText, userEmailEditText;
+    private Button saveChangesButton, logoutButton, resetPasswordButton, changeEmailButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         saveChangesButton = findViewById(R.id.saveChangesButton);
         resetPasswordButton = findViewById(R.id.resetPasswordButton);
         logoutButton = findViewById(R.id.logoutButton);
+        changeEmailButton = findViewById(R.id.changeEmailButton);
 
         // Set current user info
         if (currentUser != null) {
@@ -58,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             if (email != null) {
                 userEmailEditText.setText(email);
+                userEmailEditText.setEnabled(false); // Make email read-only
             } else {
                 userEmailEditText.setText("No email set");
             }
@@ -69,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
         saveChangesButton.setOnClickListener(v -> updateProfile());
         resetPasswordButton.setOnClickListener(v -> sendPasswordResetEmail());
         logoutButton.setOnClickListener(v -> mainViewModel.logout());
+        changeEmailButton.setOnClickListener(v -> navigateToChangeEmailActivity());
 
         // Observe logout state
         mainViewModel.getLogoutSuccess().observe(this, success -> {
@@ -82,16 +83,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void updateProfile() {
         String newUserName = userNameEditText.getText().toString().trim();
-        String newUserEmail = userEmailEditText.getText().toString().trim();
-        boolean isValid = true;
 
-        // Validate new email
-        if (!TextUtils.isEmpty(newUserEmail) && !Patterns.EMAIL_ADDRESS.matcher(newUserEmail).matches()) {
-            showToast("Invalid email format");
-            isValid = false;
-        }
-
-        if (!TextUtils.isEmpty(newUserName)) {
+        if (!newUserName.isEmpty()) {
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(newUserName)
                     .build();
@@ -101,17 +94,6 @@ public class ProfileActivity extends AppCompatActivity {
                             showToast("Username updated");
                         } else {
                             showToast("Failed to update username");
-                        }
-                    });
-        }
-
-        if (isValid && !TextUtils.isEmpty(newUserEmail)) {
-            currentUser.updateEmail(newUserEmail)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            showToast("Email updated. Please check your previous email for confirmation.");
-                        } else {
-                            showToast("Failed to update email. Please re-authenticate and try again.");
                         }
                     });
         }
@@ -135,6 +117,11 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             showToast("No authenticated user. Please log in first.");
         }
+    }
+
+    private void navigateToChangeEmailActivity() {
+        Intent intent = new Intent(ProfileActivity.this, ChangeEmailActivity.class);
+        startActivity(intent);
     }
 
     private void showToast(String message) {
