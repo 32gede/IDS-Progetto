@@ -15,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.Recipe;
+import com.example.progetto.data.model.RecipeUser;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -102,6 +105,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private void saveRecipeToFirestore(String name, String description, String ingredients, String steps,
                                        String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
         // Crea un oggetto ricetta
+        Recipe appo = new Recipe(name, description, ingredients, steps, difficulty, category, preparationTime, imageUrl);
         Map<String, Object> recipe = new HashMap<>();
         recipe.put("name", name);
         recipe.put("description", description);
@@ -118,6 +122,21 @@ public class AddRecipeActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentReference -> {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
+                    finish(); // Chiude l'activity
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+
+        recipe.put("userId", userId);
+        db.collection("recipes_user")
+                .add(recipe)
+                .addOnSuccessListener(documentReference -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Ricetta Utente aggiunta con successo!", Toast.LENGTH_SHORT).show();
                     finish(); // Chiude l'activity
                 })
                 .addOnFailureListener(e -> {
