@@ -3,6 +3,7 @@
     <!-- Tema per la tua app -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Colori per la tua app -->
+        <item name="tabTextColor">@android:color/white</item>
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryDark">@color/purple_500</item>
         <item name="colorAccent">@color/purple_500</item>

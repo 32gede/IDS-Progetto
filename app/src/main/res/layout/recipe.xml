@@ -87,10 +87,10 @@
                         android:layout_height="wrap_content"
                         android:elevation="4dp"
                         android:padding="8dp"
-                        app:tabIndicatorColor="#4B0082"
+                        app:tabIndicatorColor="@color/purple_500"
                         app:tabMode="scrollable"
-                        app:tabSelectedTextColor="#4B0082"
-                        app:tabTextColor="#FFFFFF" />
+                        app:tabSelectedTextColor="@android:color/white"
+                        app:tabTextColor="@android:color/white" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         xmlns:android="http://schemas.android.com/apk/res/android"
