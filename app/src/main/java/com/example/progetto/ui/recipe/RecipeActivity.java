@@ -209,19 +209,15 @@ public class RecipeActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
+                Set<String> savedRecipeIds = new HashSet<>();
+                for (UserRecipeUtils userRecipe : savedRecipes) {
+                    savedRecipeIds.add(userRecipe.getId());
+                }
+                adapter.setSavedRecipeIds(savedRecipeIds);
+
                 if (tab.getPosition() == 0) {
-                    Set<String> savedRecipeIds = new HashSet<>();
-                    for (UserRecipeUtils userRecipe : savedRecipes) {
-                        savedRecipeIds.add(userRecipe.getId());
-                    }
-                    adapter.setSavedRecipeIds(savedRecipeIds);
                     adapter.setRecipes(new ArrayList<>(savedRecipes));
                 } else {
-                    Set<String> savedRecipeIds = new HashSet<>();
-                    for (UserRecipeUtils userRecipe : savedRecipes) {
-                        savedRecipeIds.add(userRecipe.getId());
-                    }
-                    adapter.setSavedRecipeIds(savedRecipeIds);
                     adapter.setRecipes(globalRecipes);
                 }
             }

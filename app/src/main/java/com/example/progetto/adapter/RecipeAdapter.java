@@ -14,14 +14,18 @@ import java.util.List;
 import java.util.Set;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
-
     private List<Recipe> recipes;
-    private final Set<String> savedRecipeIds = new HashSet<>(); // Tracks saved recipes
+    private Set<String> savedRecipeIds;
     private final OnBookmarkClickListener bookmarkClickListener;
+
+    public interface OnBookmarkClickListener {
+        void onBookmarkClick(Recipe recipe, boolean isSaved);
+    }
 
     public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener) {
         this.recipes = recipes;
         this.bookmarkClickListener = bookmarkClickListener;
+        this.savedRecipeIds = new HashSet<>();
     }
 
     public void setRecipes(List<Recipe> recipes) {
@@ -30,50 +34,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
     public void setSavedRecipeIds(Set<String> savedRecipeIds) {
-        this.savedRecipeIds.clear();
-        this.savedRecipeIds.addAll(savedRecipeIds);
+        this.savedRecipeIds = savedRecipeIds;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_recipe, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
         return new RecipeViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
-        holder.titleTextView.setText(recipe.getName());
-        holder.descriptionTextView.setText(recipe.getDescription());
-
-        // Check if the recipe is already saved and set the bookmark icon
-        if (savedRecipeIds.contains(recipe.getId())) {
-            holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_24);
-        } else {
-            holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_border_24);
-        }
-
-        // Set the listener for the bookmark button
-        holder.bookmarkButton.setOnClickListener(v -> {
-            boolean isSaved = savedRecipeIds.contains(recipe.getId());
-            if (isSaved) {
-                // Remove from saved and update icon
-                savedRecipeIds.remove(recipe.getId());
-                holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_border_24);
-            } else {
-                // Add to saved and update icon
-                savedRecipeIds.add(recipe.getId());
-                holder.bookmarkButton.setImageResource(R.drawable.baseline_bookmark_24);
-            }
-
-            // Notify activity about the change
-            if (bookmarkClickListener != null) {
-                bookmarkClickListener.onBookmarkClick(recipe, !isSaved);
-            }
-        });
+        holder.bind(recipe, savedRecipeIds.contains(recipe.getId()));
     }
 
     @Override
@@ -81,22 +56,25 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return recipes.size();
     }
 
-    // ViewHolder class updated to include the bookmark button
-    static class RecipeViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView;
-        TextView descriptionTextView;
-        ImageButton bookmarkButton;
+    class RecipeViewHolder extends RecyclerView.ViewHolder {
+        private final TextView recipeTitle;
+        private final ImageButton bookmarkButton;
 
-        public RecipeViewHolder(@NonNull View itemView) {
+        RecipeViewHolder(View itemView) {
             super(itemView);
-            titleTextView = itemView.findViewById(R.id.titleTextView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
-            bookmarkButton = itemView.findViewById(R.id.bookmarkButton); // Add this in your layout
+            recipeTitle = itemView.findViewById(R.id.titleTextView);
+            bookmarkButton = itemView.findViewById(R.id.bookmarkButton);
         }
-    }
 
-    // Interface to handle bookmark button clicks
-    public interface OnBookmarkClickListener {
-        void onBookmarkClick(Recipe recipe, boolean isSaved);
+        void bind(Recipe recipe, boolean isSaved) {
+            recipeTitle.setText(recipe.getName());
+            bookmarkButton.setImageResource(isSaved ? R.drawable.baseline_bookmark_24 : R.drawable.baseline_bookmark_border_24);
+
+            bookmarkButton.setOnClickListener(v -> {
+                boolean newSavedState = !isSaved;
+                bookmarkClickListener.onBookmarkClick(recipe, newSavedState);
+                bookmarkButton.setImageResource(newSavedState ? R.drawable.baseline_bookmark_24 : R.drawable.baseline_bookmark_border_24);
+            });
+        }
     }
 }
