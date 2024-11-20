@@ -37,40 +37,52 @@
         <activity
             android:name=".ui.registration.RegistrationActivity"
             android:exported="false"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_registration" />
 
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_login" />
 
         <activity
             android:name=".ui.fridge.FridgeActivity"
             android:exported="false"
+
+            android:theme="@style/AppTheme"
             android:label="@string/fridge" />
 
         <activity
             android:name=".ui.search.SearchActivity"
             android:exported="false"
+
+            android:theme="@style/AppTheme"
             android:label="@string/search" />
 
         <activity
             android:name=".ui.fridge.AddProductActivity"
+
+            android:theme="@style/AppTheme"
             android:exported="false" />
 
         <activity
             android:name=".ui.recipe.RecipeActivity"
+            android:theme="@style/AppTheme"
             android:exported="false"
             android:label="@string/recipe" />
 
         <activity
             android:name=".ui.home.HomeActivity"
+            android:theme="@style/AppTheme"
             android:exported="false"
             android:label="@string/home" />
 
         <!-- Main Activity with LAUNCHER intent -->
         <activity
             android:name=".MainActivity"
+
+            android:theme="@style/AppTheme"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -81,9 +93,12 @@
         <!-- Other Activities -->
         <activity
             android:name=".ui.recipe.AddRecipeActivity"
+
+            android:theme="@style/AppTheme"
             android:exported="false"/>
         <activity
             android:name=".ui.profile.ProfileActivity"
+            android:theme="@style/AppTheme"
             android:exported="false" />
 
     </application>

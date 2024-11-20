@@ -33,7 +33,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private MainViewModel mainViewModel;
     private GoogleSignInClient mGoogleSignInClient;

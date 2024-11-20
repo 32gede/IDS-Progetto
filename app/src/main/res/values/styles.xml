@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema per la tua app -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Colori per la tua app -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_500</item>
+        <item name="colorAccent">@color/purple_500</item>
+        <!-- Stile per la barra di stato -->
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Stile per la barra di navigazione -->
+        <item name="android:navigationBarColor">@color/light_gray</item>
+    </style>
+</resources>
