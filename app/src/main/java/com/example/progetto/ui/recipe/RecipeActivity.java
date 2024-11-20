@@ -249,6 +249,7 @@ public class RecipeActivity extends AppCompatActivity {
         });
     }
 
+
     private void setNavigationListeners() {
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
