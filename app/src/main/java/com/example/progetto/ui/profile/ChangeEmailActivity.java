@@ -8,8 +8,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.progetto.R;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import android.util.Log;
 
 public class ChangeEmailActivity extends AppCompatActivity {
 
@@ -50,20 +53,36 @@ public class ChangeEmailActivity extends AppCompatActivity {
             return;
         }
 
-        // Simulate password verification (replace with actual verification logic)
-        if (password.equals("current_password")) { // Replace "current_password" with actual password check
-            currentUser.updateEmail(newEmail)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            showToast("Email updated successfully.");
-                        } else {
-                            showToast("Failed to update email. Please try again.");
-                        }
-                    });
-        } else {
-            showToast("Incorrect password. Please try again.");
+        if (currentUser == null) {
+            showToast("No authenticated user. Please log in again.");
+            return;
         }
+
+        // Re-authenticate the user
+        AuthCredential credential = EmailAuthProvider.getCredential(currentUser.getEmail(), password);
+        currentUser.reauthenticate(credential)
+                .addOnCompleteListener(authTask -> {
+                    if (authTask.isSuccessful()) {
+                        // Send verification email to the new address
+                        sendVerificationEmail(newEmail);
+                    } else {
+                        showToast("Re-authentication failed. Incorrect password.");
+                    }
+                });
     }
+
+    private void sendVerificationEmail(String newEmail) {
+        currentUser.verifyBeforeUpdateEmail(newEmail)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showToast("Verification email sent to " + newEmail + ". Please verify to complete the update.");
+                    } else {
+                        showToast("Failed to send verification email.");
+                        Log.e("ChangeEmail", "Error sending verification email: " + task.getException());
+                    }
+                });
+    }
+
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
