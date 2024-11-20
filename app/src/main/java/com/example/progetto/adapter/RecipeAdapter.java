@@ -29,6 +29,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         notifyDataSetChanged();
     }
 
+    public void setSavedRecipeIds(Set<String> savedRecipeIds) {
+        this.savedRecipeIds.clear();
+        this.savedRecipeIds.addAll(savedRecipeIds);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

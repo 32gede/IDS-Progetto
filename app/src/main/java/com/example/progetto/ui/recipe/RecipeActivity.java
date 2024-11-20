@@ -30,7 +30,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RecipeActivity extends AppCompatActivity {
 
@@ -208,8 +210,18 @@ public class RecipeActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
+                    Set<String> savedRecipeIds = new HashSet<>();
+                    for (UserRecipeUtils userRecipe : savedRecipes) {
+                        savedRecipeIds.add(userRecipe.getId());
+                    }
+                    adapter.setSavedRecipeIds(savedRecipeIds);
                     adapter.setRecipes(new ArrayList<>(savedRecipes));
                 } else {
+                    Set<String> savedRecipeIds = new HashSet<>();
+                    for (UserRecipeUtils userRecipe : savedRecipes) {
+                        savedRecipeIds.add(userRecipe.getId());
+                    }
+                    adapter.setSavedRecipeIds(savedRecipeIds);
                     adapter.setRecipes(globalRecipes);
                 }
             }
@@ -222,6 +234,11 @@ public class RecipeActivity extends AppCompatActivity {
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
+        Set<String> savedRecipeIds = new HashSet<>();
+        for (UserRecipeUtils userRecipe : savedRecipes) {
+            savedRecipeIds.add(userRecipe.getId());
+        }
+        adapter.setSavedRecipeIds(savedRecipeIds);
         adapter.setRecipes(new ArrayList<>(savedRecipes));
     }
 
