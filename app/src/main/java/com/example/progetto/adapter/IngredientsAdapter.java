@@ -49,9 +49,9 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         // Cambia il colore del testo (opzionale)
         holder.ingredientName.setTextColor(isSelected ? Color.WHITE : Color.BLACK);
 
-        // Listener per gestire il click
+        // Listener per gestire il click sull'intera card
         holder.itemView.setOnClickListener(v -> {
-            if (isSelected) {
+            if (selectedIngredients.contains(ingredient)) {
                 selectedIngredients.remove(ingredient);
             } else {
                 selectedIngredients.add(ingredient);

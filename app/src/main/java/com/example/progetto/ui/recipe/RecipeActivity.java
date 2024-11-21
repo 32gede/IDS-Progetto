@@ -34,6 +34,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.JustifyContent;
+
+
 public class RecipeActivity extends AppCompatActivity {
 
     // UI Components
@@ -108,7 +114,11 @@ public class RecipeActivity extends AppCompatActivity {
             Log.e("RecipeActivity", "RecyclerView is null. Check R.id.recyclerViewRecipes in recipe.xml.");
             return;
         }
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setFlexWrap(FlexWrap.WRAP);
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new RecipeAdapter(new ArrayList<>(), (recipe, isSaved) -> {
             if (isSaved) {

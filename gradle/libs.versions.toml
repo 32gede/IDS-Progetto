@@ -3,6 +3,7 @@ agp = "8.6.1"
 firebaseBom = "33.5.1"
 firebaseFirestore = "24.5.0"
 firebaseStorage = "21.0.1"
+flexboxVersion = "3.0.0"
 googleFirebaseBom = "32.2.0"
 googleMaterial = "1.12.0"
 junit = "4.13.2"
@@ -22,6 +23,7 @@ firebaseDatabase = "21.0.0"
 swiperefreshlayout = "1.1.0"
 
 [libraries]
+android-flexbox = { module = "com.google.android:flexbox", version.ref = "flexboxVersion" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-bom-v3220 = { module = "com.google.firebase:firebase-bom", version.ref = "googleFirebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
