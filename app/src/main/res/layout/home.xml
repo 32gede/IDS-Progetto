@@ -16,37 +16,173 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <!-- Top bar -->
-        <include
-            android:id="@+id/navHeader"
-            layout="@layout/nav_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Main content frame -->
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/navHeader"
-            app:layout_constraintBottom_toTopOf="@id/navBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Bottom Navbar -->
-        <include
+        <!-- NavBar ancorata al fondo -->
+        <LinearLayout
             android:id="@+id/navBar"
-            layout="@layout/nav_bar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#E0E0E0"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!-- FrameLayout per il pulsante Home -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <!-- Sfondo circolare per Home -->
+                <ImageView
+                    android:id="@+id/homeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+                <!-- Icona Home -->
+                <ImageButton
+                    android:id="@+id/homeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Home"
+                    android:src="@drawable/icons8_casa_24" />
+            </FrameLayout>
+
+            <!-- FrameLayout per il pulsante Ricerca -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <!-- Sfondo circolare per Ricerca -->
+                <ImageView
+                    android:id="@+id/searchBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+                <!-- Icona Ricerca -->
+                <ImageButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Ricerca"
+                    android:src="@drawable/baseline_search_24" />
+            </FrameLayout>
+
+            <!-- FrameLayout per il pulsante Lista -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <!-- Sfondo circolare per Lista -->
+                <ImageView
+                    android:id="@+id/fridgeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+                <!-- Icona Lista -->
+                <ImageButton
+                    android:id="@+id/fridgeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Lista"
+                    android:src="@drawable/fridge__1_" />
+            </FrameLayout>
+
+            <!-- FrameLayout per il pulsante Profilo -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <!-- Sfondo circolare per Profilo -->
+                <ImageView
+                    android:id="@+id/recipeBackgroundCircle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/selected_nav_item_background"
+                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+
+                <!-- Icona Profilo -->
+                <ImageButton
+                    android:id="@+id/recipeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:contentDescription="Profilo"
+                    android:src="@drawable/baseline_library_books_24" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Search Bar -->
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:letterSpacing="0.15"
+                android:padding="8dp"
+                android:text="@string/home"
+                android:textColor="#4B0082"
+                android:textSize="32sp" />
+
+
+            <!-- Notifications Icon -->
+            <ImageButton
+                android:id="@+id/notificationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Notifiche"
+                android:padding="8dp"
+                android:src="@drawable/baseline_notifications_24" />
+
+            <!-- Profile Button -->
+            <ImageButton
+                android:id="@+id/profileButtonTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:contentDescription="Profilo"
+                android:padding="8dp"
+                android:src="@drawable/baseline_person_24" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->
