@@ -203,40 +203,42 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void setupTabLayout() {
-        tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
-        tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
+    tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
+    tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull TabLayout.Tab tab) {
-                Set<String> savedRecipeIds = new HashSet<>();
-                for (UserRecipeUtils userRecipe : savedRecipes) {
-                    savedRecipeIds.add(userRecipe.getId());
-                }
-                adapter.setSavedRecipeIds(savedRecipeIds);
+    tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(@NonNull TabLayout.Tab tab) {
+            loadRecipesFromFirestore(); // Reload recipes from Firestore
 
-                if (tab.getPosition() == 0) {
-                    adapter.setRecipes(new ArrayList<>(savedRecipes));
-                } else {
-                    adapter.setRecipes(globalRecipes);
-                }
+            Set<String> savedRecipeIds = new HashSet<>();
+            for (UserRecipeUtils userRecipe : savedRecipes) {
+                savedRecipeIds.add(userRecipe.getId());
             }
+            adapter.setSavedRecipeIds(savedRecipeIds);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
-
-        tabLayout.selectTab(tabLayout.getTabAt(0));
-        Set<String> savedRecipeIds = new HashSet<>();
-        for (UserRecipeUtils userRecipe : savedRecipes) {
-            savedRecipeIds.add(userRecipe.getId());
+            if (tab.getPosition() == 0) {
+                adapter.setRecipes(new ArrayList<>(savedRecipes));
+            } else {
+                adapter.setRecipes(globalRecipes);
+            }
         }
-        adapter.setSavedRecipeIds(savedRecipeIds);
-        adapter.setRecipes(new ArrayList<>(savedRecipes));
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {}
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {}
+    });
+
+    tabLayout.selectTab(tabLayout.getTabAt(0));
+    Set<String> savedRecipeIds = new HashSet<>();
+    for (UserRecipeUtils userRecipe : savedRecipes) {
+        savedRecipeIds.add(userRecipe.getId());
     }
+    adapter.setSavedRecipeIds(savedRecipeIds);
+    adapter.setRecipes(new ArrayList<>(savedRecipes));
+}
 
     private void setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(() -> {

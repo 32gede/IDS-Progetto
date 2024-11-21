@@ -38,13 +38,12 @@
                     android:layout_marginBottom="8dp" />
 
                 <!-- Ingredienti -->
-                <EditText
-                    android:id="@+id/recipe_ingredients"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ingredients_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/ingredienti"
-                    android:padding="12dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_height="118dp"
+                    android:layout_marginBottom="16dp"
+                    android:padding="12dp" />
 
                 <!-- Procedura -->
                 <EditText
