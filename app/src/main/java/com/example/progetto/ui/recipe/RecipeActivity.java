@@ -109,6 +109,10 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
+    // src/main/java/com/example/progetto/ui/recipe/RecipeActivity.java
+// Update the setupRecyclerView method
+    // src/main/java/com/example/progetto/ui/recipe/RecipeActivity.java
+// Update the setupRecyclerView method
     private void setupRecyclerView() {
         if (recyclerView == null) {
             Log.e("RecipeActivity", "RecyclerView is null. Check R.id.recyclerViewRecipes in recipe.xml.");
@@ -126,7 +130,7 @@ public class RecipeActivity extends AppCompatActivity {
             } else {
                 removeRecipeFromUserCollection(recipe);
             }
-        });
+        }, this);
         recyclerView.setAdapter(adapter);
     }
 
