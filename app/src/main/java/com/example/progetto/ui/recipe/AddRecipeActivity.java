@@ -20,6 +20,10 @@ import com.example.progetto.R;
 import com.example.progetto.adapter.IngredientsAdapter;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.Recipe;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -66,24 +70,34 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void setupIngredientsRecyclerView() {
-    recipeIngredients = findViewById(R.id.ingredients_recycler_view);
-    List<ItemUtils> ingredients = new ArrayList<>();
-    db.collection("items")
-            .get()
-            .addOnSuccessListener(queryDocumentSnapshots -> {
-                for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                    ItemUtils item = queryDocumentSnapshots.getDocuments().get(i).toObject(ItemUtils.class);
-                    if (item != null) {
-                        ingredients.add(item);
-                    }
-                }
-                ingredientsAdapter.notifyDataSetChanged();
-            });
+        recipeIngredients = findViewById(R.id.ingredients_recycler_view);
+        List<ItemUtils> ingredients = new ArrayList<>();
 
-    ingredientsAdapter = new IngredientsAdapter(ingredients);
-    recipeIngredients.setLayoutManager(new LinearLayoutManager(this));
-    recipeIngredients.setAdapter(ingredientsAdapter);
-}
+        // Recupera gli ingredienti da Firestore
+        db.collection("items")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                        ItemUtils item = queryDocumentSnapshots.getDocuments().get(i).toObject(ItemUtils.class);
+                        if (item != null) {
+                            ingredients.add(item);
+                        }
+                    }
+                    ingredientsAdapter.notifyDataSetChanged();
+                });
+
+        // Inizializza il FlexboxLayoutManager
+        FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
+        flexboxLayoutManager.setFlexDirection(FlexDirection.ROW); // Direzione orizzontale delle righe
+        flexboxLayoutManager.setJustifyContent(JustifyContent.FLEX_START); // Allinea gli elementi all'inizio
+        flexboxLayoutManager.setAlignItems(AlignItems.FLEX_START); // Allinea gli elementi in alto
+
+        // Imposta l'adattatore e il layout manager
+        ingredientsAdapter = new IngredientsAdapter(ingredients);
+        recipeIngredients.setLayoutManager(flexboxLayoutManager);
+        recipeIngredients.setAdapter(ingredientsAdapter);
+    }
+
 
     private void initializeViews() {
         recipeName = findViewById(R.id.recipe_name);
