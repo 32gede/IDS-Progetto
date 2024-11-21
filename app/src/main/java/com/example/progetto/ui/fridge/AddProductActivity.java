@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.adapter.ProductAdapter;
 import com.example.progetto.data.model.ItemUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.progetto.R;
 import com.example.progetto.data.model.UserProductUtils;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +50,6 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         mAuth = FirebaseAuth.getInstance();
         itemsCollection = firestore.collection("items");
 
-
         // Setup RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -59,7 +59,7 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         // Load items from Firestore
         loadItemsFromFirestore();
 
-        // Set up back button
+        // Setup back button
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(AddProductActivity.this, FridgeActivity.class);
@@ -80,6 +80,13 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
 
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+
+        // Listener to open CreateProductActivity
+        FloatingActionButton addNewProductButton = findViewById(R.id.addNewProductButtonFridge);
+        addNewProductButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AddProductActivity.this, CreateProductActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -132,6 +139,7 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         } else {
             Log.e("AddProductActivity", "User ID is null. User might not be authenticated.");
         }
+        Toast.makeText(this, "Product selected: " + product.getName(), Toast.LENGTH_SHORT).show();
     }
 
     private void showProductDetailDialog(UserProductUtils product) {

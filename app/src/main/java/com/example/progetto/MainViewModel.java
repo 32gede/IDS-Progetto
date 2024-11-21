@@ -53,8 +53,6 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-
-
     // Metodo per gestire il logout
     public void logout() {
         executor.execute(() -> {
