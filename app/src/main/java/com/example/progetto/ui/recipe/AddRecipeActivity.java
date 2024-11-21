@@ -13,20 +13,27 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
+import com.example.progetto.adapter.IngredientsAdapter;
+import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.Recipe;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
-    private EditText recipeName, recipeDescription, recipeIngredients, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
+    private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
+    private RecyclerView recipeIngredients;
     private ImageView recipeImageView;
     private Button btnSubmitRecipe, btnSelectImage;
 
@@ -36,6 +43,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private ProgressBar progressBar;
+    private IngredientsAdapter ingredientsAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +56,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         // Trova gli elementi UI
         initializeViews();
+        setupIngredientsRecyclerView();
 
         // Listener per selezionare l'immagine
         btnSelectImage.setOnClickListener(v -> openImageChooser());
@@ -56,10 +65,29 @@ public class AddRecipeActivity extends AppCompatActivity {
         btnSubmitRecipe.setOnClickListener(v -> saveRecipe());
     }
 
+    private void setupIngredientsRecyclerView() {
+    recipeIngredients = findViewById(R.id.ingredients_recycler_view);
+    List<ItemUtils> ingredients = new ArrayList<>();
+    db.collection("items")
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                    ItemUtils item = queryDocumentSnapshots.getDocuments().get(i).toObject(ItemUtils.class);
+                    if (item != null) {
+                        ingredients.add(item);
+                    }
+                }
+                ingredientsAdapter.notifyDataSetChanged();
+            });
+
+    ingredientsAdapter = new IngredientsAdapter(ingredients);
+    recipeIngredients.setLayoutManager(new LinearLayoutManager(this));
+    recipeIngredients.setAdapter(ingredientsAdapter);
+}
+
     private void initializeViews() {
         recipeName = findViewById(R.id.recipe_name);
         recipeDescription = findViewById(R.id.recipe_description);
-        recipeIngredients = findViewById(R.id.recipe_ingredients);
         recipeSteps = findViewById(R.id.recipe_steps);
         recipeImageView = findViewById(R.id.recipe_image_view);
         btnSelectImage = findViewById(R.id.btn_select_image);
@@ -73,7 +101,11 @@ public class AddRecipeActivity extends AppCompatActivity {
     private void saveRecipe() {
         String name = recipeName.getText().toString().trim();
         String description = recipeDescription.getText().toString().trim();
-        String ingredients = recipeIngredients.getText().toString().trim();
+        List<ItemUtils> list_ingredients = ingredientsAdapter.getSelectedIngredients();
+        String ingredients = "";
+        for (ItemUtils ingredient : list_ingredients) {
+            ingredients += ingredient.getName() + ", ";
+        }
         String steps = recipeSteps.getText().toString().trim();
         String difficulty = recipeDifficulty.getText().toString().trim();
         String category = recipeCategory.getText().toString().trim();
