@@ -67,17 +67,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Logout"
-        app:layout_constraintTop_toBottomOf="@id/resetPasswordButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/changeEmailButton" />
 
     <Button
         android:id="@+id/changeEmailButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Change Email"
-        app:layout_constraintTop_toBottomOf="@id/logoutButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/resetPasswordButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
