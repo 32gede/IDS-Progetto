@@ -13,7 +13,7 @@
                 homeCircle.setVisibility(View.VISIBLE);
             } else if (selectedButtonId == R.id.fridgeButton && fridgeCircle != null) {
                 fridgeCircle.setVisibility(View.VISIBLE);
-            } else if (selectedButtonId == R.id.searchButton && searchCircle != null) {
+            } else if (selectedButtonId == R.id.storeButton && searchCircle != null) {
                 searchCircle.setVisibility(View.VISIBLE);
             } else if (selectedButtonId == R.id.recipeButton && recipeCircle != null) {
                 recipeCircle.setVisibility(View.VISIBLE);
