@@ -118,6 +118,7 @@ public class RecipeActivity extends AppCompatActivity {
             Log.e("RecipeActivity", "RecyclerView is null. Check R.id.recyclerViewRecipes in recipe.xml.");
             return;
         }
+
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setFlexWrap(FlexWrap.WRAP);
@@ -126,11 +127,12 @@ public class RecipeActivity extends AppCompatActivity {
 
         adapter = new RecipeAdapter(new ArrayList<>(), (recipe, isSaved) -> {
             if (isSaved) {
-                saveRecipeToUserCollection(recipe);
+                saveRecipeToUserCollection(recipe); // Salva la ricetta
             } else {
-                removeRecipeFromUserCollection(recipe);
+                removeRecipeFromUserCollection(recipe); // Rimuovi la ricetta
             }
         }, this);
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -142,6 +144,9 @@ public class RecipeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
+        // Insieme per tracciare gli ID delle ricette salvate
+        Set<String> savedRecipeIds = new HashSet<>();
+
         // Carica le ricette globali
         firestore.collection("recipes")
                 .get()
@@ -149,10 +154,7 @@ public class RecipeActivity extends AppCompatActivity {
                     globalRecipes.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Recipe recipe = document.toObject(Recipe.class);
-
-                        // Imposta l'ID del documento come l'ID della ricetta
                         recipe.setId(document.getId());
-
                         globalRecipes.add(recipe);
                     }
                     if (tabLayout.getSelectedTabPosition() == 1) {
@@ -170,12 +172,15 @@ public class RecipeActivity extends AppCompatActivity {
                         savedRecipes.clear();
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                             UserRecipeUtils userRecipe = document.toObject(UserRecipeUtils.class);
-
-                            // Imposta l'ID del documento come l'ID della ricetta
                             userRecipe.setId(document.getId());
-
                             savedRecipes.add(userRecipe);
+
+                            // Aggiungi l'ID al Set degli ID salvati
+                            savedRecipeIds.add(userRecipe.getId());
                         }
+                        // Aggiorna l'adapter con i nuovi dati
+                        adapter.setSavedRecipeIds(savedRecipeIds);
+
                         if (tabLayout.getSelectedTabPosition() == 0) {
                             adapter.setRecipes(new ArrayList<>(savedRecipes));
                         }
@@ -183,6 +188,7 @@ public class RecipeActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage()));
         }
     }
+
 
 
     private void saveRecipeToUserCollection(Recipe recipe) {

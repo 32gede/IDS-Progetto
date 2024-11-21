@@ -83,13 +83,36 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         void bind(Recipe recipe, boolean isSaved) {
             recipeTitle.setText(recipe.getName());
-            bookmarkButton.setImageResource(isSaved ? R.drawable.baseline_bookmark_24 : R.drawable.baseline_bookmark_border_24);
 
+            // Controlla se la ricetta è salvata nel Set globale e imposta lo stato iniziale
+            boolean isCurrentlySaved = savedRecipeIds.contains(recipe.getId());
+            bookmarkButton.setImageResource(isCurrentlySaved ?
+                    R.drawable.baseline_bookmark_24 :
+                    R.drawable.baseline_bookmark_border_24);
+
+            // Aggiungi il listener per gestire il clic
             bookmarkButton.setOnClickListener(v -> {
-                boolean newSavedState = !isSaved;
+                boolean newSavedState;
+
+                // Alterna lo stato di salvataggio
+                if (savedRecipeIds.contains(recipe.getId())) {
+                    savedRecipeIds.remove(recipe.getId()); // Rimuovi dai salvati
+                    newSavedState = false;
+                } else {
+                    savedRecipeIds.add(recipe.getId()); // Aggiungi ai salvati
+                    newSavedState = true;
+                }
+
+                // Aggiorna il database tramite il listener fornito
                 bookmarkClickListener.onBookmarkClick(recipe, newSavedState);
-                bookmarkButton.setImageResource(newSavedState ? R.drawable.baseline_bookmark_24 : R.drawable.baseline_bookmark_border_24);
+
+                // Cambia immediatamente l'icona
+                bookmarkButton.setImageResource(newSavedState ?
+                        R.drawable.baseline_bookmark_24 :
+                        R.drawable.baseline_bookmark_border_24);
             });
         }
+
+
     }
 }
