@@ -1,5 +1,7 @@
 package com.example.progetto.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
+import com.example.progetto.ui.recipe.RecipeFocusActivity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,15 +20,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private List<Recipe> recipes;
     private Set<String> savedRecipeIds;
     private final OnBookmarkClickListener bookmarkClickListener;
+    private final Context context;
 
     public interface OnBookmarkClickListener {
         void onBookmarkClick(Recipe recipe, boolean isSaved);
     }
 
-    public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener) {
+    public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener, Context context) {
         this.recipes = recipes;
         this.bookmarkClickListener = bookmarkClickListener;
         this.savedRecipeIds = new HashSet<>();
+        this.context = context;
     }
 
     public void setRecipes(List<Recipe> recipes) {
@@ -64,6 +69,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             super(itemView);
             recipeTitle = itemView.findViewById(R.id.titleTextView);
             bookmarkButton = itemView.findViewById(R.id.bookmarkButton);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Recipe recipe = recipes.get(position);
+                    Intent intent = new Intent(context, RecipeFocusActivity.class);
+                    intent.putExtra("recipe", recipe);
+                    context.startActivity(intent);
+                }
+            });
         }
 
         void bind(Recipe recipe, boolean isSaved) {

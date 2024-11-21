@@ -1,6 +1,8 @@
 package com.example.progetto.data.model;
 
-public class Recipe {
+import java.io.Serializable;
+
+public class Recipe implements Serializable {
     private String id; // Unique identifier for the recipe
     private String name;
     private String description;
