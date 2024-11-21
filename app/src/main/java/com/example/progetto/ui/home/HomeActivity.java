@@ -8,14 +8,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.progetto.BaseActivity;
+import com.example.progetto.R;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.R;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.search.SearchActivity;
+import com.example.progetto.data.model.SwipeGestureListener;
 
 public class HomeActivity extends BaseActivity {
 
@@ -50,48 +49,36 @@ public class HomeActivity extends BaseActivity {
         }
 
         // Listener per il pulsante Profilo
-        profileButtonTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Naviga a ProfileActivity
-                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
+        profileButtonTop.setOnClickListener(v -> {
+            // Naviga a ProfileActivity
+            Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(intent);
         });
         // Listener per il pulsante Search
-        storeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Naviga a HomeActivity
-                Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-            }
+        storeButton.setOnClickListener(v -> {
+            // Naviga a HomeActivity
+            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
         // Listener per il pulsante Fridge
-        fridgeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Naviga a FridgeActivity
-                Intent intent = new Intent(HomeActivity.this, FridgeActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-            }
+        fridgeButton.setOnClickListener(v -> {
+            // Naviga a FridgeActivity
+            Intent intent = new Intent(HomeActivity.this, FridgeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
         // Listener per il pulsante Recipe
-        recipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Naviga a RecipeActivity
-                Intent intent = new Intent(HomeActivity.this, RecipeActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-            }
+        recipeButton.setOnClickListener(v -> {
+            // Naviga a RecipeActivity
+            Intent intent = new Intent(HomeActivity.this, RecipeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
+
+        // Set up swipe gesture listener
+        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, SearchActivity.class,HomeActivity.class);
+        View mainView = findViewById(R.id.home);
+        mainView.setOnTouchListener(swipeGestureListener);
     }
-
-
 }
