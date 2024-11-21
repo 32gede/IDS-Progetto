@@ -68,6 +68,28 @@
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
+        <!-- Background circle behind the add button -->
+        <ImageView
+            android:id="@+id/addButtonBackgroundCircleFridge"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/selected_nav_item_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Add button on top right of the circle -->
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addButtonFridge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="Aggiungi"
+            android:src="@drawable/baseline_add_24"
+            app:backgroundTint="#4B0082"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- RecyclerView setup -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
