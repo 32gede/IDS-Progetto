@@ -174,13 +174,14 @@
                         android:layout_gravity="center"
                         android:src="@drawable/selected_nav_item_background"
                         android:visibility="gone" />
+                    <!-- Icona Ricerca -->
                     <ImageButton
-                        android:id="@+id/searchButton"
+                        android:id="@+id/storeButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="?android:selectableItemBackgroundBorderless"
-                        android:contentDescription="Ricerca"
-                        android:src="@drawable/baseline_search_24" />
+                        android:contentDescription="Negozio"
+                        android:src="@drawable/baseline_storefront_24" />
                 </FrameLayout>
 
                 <!-- List Button -->

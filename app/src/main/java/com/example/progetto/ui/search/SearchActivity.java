@@ -20,7 +20,7 @@ import com.example.progetto.ui.recipe.RecipeActivity;
 public class SearchActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton;
     private TextView titleText;
 
     @Override
@@ -35,7 +35,7 @@ public class SearchActivity extends AppCompatActivity {
         fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
         recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
         homeButton = findViewById(R.id.homeButton);
-        searchButton = findViewById(R.id.searchButton);
+        storeButton = findViewById(R.id.storeButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         titleText = findViewById(R.id.title);
@@ -45,7 +45,7 @@ public class SearchActivity extends AppCompatActivity {
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
             // Imposta il cerchio di sfondo solo per il pulsante Home
-            updateNavSelection(R.id.searchButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
+            updateNavSelection(R.id.storeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
         } else {
             // Log per il debug (opzionale)
             System.out.println("homeBackgroundCircle o homeButton non trovati nel layout.");

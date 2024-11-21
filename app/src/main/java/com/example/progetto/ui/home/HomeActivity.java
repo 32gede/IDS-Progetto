@@ -20,7 +20,7 @@ import com.example.progetto.ui.search.SearchActivity;
 public class HomeActivity extends BaseActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, searchButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton;
     private TextView titleText;
 
     @Override
@@ -35,7 +35,7 @@ public class HomeActivity extends BaseActivity {
         fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
         recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
         homeButton = findViewById(R.id.homeButton);
-        searchButton = findViewById(R.id.searchButton);
+        storeButton = findViewById(R.id.storeButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         titleText = findViewById(R.id.title);
@@ -59,7 +59,7 @@ public class HomeActivity extends BaseActivity {
             }
         });
         // Listener per il pulsante Search
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        storeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Naviga a HomeActivity

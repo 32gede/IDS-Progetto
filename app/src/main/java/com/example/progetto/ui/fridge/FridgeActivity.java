@@ -31,7 +31,7 @@ import java.util.List;
 public class FridgeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, searchButton, fridgeButton, recipeButton, addButton;
+    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, addButton;
     private TextView titleText;
 
     // Firebase Firestore and Authentication
@@ -86,7 +86,7 @@ public class FridgeActivity extends AppCompatActivity {
         fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
         recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
         homeButton = findViewById(R.id.homeButton);
-        searchButton = findViewById(R.id.searchButton);
+        storeButton = findViewById(R.id.storeButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButton);
@@ -99,7 +99,7 @@ public class FridgeActivity extends AppCompatActivity {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         recipeButton.setOnClickListener(v -> navigateToActivity(RecipeActivity.class));
-        searchButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
     }
 
     private void navigateToActivity(Class<?> targetActivity) {

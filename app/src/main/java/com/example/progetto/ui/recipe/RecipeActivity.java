@@ -44,7 +44,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     // UI Components
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, searchButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, storeButton, fridgeButton, recipeButton;
     private FloatingActionButton addButton;
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
@@ -98,7 +98,7 @@ public class RecipeActivity extends AppCompatActivity {
         fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
         recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
         homeButton = findViewById(R.id.homeButton);
-        searchButton = findViewById(R.id.searchButton);
+        storeButton = findViewById(R.id.storeButton);
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButtonRecipe);
@@ -261,7 +261,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void setNavigationListeners() {
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
-        searchButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
         addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
     }
 
