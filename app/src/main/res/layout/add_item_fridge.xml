@@ -70,7 +70,7 @@
 
         <!-- Background circle behind the add button -->
         <ImageView
-            android:id="@+id/addButtonBackgroundCircleFridge"
+            android:id="@+id/addNewProductButtonBackgroundCircleFridge"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
@@ -80,11 +80,11 @@
         <!-- Add button on top right of the circle -->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addButtonFridge"
+            android:id="@+id/addNewProductButtonFridge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:contentDescription="Aggiungi"
+            android:contentDescription="Aggiungi Prodotto"
             android:src="@drawable/baseline_add_24"
             app:backgroundTint="#4B0082"
             app:layout_constraintBottom_toBottomOf="parent"
