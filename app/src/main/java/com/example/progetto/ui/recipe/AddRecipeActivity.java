@@ -13,13 +13,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.adapter.IngredientsAdapter;
 import com.example.progetto.data.model.ItemUtils;
-import com.example.progetto.data.model.Recipe;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -98,7 +97,6 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipeIngredients.setAdapter(ingredientsAdapter);
     }
 
-
     private void initializeViews() {
         recipeName = findViewById(R.id.recipe_name);
         recipeDescription = findViewById(R.id.recipe_description);
@@ -173,10 +171,10 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("category", category);
         recipe.put("preparationTime", preparationTime);
 
-        // Salva nella collezione "recipes"
+        // Salva nella collezione principale "recipes"
         db.collection("recipes").document(recipeId)
                 .set(recipe)
-                .addOnSuccessListener(aVoid -> saveRecipeForUser(recipeId, recipe))
+                .addOnSuccessListener(aVoid -> saveRecipeForUser(recipeId, recipe)) // Chiama il metodo per salvare in recipes_user
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -188,7 +186,10 @@ public class AddRecipeActivity extends AppCompatActivity {
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
         if (userId != null) {
+            // Aggiungi l'ID utente alla ricetta
             recipe.put("userId", userId);
+
+            // Salva nella collezione "recipes_user"
             db.collection("recipes_user").document(recipeId)
                     .set(recipe)
                     .addOnSuccessListener(aVoid -> {
@@ -215,9 +216,14 @@ public class AddRecipeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null
+                && data.getData() != null) {
             selectedImageUri = data.getData();
-            recipeImageView.setImageURI(selectedImageUri); // Mostra l'immagine selezionata
+            // Usa Glide per mostrare l'immagine selezionata
+            Glide.with(this)
+                    .load(selectedImageUri)
+                    .error(R.drawable.baseline_error_24)
+                    .into(recipeImageView);
         }
     }
 }

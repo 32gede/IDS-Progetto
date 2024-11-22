@@ -14,6 +14,11 @@ public class RecipeFocusActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_focus);
 
         TextView titleTextView = findViewById(R.id.recipe_title);
+        TextView difficultyTextView = findViewById(R.id.recipe_difficulty);
+        TextView categoryTextView = findViewById(R.id.recipe_category);
+        TextView preparationTimeTextView = findViewById(R.id.recipe_preparation_time);
+        TextView ingredientsTextView = findViewById(R.id.recipe_ingredients);
+        TextView stepsTextView = findViewById(R.id.recipe_steps);
         TextView descriptionTextView = findViewById(R.id.recipe_description);
 
         // Get the recipe passed from the previous activity
@@ -22,6 +27,11 @@ public class RecipeFocusActivity extends AppCompatActivity {
         if (recipe != null) {
             titleTextView.setText(recipe.getName());
             descriptionTextView.setText(recipe.getDescription());
+            difficultyTextView.setText(recipe.getDifficulty());
+            categoryTextView.setText(recipe.getCategory());
+            preparationTimeTextView.setText(recipe.getPreparationTime());
+            ingredientsTextView.setText(recipe.getIngredients());
+            stepsTextView.setText(recipe.getSteps());
             // Set other recipe details as needed
         }
     }

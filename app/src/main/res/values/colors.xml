@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_500">#6750a4</color>
+    <!-- Primary Colors -->
+    <color name="purple_500">#6750A4</color>
+    <color name="purple_700">#512DA8</color>
+    <color name="purple_light">#D1C4E9</color>
+    <color name="purple_dark">#311B92</color>
+
+    <!-- Neutral Colors -->
     <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color><!-- res/values/colors.xml -->
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#808080</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="dark_gray">#505050</color>
+
+    <!-- Navigation Colors -->
     <color name="selected_nav_color">#FF5722</color> <!-- Highlight color -->
     <color name="unselected_nav_color">#BDBDBD</color> <!-- Default gray color -->
-    <color name="gray">#808080</color>
-    <color name="light_gray">#e0e0e0</color>
+
+    <!-- Additional Accent Colors -->
+    <color name="accent_light_purple">#B39DDB</color> <!-- Light accent violet -->
+    <color name="accent_deep_purple">#7E57C2</color> <!-- Deep violet accent -->
+    <color name="accent_violet">#9575CD</color> <!-- Medium violet accent -->
+
+    <!-- Background Colors -->
+    <color name="background_light">#F5F5F5</color> <!-- Light background -->
+    <color name="background_dark">#303030</color> <!-- Dark background -->
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color> <!-- Main text -->
+    <color name="text_secondary">#757575</color> <!-- Secondary text -->
+    <color name="text_on_purple">#FFFFFF</color> <!-- Text on purple backgrounds -->
 </resources>
