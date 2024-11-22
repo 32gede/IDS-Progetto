@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -10,7 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Titolo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +18,6 @@
             android:gravity="center"
             android:paddingBottom="16dp" />
 
-        <!-- Campo Nome Prodotto -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,12 +30,10 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo Categoria -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Categoria"
-            android:layout_marginTop="8dp">
+            android:hint="Categoria">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextCategory"
@@ -47,21 +42,21 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo Descrizione -->
-        <com.google.android.material.textfield.TextInputLayout
+        <Button
+            android:id="@+id/btn_select_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Descrizione (opzionale)"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="16dp"
+            android:text="Seleziona Immagine" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <ImageView
+            android:id="@+id/product_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:background="@android:color/darker_gray" />
 
-        <!-- Pulsante di Salvataggio -->
         <Button
             android:id="@+id/save_button"
             android:layout_width="match_parent"
@@ -69,5 +64,12 @@
             android:layout_marginTop="16dp"
             android:text="Salva Prodotto" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </ScrollView>
