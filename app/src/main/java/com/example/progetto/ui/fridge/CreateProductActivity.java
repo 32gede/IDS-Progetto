@@ -114,7 +114,7 @@ public class CreateProductActivity extends AppCompatActivity {
         Map<String, Object> product = new HashMap<>();
         product.put("name", name);
         product.put("category", category);
-        product.put("image", imageUrl);
+        product.put("imageUrl", imageUrl);
         product.put("timestamp", System.currentTimeMillis());
 
         // Salva il prodotto su Firestore

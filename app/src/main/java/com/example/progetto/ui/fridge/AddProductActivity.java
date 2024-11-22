@@ -188,8 +188,6 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
 
     }
 
-
-
     private void saveProductDetailsToFirestore(UserProductUtils product) {
         String userProductsCollectionPath = "user_products";
 

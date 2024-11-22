@@ -56,23 +56,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         ItemUtils product = products.get(position);
         holder.productName.setText(product.getName());
 
-        // Load product image with Glide
-        Glide.with(context)
-                .load(product.getImageUrl())
-                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("Glide", "Error loading image", e);
-                        return false; // Let Glide handle the error
-                    }
+        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+            // Load product image with Glide
+            Glide.with(context)
+                    .load(product.getImageUrl())
+                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            Log.e("Glide", "Error loading image", e);
+                            return false; // Let Glide handle the error
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                })
-                .into(holder.productImage);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
+                    .into(holder.productImage);
+        }
+
 
         // Set click listener on each item
         holder.itemView.setOnClickListener(v -> {
