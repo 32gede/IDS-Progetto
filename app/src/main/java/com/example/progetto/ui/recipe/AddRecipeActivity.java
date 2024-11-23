@@ -117,6 +117,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         String ingredients = "";
         for (ItemUtils ingredient : list_ingredients) {
             ingredients += ingredient.getName() + ", ";
+            ingredients = ingredients.substring(0, ingredients.length() - 2);
         }
         String steps = recipeSteps.getText().toString().trim();
         String difficulty = recipeDifficulty.getText().toString().trim();

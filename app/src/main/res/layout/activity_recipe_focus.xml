@@ -4,22 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:background="#414141"
     tools:context=".ui.recipe.RecipeFocusActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:divider="?android:dividerHorizontal"
+        android:showDividers="middle"
+        android:dividerPadding="8dp">
 
         <!-- Immagine della ricetta -->
         <ImageView
             android:id="@+id/recipe_image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="240dp"
             android:layout_marginBottom="16dp"
             android:scaleType="centerCrop" />
 
-        <!-- Titolo della ricetta -->
+        <!-- Titolo e descrizione -->
         <TextView
             android:id="@+id/recipe_title"
             android:layout_width="wrap_content"
@@ -29,20 +33,22 @@
             android:textColor="@color/black"
             android:layout_marginBottom="8dp" />
 
-        <!-- Descrizione della ricetta -->
         <TextView
             android:id="@+id/recipe_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
             android:layout_marginBottom="16dp"
-            android:textColor="@color/purple_500" />
+            android:textColor="@color/white" />
 
-        <!-- Difficoltà, Categoria e Tempo di preparazione -->
+        <!-- Dettagli ricetta -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:padding="8dp"
+            android:elevation="4dp"
             android:layout_marginBottom="16dp">
 
             <TextView
@@ -50,9 +56,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
+                android:gravity="start"
                 android:textSize="14sp"
-                android:textColor="@color/gray" />
+                android:textStyle="bold"
+                android:textColor="@color/purple_dark" />
 
             <TextView
                 android:id="@+id/recipe_category"
@@ -60,8 +67,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textStyle="bold"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 android:textColor="@color/purple_dark" />
 
             <TextView
@@ -70,32 +77,63 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:textStyle="bold"
                 android:textSize="14sp"
-                android:textColor="@color/purple_700" />
+                android:textStyle="bold"
+                android:textColor="@color/purple_dark" />
         </LinearLayout>
 
-        <!-- Titolo ingredienti -->
-
-        <!-- Lista degli ingredienti -->
-        <TextView
-            android:id="@+id/recipe_ingredients"
+        <!-- Sezione Ingredienti -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
+            android:orientation="vertical"
+            android:padding="16dp"
             android:layout_marginBottom="16dp"
-            android:textColor="@color/accent_light_purple" />
+            android:elevation="4dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ingredienti"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Lista dei passaggi -->
-        <TextView
-            android:id="@+id/recipe_steps"
+            <TextView
+                android:id="@+id/recipe_ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <!-- Sezione Passaggi -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:textColor="@color/dark_gray" />
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Passaggi"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/recipe_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="@color/white" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
