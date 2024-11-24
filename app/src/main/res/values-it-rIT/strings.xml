@@ -15,6 +15,6 @@
     <string name="registration_failed">Registrazione Fallita</string>
     <string name="fridge">Frigo</string>
     <string name="home">Home</string>
-    <string name="search">Cerca</string>
+    <string name="search">Negozio</string>
     <string name="recipe">Ricette</string>
 </resources>
