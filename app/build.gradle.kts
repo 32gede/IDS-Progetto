@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.progetto"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.progetto"
@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.gms.play.services.auth)
     implementation(libs.firebase.storage)
 
+    implementation(libs.guava)
+
     // AndroidX e Material Design
     implementation(libs.material) // Usa l'ultima versione disponibile
 
@@ -55,12 +57,13 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
-    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation(libs.swiperefreshlayout)
 
     // Glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation(libs.github.glide)
+    kapt(libs.compiler)
+    implementation(libs.google.flexbox)
+    implementation(libs.work.runtime.ktx)
 
     // Test
     testImplementation(libs.junit)

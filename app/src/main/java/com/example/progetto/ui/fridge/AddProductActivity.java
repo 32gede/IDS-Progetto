@@ -17,11 +17,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.progetto.R;
 import com.example.progetto.adapter.ProductAdapter;
 import com.example.progetto.data.model.ItemUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.example.progetto.R;
 import com.example.progetto.data.model.UserProductUtils;
+import com.example.progetto.data.model.Note.NotificationScheduler;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -184,8 +185,6 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
-
-
     }
 
     private void saveProductDetailsToFirestore(UserProductUtils product) {
@@ -198,6 +197,17 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
 
                     // Show a success Toast notification
                     Toast.makeText(AddProductActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+
+                    // Schedule the expiry notification
+                    Calendar expiryDate = Calendar.getInstance();
+                    // Assuming the expiry date is in the format "dd/MM/yyyy"
+                    String[] dateParts = product.getExpiryDate().split("/");
+                    int day = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]) - 1; // Month is 0-based in Calendar
+                    int year = Integer.parseInt(dateParts[2]);
+                    expiryDate.set(year, month, day);
+
+                    NotificationScheduler.scheduleExpiryNotification(this, product.getName(), expiryDate);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("AddProductActivity", "Failed to save product details: " + e.getMessage());
@@ -206,5 +216,4 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
                     Toast.makeText(AddProductActivity.this, "Failed to add product. Please try again.", Toast.LENGTH_SHORT).show();
                 });
     }
-
 }
