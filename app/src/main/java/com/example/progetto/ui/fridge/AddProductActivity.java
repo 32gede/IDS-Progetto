@@ -207,7 +207,7 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
                     int year = Integer.parseInt(dateParts[2]);
                     expiryDate.set(year, month, day);
 
-                    NotificationScheduler.scheduleExpiryNotification(this, product.getName(), expiryDate);
+                    NotificationScheduler.scheduleExpiryNotification(this, product.getName(),product.getQuantity(), expiryDate);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("AddProductActivity", "Failed to save product details: " + e.getMessage());

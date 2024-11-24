@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class NotificationScheduler {
 
-    public static void scheduleExpiryNotification(Context context, String productName, Calendar expiryDate) {
+    public static void scheduleExpiryNotification(Context context, String productName, int quantity, Calendar expiryDate) {
         Calendar notificationTime = (Calendar) expiryDate.clone();
         notificationTime.add(Calendar.DAY_OF_YEAR, -7); // Set notification time to one week before expiry
 
@@ -18,6 +18,7 @@ public class NotificationScheduler {
 
         Data inputData = new Data.Builder()
                 .putString("productName", productName)
+                .putInt("quantity", quantity)
                 .build();
 
         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(ExpiryNotificationWorker.class)
