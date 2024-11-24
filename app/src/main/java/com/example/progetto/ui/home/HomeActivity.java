@@ -8,7 +8,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.progetto.BaseActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.progetto.R;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
@@ -16,7 +17,7 @@ import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.search.SearchActivity;
 import com.example.progetto.data.model.SwipeGestureListener;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton;

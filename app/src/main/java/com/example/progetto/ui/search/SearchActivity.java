@@ -2,7 +2,6 @@ package com.example.progetto.ui.search;
 
 import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

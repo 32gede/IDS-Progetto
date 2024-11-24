@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,7 +22,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateProductActivity extends AppCompatActivity {
+public class CreateProductActivity extends AddProductActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1; // Codice per il selettore immagini
 

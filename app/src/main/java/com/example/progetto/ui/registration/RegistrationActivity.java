@@ -1,8 +1,5 @@
 package com.example.progetto.ui.registration;
 
-import static com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CANCELLED;
-import static com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.NETWORK_ERROR;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,7 +24,6 @@ import com.example.progetto.R;
 import com.example.progetto.data.model.UserRepository;
 import com.example.progetto.databinding.ActivityRegistrationBinding;
 import com.example.progetto.ui.home.HomeActivity;
-import com.example.progetto.ui.login.LoginActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
