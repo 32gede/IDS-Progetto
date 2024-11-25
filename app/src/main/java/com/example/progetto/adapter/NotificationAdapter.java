@@ -32,8 +32,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
         NotificationItem notification = notificationList.get(position);
+        String notificationText = notification.getQuantity() > 1
+                ? notification.getQuantity() + " prodotti di \"" + notification.getProductName() + "\" scadono \""+notification.getExpiryDate()+"\"."
+                : "Il prodotto \"" + notification.getProductName() + "\" scade "+notification.getExpiryDate()+".";
         holder.title.setText(notification.getProductName());
-        holder.message.setText(notification.getProductName());
+        holder.message.setText(notificationText);
         holder.timestamp.setText(notification.getExpiryDate());
     }
     public void updateNotificationList(List<NotificationItem> newProducts) {
