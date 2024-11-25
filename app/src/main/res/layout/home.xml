@@ -17,6 +17,16 @@
         android:fitsSystemWindows="true">
 
         <!-- NavBar ancorata al fondo -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/popularRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            tools:layout_editor_absoluteX="0dp" />
+
         <LinearLayout
             android:id="@+id/navBar"
             android:layout_width="match_parent"
@@ -24,8 +34,8 @@
             android:background="#E0E0E0"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <!-- FrameLayout per il pulsante Home -->
             <FrameLayout
@@ -34,16 +44,14 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <!-- Sfondo circolare per Home -->
                 <ImageView
                     android:id="@+id/homeBackgroundCircle"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:src="@drawable/selected_nav_item_background"
-                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+                    android:visibility="gone" />
 
-                <!-- Icona Home -->
                 <ImageButton
                     android:id="@+id/homeButton"
                     android:layout_width="match_parent"
@@ -60,16 +68,14 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <!-- Sfondo circolare per Ricerca -->
                 <ImageView
                     android:id="@+id/searchBackgroundCircle"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:src="@drawable/selected_nav_item_background"
-                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+                    android:visibility="gone" />
 
-                <!-- Icona Ricerca -->
                 <ImageButton
                     android:id="@+id/storeButton"
                     android:layout_width="match_parent"
@@ -79,23 +85,13 @@
                     android:src="@drawable/baseline_storefront_24" />
             </FrameLayout>
 
-            <!-- FrameLayout per il pulsante Lista -->
+            <!-- FrameLayout per il pulsante Frigo -->
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <!-- Sfondo circolare per Lista -->
-                <ImageView
-                    android:id="@+id/fridgeBackgroundCircle"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/selected_nav_item_background"
-                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
-
-                <!-- Icona Lista -->
                 <ImageButton
                     android:id="@+id/fridgeButton"
                     android:layout_width="match_parent"
@@ -112,16 +108,14 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <!-- Sfondo circolare per Profilo -->
                 <ImageView
                     android:id="@+id/recipeBackgroundCircle"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:src="@drawable/selected_nav_item_background"
-                    android:visibility="gone" /> <!-- Inizialmente nascosto -->
+                    android:visibility="gone" />
 
-                <!-- Icona Profilo -->
                 <ImageButton
                     android:id="@+id/recipeButton"
                     android:layout_width="match_parent"
@@ -130,9 +124,9 @@
                     android:contentDescription="Profilo"
                     android:src="@drawable/baseline_library_books_24" />
             </FrameLayout>
-
         </LinearLayout>
 
+        <!-- Barra superiore -->
         <LinearLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
@@ -142,11 +136,10 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Search Bar -->
             <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
@@ -160,7 +153,6 @@
                 android:textColor="#4B0082"
                 android:textSize="32sp" />
 
-            <!-- Search Icon -->
             <ImageButton
                 android:id="@+id/searchButton"
                 android:layout_width="wrap_content"
@@ -171,7 +163,6 @@
                 android:padding="8dp"
                 android:src="@drawable/baseline_search_24" />
 
-            <!-- Notifications Icon -->
             <ImageButton
                 android:id="@+id/notificationButton"
                 android:layout_width="wrap_content"
@@ -182,7 +173,6 @@
                 android:padding="8dp"
                 android:src="@drawable/baseline_notifications_24" />
 
-            <!-- Profile Button -->
             <ImageButton
                 android:id="@+id/profileButtonTop"
                 android:layout_width="wrap_content"
@@ -193,6 +183,16 @@
                 android:padding="8dp"
                 android:src="@drawable/baseline_person_24" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/fridgeBackgroundCircle"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/selected_nav_item_background"
+            android:visibility="gone"
+            tools:layout_editor_absoluteX="211dp"
+            tools:layout_editor_absoluteY="768dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->

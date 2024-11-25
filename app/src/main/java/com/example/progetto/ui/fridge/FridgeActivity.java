@@ -153,4 +153,13 @@ public class FridgeActivity extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false); // Stop refreshing animation on failure
                 });
     }
+
+    public List<String> getFridgeItems() {
+        List<String> fridgeItems = new ArrayList<>();
+        for (UserProductUtils product : fridgeProductList) {
+            fridgeItems.add(product.getName()); // Supponiamo che `getName` restituisca il nome del prodotto
+        }
+        return fridgeItems;
+    }
+
 }
