@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Contenitore per sovrapporre la ProgressBar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- ScrollView con il contenuto principale -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Titolo Store -->
+                <EditText
+                    android:id="@+id/store_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nome Pacco"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Descrizione -->
+                <EditText
+                    android:id="@+id/store_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Descrizione Pacco"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Prodotti -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/products_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:padding="12dp"
+                    android:scrollbars="none" />
+                <!-- Sezione Immagine -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/store_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleType="centerCrop"
+                    android:background="@android:color/darker_gray"
+                    android:elevation="4dp" />
+
+                <Button
+                    android:id="@+id/btn_select_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/seleziona_immagine"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Tempo di Preparazione -->
+                <EditText
+                    android:id="@+id/store_prezzo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Prezzo Pacco"
+                    android:padding="12dp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Bottone Aggiungi Store -->
+                <Button
+                    android:id="@+id/btn_submit_store"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aggiungi Pacco"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="8dp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ProgressBar centrata -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
