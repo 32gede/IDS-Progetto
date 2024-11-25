@@ -6,7 +6,10 @@ import android.util.Log;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class NotificationScheduler {
@@ -22,10 +25,13 @@ public class NotificationScheduler {
             Log.w(TAG, "scheduleExpiryNotification: Notification time is in the past. Showing notification immediately.");
             delay = 0;
         }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String expiryDateString = dateFormat.format(expiryDate.getTime());
 
         Data inputData = new Data.Builder()
                 .putString("productName", productName)
                 .putInt("quantity", quantity)
+                .putString("expiryDate", expiryDateString)
                 .build();
 
         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(ExpiryNotificationWorker.class)

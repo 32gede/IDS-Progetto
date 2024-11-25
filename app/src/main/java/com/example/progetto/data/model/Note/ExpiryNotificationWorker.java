@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class ExpiryNotificationWorker extends Worker {
 
     private static final String TAG = "ExpiryNotificationWorker";
     private static final String CHANNEL_ID = "expiry_notification_channel";
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public ExpiryNotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -31,6 +33,7 @@ public class ExpiryNotificationWorker extends Worker {
         // Recupera i dati passati al Worker
         String productName = getInputData().getString("productName");
         int quantity = getInputData().getInt("quantity", 0);
+        String expiryDate = getInputData().getString("expiryDate");
 
         if (productName == null || productName.isEmpty()) {
             Log.e(TAG, "doWork: productName è nullo o vuoto");
@@ -40,13 +43,13 @@ public class ExpiryNotificationWorker extends Worker {
         Log.d(TAG, "doWork: productName = " + productName + ", quantity = " + quantity);
 
         // Mostra la notifica e salva i dati
-        showNotification(productName, quantity);
-        saveProductDataToFirestore(productName);
+        showNotification(productName, quantity,expiryDate);
+        saveProductDataToFirestore(productName,quantity,expiryDate);
 
         return Result.success();
     }
 
-    private void showNotification(String productName, int quantity) {
+    private void showNotification(String productName, int quantity,String ex) {
         NotificationManager notificationManager =
                 (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -63,8 +66,8 @@ public class ExpiryNotificationWorker extends Worker {
 
         // Costruisci il testo della notifica
         String notificationText = quantity > 1
-                ? quantity + " prodotti di \"" + productName + "\" scadono domani."
-                : "Il prodotto \"" + productName + "\" scade domani.";
+                ? quantity + " prodotti di \"" + productName + "\" scadono \""+ex+"\"."
+                : "Il prodotto \"" + productName + "\" scade "+ex+".";
 
         // Costruisci la notifica
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
@@ -83,12 +86,15 @@ public class ExpiryNotificationWorker extends Worker {
         }
     }
 
-    private void saveProductDataToFirestore(String productName) {
+    private void saveProductDataToFirestore(String productName, int quantity, String expiryDate) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         // Prepara i dati da salvare
         Map<String, Object> productData = new HashMap<>();
         productData.put("productName", productName);
+        productData.put("quantity", quantity);
+        productData.put("expiryDate", expiryDate);
+        productData.put("userId", mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null);
 
         // Aggiungi i dati alla collezione "Notification" di Firestore
         firestore.collection("Notification")
