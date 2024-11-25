@@ -19,14 +19,12 @@ import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
-import com.example.progetto.ui.store.storeActivity;
+import com.example.progetto.ui.store.StoreActivity;
 import com.example.progetto.data.model.SwipeGestureListener;
 
-import com.example.progetto.ui.store.storeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -95,7 +93,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
         storeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, storeActivity.class);
+            Intent intent = new Intent(HomeActivity.this, StoreActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
@@ -116,7 +114,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Set up swipe gesture listener
-        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, storeActivity.class,HomeActivity.class);
+        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, StoreActivity.class,HomeActivity.class);
         View mainView = findViewById(R.id.home);
         mainView.setOnTouchListener(swipeGestureListener);
     }

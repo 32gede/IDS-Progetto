@@ -22,7 +22,7 @@ import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.ui.store.storeActivity;
+import com.example.progetto.ui.store.StoreActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -265,7 +265,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void setNavigationListeners() {
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(storeActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(StoreActivity.class));
         addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
         notificationButton.setOnClickListener(v -> {
             Log.d("RecipeActivity", "Notification button clicked");

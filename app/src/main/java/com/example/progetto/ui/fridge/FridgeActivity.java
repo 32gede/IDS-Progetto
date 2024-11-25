@@ -21,7 +21,7 @@ import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
-import com.example.progetto.ui.store.storeActivity;
+import com.example.progetto.ui.store.StoreActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -101,7 +101,7 @@ public class FridgeActivity extends AppCompatActivity {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         recipeButton.setOnClickListener(v -> navigateToActivity(RecipeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(storeActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(StoreActivity.class));
         notificationButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, NotificationActivity.class)));
     }
 
