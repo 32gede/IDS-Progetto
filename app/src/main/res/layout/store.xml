@@ -74,16 +74,63 @@
                 android:src="@drawable/baseline_person_24" />
         </LinearLayout>
 
-        <!-- Main content frame between topBar and navBar -->
-        <FrameLayout
-            android:id="@+id/content_frame"
+        <!-- RecyclerView with SwipeRefreshLayout -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayoutStore"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintBottom_toTopOf="@id/navBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!-- TabLayout sopra il ViewPager2 -->
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayoutStore"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="4dp"
+                    android:padding="8dp"
+                    app:tabIndicatorColor="@color/purple_500"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="@android:color/white"
+                    app:tabTextColor="@android:color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewStore"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Background circle behind the add button -->
+        <ImageView
+            android:id="@+id/addButtonBackgroundCircleStore"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/selected_nav_item_background"
+            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutStore"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Add button on top right of the circle -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addButtonStore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="Aggiungi"
+            android:src="@drawable/baseline_add_24"
+            app:backgroundTint="#4B0082"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-            <!-- Main content of the activity goes here -->
-        </FrameLayout>
+            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutStore" />
 
         <!-- NavBar ancorata al fondo -->
         <LinearLayout
