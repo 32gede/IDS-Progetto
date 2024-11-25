@@ -50,26 +50,28 @@
                     app:boxCornerRadiusTopEnd="32dp"
                     app:boxCornerRadiusBottomStart="32dp"
                     app:boxCornerRadiusBottomEnd="32dp"
-                    app:boxStrokeColor="@color/gray"/>
+                    app:boxStrokeColor="@color/gray" />
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
-        <!-- Background circle behind the add button -->
-
-
-
-
-        <!-- RecyclerView setup -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+        <!-- SwipeRefreshLayout to enable swipe-to-refresh -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/top_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:padding="8dp"
-            android:clipToPadding="false" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- RecyclerView setup -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:clipToPadding="false" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->
@@ -80,5 +82,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_drawer_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
+import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.NotificationItem;
 
 import java.util.List;
@@ -32,9 +33,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
         NotificationItem notification = notificationList.get(position);
-        holder.title.setText(notification.getTitle());
-        holder.message.setText(notification.getMessage());
-        holder.timestamp.setText(notification.getTimestamp());
+        holder.title.setText(notification.getName());
+        holder.message.setText(notification.getUserId());
+        holder.timestamp.setText(notification.getExpiryDate());
+    }
+    public void updateNotificationList(List<NotificationItem> newProducts) {
+        notificationList.clear();
+        notificationList.addAll(newProducts);
+        notifyDataSetChanged();
     }
 
     @Override
