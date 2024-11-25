@@ -65,7 +65,7 @@
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name=".ui.search.SearchActivity"
+            android:name=".ui.store.storeActivity"
             android:exported="false"
 
             android:theme="@style/AppTheme"

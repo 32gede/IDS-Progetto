@@ -18,10 +18,11 @@ import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
 import com.example.progetto.data.model.UserRecipeUtils;
+import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.ui.search.SearchActivity;
+import com.example.progetto.ui.store.storeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,11 +40,12 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.JustifyContent;
 
 
+// RecipeActivity.java
 public class RecipeActivity extends AppCompatActivity {
 
     // UI Components
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, storeButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, notificationButton;
     private FloatingActionButton addButton;
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
@@ -101,6 +103,7 @@ public class RecipeActivity extends AppCompatActivity {
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButtonRecipe);
+        notificationButton = findViewById(R.id.notificationButtonRecipe);
 
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
         if (profileButtonTop != null) {
@@ -108,10 +111,6 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
-    // src/main/java/com/example/progetto/ui/recipe/RecipeActivity.java
-// Update the setupRecyclerView method
-    // src/main/java/com/example/progetto/ui/recipe/RecipeActivity.java
-// Update the setupRecyclerView method
     private void setupRecyclerView() {
         if (recyclerView == null) {
             Log.e("RecipeActivity", "RecyclerView is null. Check R.id.recyclerViewRecipes in recipe.xml.");
@@ -188,8 +187,6 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void saveRecipeToUserCollection(Recipe recipe) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
@@ -212,7 +209,6 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
-
     private void removeRecipeFromUserCollection(Recipe recipe) {
         firestore.collection("recipes_user")
                 .document(recipe.getId())
@@ -222,42 +218,42 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void setupTabLayout() {
-    tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
-    tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
+        tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
+        tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
 
-    tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-        @Override
-        public void onTabSelected(@NonNull TabLayout.Tab tab) {
-            loadRecipesFromFirestore(); // Reload recipes from Firestore
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull TabLayout.Tab tab) {
+                loadRecipesFromFirestore(); // Reload recipes from Firestore
 
-            Set<String> savedRecipeIds = new HashSet<>();
-            for (UserRecipeUtils userRecipe : savedRecipes) {
-                savedRecipeIds.add(userRecipe.getId());
+                Set<String> savedRecipeIds = new HashSet<>();
+                for (UserRecipeUtils userRecipe : savedRecipes) {
+                    savedRecipeIds.add(userRecipe.getId());
+                }
+                adapter.setSavedRecipeIds(savedRecipeIds);
+
+                if (tab.getPosition() == 0) {
+                    adapter.setRecipes(new ArrayList<>(savedRecipes));
+                } else {
+                    adapter.setRecipes(globalRecipes);
+                }
             }
-            adapter.setSavedRecipeIds(savedRecipeIds);
 
-            if (tab.getPosition() == 0) {
-                adapter.setRecipes(new ArrayList<>(savedRecipes));
-            } else {
-                adapter.setRecipes(globalRecipes);
-            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        tabLayout.selectTab(tabLayout.getTabAt(0));
+        Set<String> savedRecipeIds = new HashSet<>();
+        for (UserRecipeUtils userRecipe : savedRecipes) {
+            savedRecipeIds.add(userRecipe.getId());
         }
-
-        @Override
-        public void onTabUnselected(TabLayout.Tab tab) {}
-
-        @Override
-        public void onTabReselected(TabLayout.Tab tab) {}
-    });
-
-    tabLayout.selectTab(tabLayout.getTabAt(0));
-    Set<String> savedRecipeIds = new HashSet<>();
-    for (UserRecipeUtils userRecipe : savedRecipes) {
-        savedRecipeIds.add(userRecipe.getId());
+        adapter.setSavedRecipeIds(savedRecipeIds);
+        adapter.setRecipes(new ArrayList<>(savedRecipes));
     }
-    adapter.setSavedRecipeIds(savedRecipeIds);
-    adapter.setRecipes(new ArrayList<>(savedRecipes));
-}
 
     private void setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -266,12 +262,15 @@ public class RecipeActivity extends AppCompatActivity {
         });
     }
 
-
     private void setNavigationListeners() {
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(storeActivity.class));
         addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
+        notificationButton.setOnClickListener(v -> {
+            Log.d("RecipeActivity", "Notification button clicked");
+            navigateToActivity(NotificationActivity.class);
+        });
     }
 
     private void navigateToActivity(Class<?> targetActivity) {

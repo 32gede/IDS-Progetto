@@ -17,10 +17,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.adapter.UserProductAdapter;
 import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.R;
+import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
-import com.example.progetto.ui.search.SearchActivity;
+import com.example.progetto.ui.store.storeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,7 +32,7 @@ import java.util.List;
 public class FridgeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, addButton;
+    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, addButton, notificationButton;
     private TextView titleText;
 
     // Firebase Firestore and Authentication
@@ -59,6 +60,7 @@ public class FridgeActivity extends AppCompatActivity {
         // Initialize RecyclerView and Adapter
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         recyclerViewFridge = findViewById(R.id.recyclerViewFridge);
+        notificationButton = findViewById(R.id.notificationButton);
         recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new UserProductAdapter(this, fridgeProductList, null);
         recyclerViewFridge.setAdapter(productAdapter);
@@ -99,7 +101,8 @@ public class FridgeActivity extends AppCompatActivity {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
         homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
         recipeButton.setOnClickListener(v -> navigateToActivity(RecipeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(SearchActivity.class));
+        storeButton.setOnClickListener(v -> navigateToActivity(storeActivity.class));
+        notificationButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, NotificationActivity.class)));
     }
 
     private void navigateToActivity(Class<?> targetActivity) {

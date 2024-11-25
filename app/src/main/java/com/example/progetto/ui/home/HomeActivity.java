@@ -15,7 +15,7 @@ import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
-import com.example.progetto.ui.search.SearchActivity;
+import com.example.progetto.ui.store.storeActivity;
 import com.example.progetto.data.model.SwipeGestureListener;
 
 public class HomeActivity extends AppCompatActivity {
@@ -60,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         // Listener per il pulsante Search
         storeButton.setOnClickListener(v -> {
             // Naviga a HomeActivity
-            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+            Intent intent = new Intent(HomeActivity.this, storeActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Set up swipe gesture listener
-        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, SearchActivity.class,HomeActivity.class);
+        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, storeActivity.class,HomeActivity.class);
         View mainView = findViewById(R.id.home);
         mainView.setOnTouchListener(swipeGestureListener);
     }

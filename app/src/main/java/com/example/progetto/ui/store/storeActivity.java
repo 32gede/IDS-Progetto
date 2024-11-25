@@ -1,4 +1,4 @@
-package com.example.progetto.ui.search;
+package com.example.progetto.ui.store;
 
 import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
 
@@ -11,15 +11,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
+import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 
-public class SearchActivity extends AppCompatActivity {
+public class storeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton,notificationButton;
     private TextView titleText;
 
     @Override
@@ -39,6 +40,7 @@ public class SearchActivity extends AppCompatActivity {
         recipeButton = findViewById(R.id.recipeButton);
         titleText = findViewById(R.id.title);
         titleText.setText(getString(R.string.search));
+        notificationButton = findViewById(R.id.notificationButton);
 
 
         // Verifica che le viste siano state trovate
@@ -55,7 +57,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Naviga a ProfileActivity
-                Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(storeActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -64,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Naviga a HomeActivity
-                Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, HomeActivity.class);
+                Intent intent = new Intent(storeActivity.this, HomeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
@@ -76,7 +78,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Naviga a FridgeActivity
-                Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, FridgeActivity.class);
+                Intent intent = new Intent(storeActivity.this, FridgeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
@@ -88,7 +90,18 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Naviga a RecipeActivity
-                Intent intent = new Intent(com.example.progetto.ui.search.SearchActivity.this, RecipeActivity.class);
+                Intent intent = new Intent(storeActivity.this, RecipeActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+                finish();
+            }
+        });
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Naviga a NotificationActivity
+                Intent intent = new Intent(storeActivity.this, NotificationActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
