@@ -1,7 +1,7 @@
 package com.example.progetto.data.model;
 
 public class NotificationItem {
-    private String Name;
+    private String productName;
     private String userId;
     private int quantity;
     private String expiryDate;
@@ -10,7 +10,7 @@ public class NotificationItem {
     }
 
     public NotificationItem(String title, String message, String timestamp) {
-        this.Name = title;
+        this.productName = title;
         this.userId = message;
         this.expiryDate = timestamp;
     }
@@ -23,8 +23,8 @@ public class NotificationItem {
         this.quantity = quantity;
     }
 
-    public String getName() {
-        return Name;
+    public String getProductName() {
+        return productName;
     }
 
     public String getUserId() {

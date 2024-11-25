@@ -105,8 +105,15 @@ public class NotificationActivity extends AppCompatActivity {
                     // Aggiorna l'adapter
                     adapter.updateNotificationList(notificationProductList);
 
+                    if (!notificationProductList.isEmpty()) {
+                        Log.d(TAG, "Ecco: " + notificationProductList.get(0).getProductName());
+                    } else {
+                        Log.d(TAG, "La lista delle notifiche è vuota.");
+                    }
+
                     Log.d(TAG, "Items loaded successfully from Firestore. Total: " + notificationProductList.size());
                     swipeRefreshLayout.setRefreshing(false); // Ferma l'animazione
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to load user notifications: " + e.getMessage(), e);
