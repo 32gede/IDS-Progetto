@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
+import com.example.progetto.adapter.StoreAdapter;
+import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
@@ -22,6 +24,13 @@ import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class storeActivity extends AppCompatActivity {
 
@@ -35,12 +44,26 @@ public class storeActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private FloatingActionButton addButton;
 
+    private StoreAdapter adapter;
+    private List<StoreUtils> globalStores;
+    private List<StoreUtils> savedStores;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.store); // Assicurati che il nome del layout sia corretto
 
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         findView();
+        setupRecyclerView();
+        setupTabLayout();
+        setupSwipeRefresh();
+        loadStores(); // Load stores from Firestore
 
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
@@ -99,12 +122,19 @@ public class storeActivity extends AppCompatActivity {
             Intent intent = new Intent(storeActivity.this, AddStoreActivity.class);
             startActivity(intent);
         });
+    }
 
-        // Setup TabLayout
-        setupTabLayout();
-
-        // Setup SwipeRefreshLayout
-        setupSwipeRefresh();
+    private void setupRecyclerView() {
+        globalStores = new ArrayList<>();
+        savedStores = new ArrayList<>();
+        adapter = new StoreAdapter(new ArrayList<>(), (store, isSaved) -> {
+            if (isSaved) {
+                saveStoreToUserCollection(store); // Save the store
+            } else {
+                removeStoreFromUserCollection(store); // Remove the store
+            }
+        }, this);
+        recyclerView.setAdapter(adapter);
     }
 
     private void setupTabLayout() {
@@ -117,9 +147,9 @@ public class storeActivity extends AppCompatActivity {
                 // Handle tab selection
                 Log.d(TAG, "Tab selected: " + tab.getPosition());
                 if (tab.getPosition() == 0) {
-                    // Load data for Tab 1
+                    adapter.setStores(new ArrayList<>(savedStores));
                 } else {
-                    // Load data for Tab 2
+                    adapter.setStores(globalStores);
                 }
             }
 
@@ -166,5 +196,50 @@ public class storeActivity extends AppCompatActivity {
 
         // Log for view initialization
         Log.d(TAG, "Views initialized");
+    }
+
+    private void loadStores() {
+        String currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+        db.collection("stores")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        globalStores.clear();
+                        savedStores.clear();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            StoreUtils store = document.toObject(StoreUtils.class);
+                            if (store.getUserId().equals(currentUserId)) {
+                                savedStores.add(store);
+                            } else {
+                                globalStores.add(store);
+                            }
+                        }
+
+                        Log.e(TAG, "Saved stores size: "+ savedStores.size());
+                        Log.e(TAG, "Global stores size: "+ globalStores.size());
+
+                        // Update the adapter based on the selected tab
+                        if (tabLayout.getSelectedTabPosition() == 0) {
+                            adapter.setStores(new ArrayList<>(savedStores));
+                        } else {
+                            adapter.setStores(new ArrayList<>(globalStores));
+                        }
+                    } else {
+                        Log.e(TAG, "Error getting stores: ", task.getException());
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to load stores: ", e));
+    }
+
+    private void saveStoreToUserCollection(StoreUtils store) {
+        // Implement the logic to save the store to the user's collection
+        Log.d(TAG, "Saving store to user collection: " + store.getId());
+    }
+
+    private void removeStoreFromUserCollection(StoreUtils store) {
+        // Implement the logic to remove the store from the user's collection
+        Log.d(TAG, "Removing store from user collection: " + store.getId());
     }
 }
