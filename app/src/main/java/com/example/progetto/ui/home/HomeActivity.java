@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.progetto.R;
+import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
@@ -20,7 +21,7 @@ import com.example.progetto.data.model.SwipeGestureListener;
 public class HomeActivity extends AppCompatActivity {
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton;
+    private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton, notificationButton;
     private TextView titleText;
 
     @Override
@@ -39,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
         fridgeButton = findViewById(R.id.fridgeButton);
         recipeButton = findViewById(R.id.recipeButton);
         titleText = findViewById(R.id.title);
+        notificationButton = findViewById(R.id.notificationButton);
         titleText.setText(getString(R.string.home));
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
@@ -73,6 +75,12 @@ public class HomeActivity extends AppCompatActivity {
         recipeButton.setOnClickListener(v -> {
             // Naviga a RecipeActivity
             Intent intent = new Intent(HomeActivity.this, RecipeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        });
+        notificationButton.setOnClickListener(v -> {
+            // Naviga a NotificationActivity
+            Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });

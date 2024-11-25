@@ -87,6 +87,12 @@
             android:exported="false"
             android:label="@string/home" />
 
+        <activity
+            android:name=".ui.Notification.NotificationActivity"
+            android:theme="@style/AppTheme"
+            android:exported="false"
+            android:label="Notification" />
+
         <!-- Main Activity with LAUNCHER intent -->
         <activity
             android:name=".MainActivity"
