@@ -238,6 +238,7 @@ public class storeActivity extends AppCompatActivity {
         Log.d(TAG, "Saving store to user collection: " + store.getId());
     }
 
+
     private void removeStoreFromUserCollection(StoreUtils store) {
         // Implement the logic to remove the store from the user's collection
         Log.d(TAG, "Removing store from user collection: " + store.getId());
