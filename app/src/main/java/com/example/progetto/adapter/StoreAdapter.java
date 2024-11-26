@@ -78,6 +78,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         private final TextView storeDescription;
         private final TextView storePrice;
         private final ImageView storeImage;
+        private final View frameLayout;
 
         StoreViewHolder(View itemView) {
             super(itemView);
@@ -85,6 +86,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             storeDescription = itemView.findViewById(R.id.storeDescriptionTextView);
             storePrice = itemView.findViewById(R.id.storePriceTextView);
             storeImage = itemView.findViewById(R.id.storeImageView);
+            frameLayout = itemView.findViewById(R.id.cart_icon_container); // Initialize FrameLayout
+
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -110,7 +113,9 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                         .error(R.drawable.baseline_error_24)
                         .into(storeImage);
 
-                
+                frameLayout.setVisibility(isSaved ? View.GONE : View.VISIBLE);
+
+
             } else {
                 Log.e(TAG, "Store object is null in bind method");
             }

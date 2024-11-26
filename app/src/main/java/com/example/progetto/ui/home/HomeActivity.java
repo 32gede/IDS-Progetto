@@ -4,6 +4,7 @@ import static com.example.progetto.data.model.NavigationUtils.updateNavSelection
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private static final String TAG = "HomeActivity";
 
     private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
     private ImageButton homeButton, profileButtonTop, storeButton, fridgeButton, recipeButton, notificationButton;
@@ -69,8 +72,7 @@ public class HomeActivity extends AppCompatActivity {
             // Imposta il cerchio di sfondo solo per il pulsante Home
             updateNavSelection(R.id.homeButton, homeBackgroundCircle, null, null, null);
         } else {
-            // Log per il debug (opzionale)
-            System.out.println("homeBackgroundCircle o homeButton non trovati nel layout.");
+            Log.e(TAG, "homeBackgroundCircle o homeButton non trovati nel layout.");
         }
 
         // Configura RecyclerView
@@ -114,47 +116,51 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Set up swipe gesture listener
-        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, StoreActivity.class,HomeActivity.class);
+        SwipeGestureListener swipeGestureListener = new SwipeGestureListener(this, StoreActivity.class, HomeActivity.class);
         View mainView = findViewById(R.id.home);
         mainView.setOnTouchListener(swipeGestureListener);
     }
 
     private void loadRecommendedRecipes() {
-        List<String> fridgeItems = getFridgeItemsFromFirestore();
-
-        if (fridgeItems.isEmpty()) {
-            // Se il frigo è vuoto, carica le ricette più recenti
-            firestore.collection("recipes")
-                    .orderBy("createdAt", Query.Direction.DESCENDING)
-                    .limit(10)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        recipeList.clear();
-                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                            Recipe recipe = doc.toObject(Recipe.class);
-                            recipeList.add(recipe);
-                        }
-                        adapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> System.err.println("Errore nel caricamento delle ricette: " + e.getMessage()));
-        } else {
-            // Cerca ricette in base agli ingredienti nel frigo
-            firestore.collection("recipes")
-                    .whereArrayContainsAny("ingredients", fridgeItems)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        recipeList.clear();
-                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                            Recipe recipe = doc.toObject(Recipe.class);
-                            recipeList.add(recipe);
-                        }
-                        adapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> System.err.println("Errore nel caricamento delle ricette consigliate: " + e.getMessage()));
-        }
+        getFridgeItemsFromFirestore(fridgeItems -> {
+            if (fridgeItems.isEmpty()) {
+                // Se il frigo è vuoto, carica le ricette più recenti
+                firestore.collection("recipes")
+                        .orderBy("createdAt", Query.Direction.DESCENDING)
+                        .limit(10)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            recipeList.clear();
+                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                Recipe recipe = doc.toObject(Recipe.class);
+                                recipeList.add(recipe);
+                            }
+                            adapter.notifyDataSetChanged();
+                            Log.d(TAG, "Ricette più recenti caricate con successo.");
+                            Log.d(TAG, "Ci sono " + recipeList.size() + " ricette recenti");
+                        })
+                        .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
+            } else {
+                // Cerca ricette in base agli ingredienti nel frigo
+                firestore.collection("recipes")
+                        .whereArrayContainsAny("ingredients", fridgeItems)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            recipeList.clear();
+                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                Recipe recipe = doc.toObject(Recipe.class);
+                                recipeList.add(recipe);
+                            }
+                            adapter.notifyDataSetChanged();
+                            Log.d(TAG, "Ricette consigliate caricate con successo.");
+                            Log.d(TAG, "Ci sono " + recipeList.size() + " ricette consigliate");
+                        })
+                        .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette consigliate: " + e.getMessage()));
+            }
+        });
     }
 
-    private List<String> getFridgeItemsFromFirestore() {
+    private void getFridgeItemsFromFirestore(OnFridgeItemsLoadedListener listener) {
         List<String> fridgeItems = new ArrayList<>();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -165,9 +171,16 @@ public class HomeActivity extends AppCompatActivity {
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
                         fridgeItems.add(doc.getString("name")); // Supponiamo che "name" sia il nome del prodotto
                     }
+                    Log.d(TAG, "Ingredienti dal frigo caricati con successo.");
+                    listener.onFridgeItemsLoaded(fridgeItems);
                 })
-                .addOnFailureListener(e -> System.err.println("Errore nel caricamento degli ingredienti dal frigo: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Errore nel caricamento degli ingredienti dal frigo: " + e.getMessage());
+                    listener.onFridgeItemsLoaded(fridgeItems);
+                });
+    }
 
-        return fridgeItems;
+    private interface OnFridgeItemsLoadedListener {
+        void onFridgeItemsLoaded(List<String> fridgeItems);
     }
 }

@@ -57,7 +57,7 @@
 
             <!-- Pulsante accanto ai TextView -->
             <FrameLayout
-                android:id="@+id/bookmarkButtonContainer"
+                android:id="@+id/cart_icon_container"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="8dp">
@@ -70,11 +70,11 @@
 
                 <!-- Icona del segnalibro -->
                 <ImageButton
-                    android:id="@+id/bookmarkButton"
+                    android:id="@+id/cart_icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/baseline_bookmark_24"
+                    android:src="@drawable/shopping_cart_svgrepo_com"
                     android:padding="8dp"
                     app:tint="@android:color/white" />
             </FrameLayout>
