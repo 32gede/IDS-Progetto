@@ -122,26 +122,47 @@ public class CartActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String storeId = document.getString("store_id");
 
-                            // Delete from user_store
-                            db.collection("user_store").document(document.getId()).delete()
-                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted from user_store"))
-                                    .addOnFailureListener(e -> Log.e(TAG, "Error deleting from user_store", e));
-
-                            // Delete from stores
-                            db.collection("stores").document(storeId).delete()
-                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted from stores"))
-                                    .addOnFailureListener(e -> Log.e(TAG, "Error deleting from stores", e));
+                            // Check if the store item is still available
+                            db.collection("stores").document(storeId).get()
+                                    .addOnSuccessListener(storeDoc -> {
+                                        if (storeDoc.exists()) {
+                                            // Proceed with checkout
+                                            deleteUserStoreAndStore(document.getId(), storeId);
+                                        } else {
+                                            // Store item is no longer available, remove from user cart
+                                            db.collection("user_store").document(document.getId()).delete()
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d(TAG, "Store removed from user_store");
+                                                        Toast.makeText(CartActivity.this, "Box non più disponibile", Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .addOnFailureListener(e -> Log.e(TAG, "Error removing store from user_store", e));
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e(TAG, "Error checking store availability", e));
                         }
-                        Toast.makeText(CartActivity.this, "Purchase successful!", Toast.LENGTH_SHORT).show();
-
-                        // Navigate back to StoreActivity
-                        Intent intent = new Intent(CartActivity.this, StoreActivity.class);
-                        startActivity(intent);
-                        finish();
                     } else {
                         Log.e(TAG, "Error getting user stores for checkout: ", task.getException());
                     }
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to get user stores for checkout: ", e));
+    }
+
+    private void deleteUserStoreAndStore(String userStoreId, String storeId) {
+        // Delete from user_store
+        db.collection("user_store").document(userStoreId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted from user_store"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error deleting from user_store", e));
+
+        // Delete from stores
+        db.collection("stores").document(storeId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted from stores"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error deleting from stores", e));
+
+        Toast.makeText(CartActivity.this, "Purchase successful!", Toast.LENGTH_SHORT).show();
+
+        // Navigate back to StoreActivity
+        Intent intent = new Intent(CartActivity.this, StoreActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
