@@ -106,4 +106,5 @@ public class ExpiryNotificationWorker extends Worker {
                     Log.e(TAG, "saveProductDataToFirestore: Errore nel salvataggio su Firestore", e);
                 });
     }
+
 }

@@ -1,5 +1,7 @@
 package com.example.progetto;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,8 +32,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -117,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.Registration);
 
         updateUI();
+        checkAndDeleteExpiredNotifications();
 
         loginButton.setOnClickListener(v -> {
             if (!LoginUtils.isLoggedIn(this)) {
@@ -153,5 +162,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    private void checkAndDeleteExpiredNotifications() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.DAY_OF_YEAR, -7); // One week before today
+
+        firestore.collection("Notification")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String expiryDateStr = document.getString("expiryDate");
+                        if (expiryDateStr != null) {
+                            try {
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                Calendar expiryDate = Calendar.getInstance();
+                                expiryDate.setTime(dateFormat.parse(expiryDateStr));
+                                expiryDate.add(Calendar.DAY_OF_YEAR, 7); // One week after expiry
+
+                                if (expiryDate.before(today)) {
+                                    firestore.collection("Notification").document(document.getId()).delete()
+                                            .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted expired notification: " + document.getId()))
+                                            .addOnFailureListener(e -> Log.e(TAG, "Error deleting expired notification", e));
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing expiry date", e);
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error fetching notifications", e));
     }
 }
