@@ -122,42 +122,20 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void loadRecommendedRecipes() {
-        getFridgeItemsFromFirestore(fridgeItems -> {
-            if (fridgeItems.isEmpty()) {
-                // Se il frigo è vuoto, carica le ricette più recenti
-                firestore.collection("recipes")
-                        .orderBy("createdAt", Query.Direction.DESCENDING)
-                        .limit(10)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            recipeList.clear();
-                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                                Recipe recipe = doc.toObject(Recipe.class);
-                                recipeList.add(recipe);
-                            }
-                            adapter.notifyDataSetChanged();
-                            Log.d(TAG, "Ricette più recenti caricate con successo.");
-                            Log.d(TAG, "Ci sono " + recipeList.size() + " ricette recenti");
-                        })
-                        .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
-            } else {
-                // Cerca ricette in base agli ingredienti nel frigo
-                firestore.collection("recipes")
-                        .whereArrayContainsAny("ingredients", fridgeItems)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            recipeList.clear();
-                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                                Recipe recipe = doc.toObject(Recipe.class);
-                                recipeList.add(recipe);
-                            }
-                            adapter.notifyDataSetChanged();
-                            Log.d(TAG, "Ricette consigliate caricate con successo.");
-                            Log.d(TAG, "Ci sono " + recipeList.size() + " ricette consigliate");
-                        })
-                        .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette consigliate: " + e.getMessage()));
-            }
-        });
+        firestore.collection("recipes")
+                .orderBy("averageRating", Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    recipeList.clear();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                        Recipe recipe = doc.toObject(Recipe.class);
+                        recipeList.add(recipe);
+                    }
+                    adapter.notifyDataSetChanged();
+                    Log.d(TAG, "Top 5 ricette caricate con successo.");
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
     }
 
     private void getFridgeItemsFromFirestore(OnFridgeItemsLoadedListener listener) {
@@ -184,3 +162,4 @@ public class HomeActivity extends AppCompatActivity {
         void onFridgeItemsLoaded(List<String> fridgeItems);
     }
 }
+

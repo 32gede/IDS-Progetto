@@ -12,21 +12,30 @@ public class Recipe implements Serializable {
     private String difficulty;
     private String category;
     private String preparationTime;
+    private float averageRating;
+
+    public float getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(float averageRating) {
+        this.averageRating = averageRating;
+    }
 
     // No-argument constructor required for Firestore
     public Recipe() {}
 
-    public Recipe(String id, String name, String description, String image, String ingredients,
-                  String steps, String difficulty, String category, String preparationTime) {
+    public Recipe(String id, String name, String description, String image, String ingredients, String difficulty, String steps, String category, String preparationTime, float rating) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
         this.ingredients = ingredients;
-        this.steps = steps;
         this.difficulty = difficulty;
+        this.steps = steps;
         this.category = category;
         this.preparationTime = preparationTime;
+        this.averageRating = rating;
     }
 
     // Getters and Setters

@@ -90,20 +90,27 @@ public class RecipeFocusActivity extends AppCompatActivity {
                         ratings.add(rating.rating);
                     }
                     if (!ratings.isEmpty()) {
-                        float averageRating = calculateAverageRating(ratings);
-                        ratingBar.setRating(averageRating);
-                        ratingBar.setIsIndicator(true); // Make the RatingBar non-interactive
+                        calculateAverageRating(recipeId, ratings);
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(RecipeFocusActivity.this, "Failed to fetch ratings", Toast.LENGTH_SHORT).show());
     }
 
-    private float calculateAverageRating(List<Float> ratings) {
+    private void calculateAverageRating(String recipeId, List<Float> ratings) {
         float sum = 0;
         for (float rating : ratings) {
             sum += rating;
         }
-        return sum / ratings.size();
+        float averageRating = sum / ratings.size();
+
+        // Update the average rating in the Recipe document
+        databaseReference.collection("recipes").document(recipeId)
+                .update("averageRating", averageRating)
+                .addOnSuccessListener(aVoid -> {
+                    ratingBar.setRating(averageRating);
+                    ratingBar.setIsIndicator(true); // Make the RatingBar non-interactive
+                })
+                .addOnFailureListener(e -> Toast.makeText(RecipeFocusActivity.this, "Failed to update average rating", Toast.LENGTH_SHORT).show());
     }
 
     private void showRatingDialog(Recipe recipe) {

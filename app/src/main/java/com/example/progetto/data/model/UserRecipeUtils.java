@@ -10,14 +10,14 @@ public class UserRecipeUtils extends Recipe {
     public UserRecipeUtils(Recipe recipe, String userId) {
         super(recipe.getId(), recipe.getName(), recipe.getDescription(), recipe.getImage(),
                 recipe.getIngredients(), recipe.getSteps(), recipe.getDifficulty(),
-                recipe.getCategory(), recipe.getPreparationTime());
+                recipe.getCategory(), recipe.getPreparationTime(), recipe.getAverageRating());
         this.userId = userId;
     }
 
     // Full constructor with all fields
     public UserRecipeUtils(String id, String name, String description, String image, String ingredients,
                            String steps, String difficulty, String category, String preparationTime, String userId) {
-        super(id, name, description, image, ingredients, steps, difficulty, category, preparationTime);
+        super(id, name, description, image, ingredients, steps, difficulty, category, preparationTime,5);
         this.userId = userId;
     }
 
