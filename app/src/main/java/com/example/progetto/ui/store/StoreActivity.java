@@ -70,6 +70,7 @@ public class StoreActivity extends AppCompatActivity {
         setupRecyclerView();
         setupTabLayout();
         setupSwipeRefresh();
+        validateUserStores();
         loadStores();
 
         // Set navigation selection
@@ -150,13 +151,40 @@ public class StoreActivity extends AppCompatActivity {
         fridgeButton.setOnClickListener(v -> navigateTo(FridgeActivity.class));
         recipeButton.setOnClickListener(v -> navigateTo(RecipeActivity.class));
         notificationButton.setOnClickListener(v -> navigateTo(NotificationActivity.class));
-
     }
 
     private void navigateTo(Class<?> activityClass) {
         Intent intent = new Intent(StoreActivity.this, activityClass);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    private void validateUserStores() {
+        String currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+        db.collection("user_store")
+                .whereEqualTo("buyer_id", currentUserId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String storeId = document.getString("store_id");
+
+                            db.collection("stores").document(storeId).get()
+                                    .addOnSuccessListener(storeDoc -> {
+                                        if (!storeDoc.exists()) {
+                                            db.collection("user_store").document(document.getId()).delete()
+                                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Removed invalid store from user_store"))
+                                                    .addOnFailureListener(e -> Log.e(TAG, "Error removing invalid store from user_store", e));
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e(TAG, "Error checking store existence", e));
+                        }
+                    } else {
+                        Log.e(TAG, "Error getting user stores: ", task.getException());
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to validate user stores: ", e));
     }
 
     private void loadStores() {
