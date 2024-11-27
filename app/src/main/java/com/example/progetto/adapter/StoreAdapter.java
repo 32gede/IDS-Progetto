@@ -1,3 +1,4 @@
+// StoreAdapter.java
 package com.example.progetto.adapter;
 
 import android.content.Context;
@@ -25,11 +26,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
     private List<StoreUtils> stores;
     private Set<String> savedStoreIds;
     private final Context context;
+    private int selectedTabPosition;
 
-    public StoreAdapter(List<StoreUtils> stores, Context context) {
+    public StoreAdapter(List<StoreUtils> stores, Context context, int selectedTabPosition) {
         this.stores = stores;
         this.savedStoreIds = new HashSet<>();
         this.context = context;
+        this.selectedTabPosition = selectedTabPosition;
     }
 
     public void setStores(List<StoreUtils> stores) {
@@ -50,6 +53,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         }
     }
 
+    public void setSelectedTabPosition(int selectedTabPosition) {
+        this.selectedTabPosition = selectedTabPosition;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public StoreViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,7 +70,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         if (stores != null && position < stores.size()) {
             StoreUtils store = stores.get(position);
             boolean isSaved = savedStoreIds.contains(store.getId());
-            holder.bind(store, isSaved);
+            holder.bind(store, isSaved, selectedTabPosition);
         } else {
             Log.e(TAG, "Invalid position or empty store list in onBindViewHolder");
         }
@@ -78,7 +86,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         private final TextView storeDescription;
         private final TextView storePrice;
         private final ImageView storeImage;
-        private final View frameLayout;
+        private final ImageView actionIcon;
 
         StoreViewHolder(View itemView) {
             super(itemView);
@@ -86,14 +94,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             storeDescription = itemView.findViewById(R.id.storeDescriptionTextView);
             storePrice = itemView.findViewById(R.id.storePriceTextView);
             storeImage = itemView.findViewById(R.id.storeImageView);
-            frameLayout = itemView.findViewById(R.id.cart_icon_container); // Initialize FrameLayout
-
+            actionIcon = itemView.findViewById(R.id.cart_icon);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && stores != null && position < stores.size()) {
                     StoreUtils store = stores.get(position);
-                    Intent intent = new Intent(context, StoreActivity.class); // Corretto il nome per seguire le convenzioni di denominazione
+                    Intent intent = new Intent(context, StoreActivity.class);
                     intent.putExtra("store", store);
                     context.startActivity(intent);
                 } else {
@@ -102,7 +109,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             });
         }
 
-        void bind(StoreUtils store, boolean isSaved) {
+        void bind(StoreUtils store, boolean isSaved, int selectedTabPosition) {
             if (store != null) {
                 storeName.setText(store.getName());
                 storeDescription.setText(store.getDescription());
@@ -113,9 +120,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                         .error(R.drawable.baseline_error_24)
                         .into(storeImage);
 
-                frameLayout.setVisibility(isSaved ? View.GONE : View.VISIBLE);
-
-
+                if (selectedTabPosition == 0) {
+                    actionIcon.setImageResource(R.drawable.baseline_edit_24);
+                } else {
+                    actionIcon.setImageResource(R.drawable.shopping_cart_svgrepo_com);
+                }
             } else {
                 Log.e(TAG, "Store object is null in bind method");
             }

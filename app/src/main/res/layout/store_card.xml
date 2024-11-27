@@ -74,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/shopping_cart_svgrepo_com"
+                    android:src="@drawable/baseline_edit_24"
                     android:padding="8dp"
                     app:tint="@android:color/white" />
             </FrameLayout>

@@ -1,3 +1,4 @@
+// StoreActivity.java
 package com.example.progetto.ui.store;
 
 import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
@@ -98,7 +99,7 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new StoreAdapter(new ArrayList<>(),this);
+        adapter = new StoreAdapter(new ArrayList<>(), this, tabLayout.getSelectedTabPosition());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
@@ -119,6 +120,7 @@ public class StoreActivity extends AppCompatActivity {
                 } else {
                     adapter.setStores(globalStores);
                 }
+                adapter.setSelectedTabPosition(tab.getPosition());
             }
 
             @Override
