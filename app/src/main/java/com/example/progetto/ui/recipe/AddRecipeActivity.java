@@ -175,10 +175,28 @@ public class AddRecipeActivity extends AppCompatActivity {
         // Salva nella collezione principale "recipes"
         db.collection("recipes").document(recipeId)
                 .set(recipe)
-                .addOnSuccessListener(aVoid -> saveRecipeForUser(recipeId, recipe)) // Chiama il metodo per salvare in recipes_user
+                .addOnSuccessListener(aVoid -> {
+                    saveRecipeForUser(recipeId, recipe); // Chiama il metodo per salvare in recipes_user
+                    saveDefaultRating(recipeId); // Chiama il metodo per salvare il rating predefinito
+                })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveDefaultRating(String recipeId) {
+        Map<String, Object> rating = new HashMap<>();
+        rating.put("recipeId", recipeId);
+        rating.put("rating", 5);
+
+        db.collection("ratings").document()
+                .set(rating)
+                .addOnSuccessListener(aVoid -> {
+                    // Rating predefinito aggiunto con successo
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Errore nell'aggiunta del rating predefinito: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
