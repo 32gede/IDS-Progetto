@@ -92,6 +92,10 @@
             android:theme="@style/AppTheme"
             android:exported="false"
             android:label="Notification" />
+        <activity
+            android:name=".ui.store.CartActivity"
+            android:exported="false"
+            android:label="Notification" />
 
         <!-- Main Activity with LAUNCHER intent -->
         <activity

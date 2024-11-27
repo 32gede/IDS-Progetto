@@ -99,7 +99,7 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new StoreAdapter(new ArrayList<>(), this, tabLayout.getSelectedTabPosition());
+        adapter = new StoreAdapter(new ArrayList<>(), this, tabLayout.getSelectedTabPosition(), false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
@@ -117,8 +117,12 @@ public class StoreActivity extends AppCompatActivity {
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     adapter.setStores(savedStores);
+                    addButton.setImageResource(R.drawable.baseline_add_24);
+                    addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
                 } else {
                     adapter.setStores(globalStores);
+                    addButton.setImageResource(R.drawable.baseline_shopping_basket_24);
+                    addButton.setOnClickListener(v -> navigateTo(CartActivity.class));
                 }
                 adapter.setSelectedTabPosition(tab.getPosition());
             }
@@ -146,7 +150,7 @@ public class StoreActivity extends AppCompatActivity {
         fridgeButton.setOnClickListener(v -> navigateTo(FridgeActivity.class));
         recipeButton.setOnClickListener(v -> navigateTo(RecipeActivity.class));
         notificationButton.setOnClickListener(v -> navigateTo(NotificationActivity.class));
-        addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
+
     }
 
     private void navigateTo(Class<?> activityClass) {
