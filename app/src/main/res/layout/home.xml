@@ -16,7 +16,20 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <!-- NavBar ancorata al fondo -->
+        <!-- Title for Popular Recipes -->
+        <TextView
+            android:id="@+id/popularRecipesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Popular Recipes"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp" />
+
+        <!-- Popular Recipes RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popularRecyclerView"
             android:layout_width="match_parent"
@@ -24,8 +37,34 @@
             android:clipToPadding="false"
             android:padding="8dp"
             android:scrollbars="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            app:layout_constraintTop_toBottomOf="@id/popularRecipesTitle"
             tools:layout_editor_absoluteX="0dp" />
+
+        <!-- Title for Newer Recipes -->
+        <TextView
+            android:id="@+id/newerRecipesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Newer Recipes"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/popularRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp" />
+
+        <!-- Newer Recipes RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/newerRecipeRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toBottomOf="@id/newerRecipesTitle"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <!-- Other existing views... -->
 
         <LinearLayout
             android:id="@+id/navBar"

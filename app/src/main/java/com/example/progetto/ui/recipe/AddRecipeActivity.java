@@ -24,6 +24,7 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -175,6 +176,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("difficulty", difficulty);
         recipe.put("category", category);
         recipe.put("preparationTime", preparationTime);
+        recipe.put("createdAt", FieldValue.serverTimestamp());
 
         // Salva nella collezione principale "recipes"
         db.collection("recipes").document(recipeId)

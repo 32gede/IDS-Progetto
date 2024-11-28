@@ -41,8 +41,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private FirebaseFirestore firestore;
     private RecyclerView popularRecyclerView;
-    private PopularRecipeAdapter adapter;
-    private List<Recipe> recipeList = new ArrayList<>();
+    private RecyclerView newerRecyclerView;
+    private PopularRecipeAdapter adapterPopular;
+    private PopularRecipeAdapter adapterNewer;
+    private List<Recipe> popularRecipe = new ArrayList<>();
+    private List<Recipe> newerRecipe = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +81,19 @@ public class HomeActivity extends AppCompatActivity {
         // Configura RecyclerView
         popularRecyclerView = findViewById(R.id.popularRecyclerView);
         popularRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapter = new PopularRecipeAdapter(recipeList, this);
-        popularRecyclerView.setAdapter(adapter);
+        adapterPopular = new PopularRecipeAdapter(popularRecipe, this);
+        popularRecyclerView.setAdapter(adapterPopular);
+        newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
+        newerRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterNewer = new PopularRecipeAdapter(newerRecipe, this);
+        newerRecyclerView.setAdapter(adapterNewer);
+
 
         // Configura pulsanti
         configureNavigation();
 
         // Carica le ricette consigliate
-        loadRecommendedRecipes();
+        loadRecipes();
     }
 
     private void configureNavigation() {
@@ -121,19 +129,33 @@ public class HomeActivity extends AppCompatActivity {
         mainView.setOnTouchListener(swipeGestureListener);
     }
 
-    private void loadRecommendedRecipes() {
+    private void loadRecipes() {
         firestore.collection("recipes")
                 .orderBy("averageRating", Query.Direction.DESCENDING)
                 .limit(5)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    recipeList.clear();
+                    popularRecipe.clear();
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
                         Recipe recipe = doc.toObject(Recipe.class);
-                        recipeList.add(recipe);
+                        popularRecipe.add(recipe);
                     }
-                    adapter.notifyDataSetChanged();
+                    adapterPopular.notifyDataSetChanged();
                     Log.d(TAG, "Top 5 ricette caricate con successo.");
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
+        firestore.collection("recipes")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    newerRecipe.clear();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                        Recipe recipe = doc.toObject(Recipe.class);
+                        newerRecipe.add(recipe);
+                    }
+                    adapterNewer.notifyDataSetChanged();
+                    Log.d(TAG, "Ultime 5 ricette caricate con successo.");
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
     }
