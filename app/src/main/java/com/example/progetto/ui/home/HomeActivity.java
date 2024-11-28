@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.PopularRecipeAdapter;
+import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
 import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
@@ -27,9 +28,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -42,10 +47,13 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private RecyclerView popularRecyclerView;
     private RecyclerView newerRecyclerView;
-    private PopularRecipeAdapter adapterPopular;
-    private PopularRecipeAdapter adapterNewer;
+    private RecyclerView cookableRecyclerView;
+    private RecipeAdapter adapterPopular;
+    private RecipeAdapter adapterNewer;
+    private RecipeAdapter adapterCookable;
     private List<Recipe> popularRecipe = new ArrayList<>();
     private List<Recipe> newerRecipe = new ArrayList<>();
+    private List<Recipe> cookableRecipe = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +89,16 @@ public class HomeActivity extends AppCompatActivity {
         // Configura RecyclerView
         popularRecyclerView = findViewById(R.id.popularRecyclerView);
         popularRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterPopular = new PopularRecipeAdapter(popularRecipe, this);
+        adapterPopular = new RecipeAdapter(popularRecipe, null,this);
         popularRecyclerView.setAdapter(adapterPopular);
         newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
         newerRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterNewer = new PopularRecipeAdapter(newerRecipe, this);
+        adapterNewer = new RecipeAdapter(newerRecipe,null, this);
         newerRecyclerView.setAdapter(adapterNewer);
+        cookableRecyclerView = findViewById(R.id.cookableRecyclerView);
+        cookableRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterCookable = new RecipeAdapter(cookableRecipe, null, this);
+        cookableRecyclerView.setAdapter(adapterCookable);
 
 
         // Configura pulsanti
@@ -158,26 +170,61 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "Ultime 5 ricette caricate con successo.");
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
+        loadCookedRecipes(FirebaseAuth.getInstance().getUid());
     }
 
-    private void getFridgeItemsFromFirestore(OnFridgeItemsLoadedListener listener) {
-        List<String> fridgeItems = new ArrayList<>();
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+    private void loadCookedRecipes(String userId) {
+        // Load user products
+        List<Recipe> globalRecipes = new ArrayList<>();
+        firestore.collection("recipes")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    globalRecipes.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Recipe recipe = document.toObject(Recipe.class);
+                        globalRecipes.add(recipe);
+                    }
+                    Log.d("HomeActivity", "Global recipes: " + globalRecipes.size());
+                })
+                .addOnFailureListener(e -> Log.e("HomeActivity", "Failed to load global recipes: " + e.getMessage()));
+        Set<String> userIngredients = new HashSet<>();
         firestore.collection("user_products")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        fridgeItems.add(doc.getString("name")); // Supponiamo che "name" sia il nome del prodotto
+                    userIngredients.clear(); // Clear current product list
+
+                    // Populate the list with product names
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String productName = document.getString("name");
+                        if (productName != null) {
+                            userIngredients.add(productName);
+                        }
                     }
-                    Log.d(TAG, "Ingredienti dal frigo caricati con successo.");
-                    listener.onFridgeItemsLoaded(fridgeItems);
+                    for (String ingredient : userIngredients) {
+                        Log.d("HomeActivity", "User ingredient: " + ingredient);
+                    }
+                    Log.d("HomeActivity", "User ingredients: " + userIngredients.size());
+                    // Filter recipes based on user ingredients
+                    cookableRecipe.clear();
+                    for (Recipe recipe : globalRecipes) {
+                        Log.d("HomeActivity", "Checking recipe: " + recipe.getName());
+                        Log.d("HomeActivity", "Checking recipe: " + recipe.getIngredients());
+                        List<String> recipeIngredients = Arrays.asList(recipe.getIngredients().split(","));
+                        for (int i = 0; i < recipeIngredients.size(); i++) {
+                            Log.d("HomeActivity", "Ingredient: " + recipeIngredients.get(i));
+                        }
+                        if (userIngredients.containsAll(recipeIngredients)) {
+                            cookableRecipe.add(recipe);
+                        }
+                    }
+                    Log.d("HomeActivity", "Cooked recipes: " + cookableRecipe.size());
+                    adapterCookable.setRecipes(cookableRecipe);
+
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Errore nel caricamento degli ingredienti dal frigo: " + e.getMessage());
-                    listener.onFridgeItemsLoaded(fridgeItems);
-                });
+                .addOnFailureListener(e -> Log.e("HomeActivity", "Failed to load user products: " + e.getMessage()));
+
     }
 
     private interface OnFridgeItemsLoadedListener {

@@ -14,15 +14,15 @@
         <ImageView
             android:id="@+id/recipeImageView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="150dp"
+        android:scaleType="centerCrop" />
 
         <!-- Contenitore per il testo e il pulsante -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="12dp"> <!-- Reduced padding -->
 
             <LinearLayout
                 android:layout_width="0dp"
