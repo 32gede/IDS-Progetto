@@ -30,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,8 +40,6 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.JustifyContent;
 
-
-// RecipeActivity.java
 public class RecipeActivity extends AppCompatActivity {
 
     // UI Components
@@ -58,6 +57,7 @@ public class RecipeActivity extends AppCompatActivity {
     // Recipe Data
     private List<Recipe> globalRecipes;
     private List<UserRecipeUtils> savedRecipes;
+    private List<Recipe> cookedRecipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +137,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void loadRecipesFromFirestore() {
         globalRecipes = new ArrayList<>();
         savedRecipes = new ArrayList<>();
+        cookedRecipes = new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -182,9 +183,37 @@ public class RecipeActivity extends AppCompatActivity {
                         if (tabLayout.getSelectedTabPosition() == 0) {
                             adapter.setRecipes(new ArrayList<>(savedRecipes));
                         }
+
+                        // Carica le ricette che l'utente può cucinare
+                        loadCookedRecipes(userId);
                     })
                     .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage()));
         }
+    }
+
+    private void loadCookedRecipes(String userId) {
+        firestore.collection("user_recipe")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Set<String> userIngredients = new HashSet<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserRecipeUtils userRecipe = document.toObject(UserRecipeUtils.class);
+                        userIngredients.add(userRecipe.getIngredients());
+                    }
+
+                    cookedRecipes.clear();
+                    for (Recipe recipe : globalRecipes) {
+                        if (userIngredients.containsAll(Arrays.asList(recipe.getIngredients().split(",")))) {
+                            cookedRecipes.add(recipe);
+                        }
+                    }
+
+                    if (tabLayout.getSelectedTabPosition() == 2) {
+                        adapter.setRecipes(cookedRecipes);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load cooked recipes: " + e.getMessage()));
     }
 
     private void saveRecipeToUserCollection(Recipe recipe) {
@@ -203,8 +232,12 @@ public class RecipeActivity extends AppCompatActivity {
                     .document(recipe.getId()) // Usa l'ID della ricetta come nome del documento
                     .set(userRecipe)
                     .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta salvata con successo!", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(this, "Errore nel salvataggio: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> {
+                        Log.e("RecipeActivity", "Errore nel salvataggio: " + e.getMessage());
+                        Toast.makeText(this, "Errore nel salvataggio: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         } else {
+            Log.e("RecipeActivity", "Utente non autenticato!");
             Toast.makeText(this, "Utente non autenticato!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -214,13 +247,16 @@ public class RecipeActivity extends AppCompatActivity {
                 .document(recipe.getId())
                 .delete()
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta rimossa con successo!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Errore nella rimozione: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e("RecipeActivity", "Errore nella rimozione: " + e.getMessage());
+                    Toast.makeText(this, "Errore nella rimozione: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void setupTabLayout() {
         tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
         tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
-
+        tabLayout.addTab(tabLayout.newTab().setText("Cooked Recipes"));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
@@ -234,8 +270,10 @@ public class RecipeActivity extends AppCompatActivity {
 
                 if (tab.getPosition() == 0) {
                     adapter.setRecipes(new ArrayList<>(savedRecipes));
-                } else {
+                } else if (tab.getPosition() == 1) {
                     adapter.setRecipes(globalRecipes);
+                } else {
+                    adapter.setRecipes(cookedRecipes);
                 }
             }
 
