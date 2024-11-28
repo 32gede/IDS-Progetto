@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
+import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.data.model.UserRecipeUtils;
 import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
@@ -192,28 +193,43 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void loadCookedRecipes(String userId) {
-        firestore.collection("user_recipe")
+        Set<String> userIngredients = new HashSet<>();
+        firestore.collection("user_products")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Set<String> userIngredients = new HashSet<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserRecipeUtils userRecipe = document.toObject(UserRecipeUtils.class);
-                        userIngredients.add(userRecipe.getIngredients());
-                    }
+                    userIngredients.clear(); // Clear current product list
 
+                    // Populate the list with product names
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String productName = document.getString("name");
+                        if (productName != null) {
+                            userIngredients.add(productName);
+                        }
+                    }
+                    for (String ingredient : userIngredients) {
+                        Log.d("RecipeActivity", "User ingredient: " + ingredient);
+                    }
+                    Log.d("RecipeActivity", "User ingredients: " + userIngredients.size());
+                    // Filter recipes based on user ingredients
                     cookedRecipes.clear();
                     for (Recipe recipe : globalRecipes) {
-                        if (userIngredients.containsAll(Arrays.asList(recipe.getIngredients().split(",")))) {
+                        Log.d("RecipeActivity", "Checking recipe: " + recipe.getName());
+                        Log.d("RecipeActivity", "Checking recipe: " + recipe.getIngredients());
+                        List<String> recipeIngredients = Arrays.asList(recipe.getIngredients().split(","));
+                        for (int i = 0; i < recipeIngredients.size(); i++) {
+                            Log.d("RecipeActivity", "Ingredient: " + recipeIngredients.get(i));
+                        }
+                        if (userIngredients.containsAll(recipeIngredients)) {
                             cookedRecipes.add(recipe);
                         }
                     }
-
+                    Log.d("RecipeActivity", "Cooked recipes: " + cookedRecipes.size());
                     if (tabLayout.getSelectedTabPosition() == 2) {
                         adapter.setRecipes(cookedRecipes);
                     }
                 })
-                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load cooked recipes: " + e.getMessage()));
+                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user products: " + e.getMessage()));
     }
 
     private void saveRecipeToUserCollection(Recipe recipe) {
@@ -278,10 +294,12 @@ public class RecipeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));

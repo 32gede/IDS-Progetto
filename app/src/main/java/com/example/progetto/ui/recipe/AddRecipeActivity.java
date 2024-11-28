@@ -115,10 +115,14 @@ public class AddRecipeActivity extends AppCompatActivity {
         String description = recipeDescription.getText().toString().trim();
         List<ItemUtils> list_ingredients = ingredientsAdapter.getSelectedIngredients();
         String ingredients = "";
-        for (ItemUtils ingredient : list_ingredients) {
-            ingredients += ingredient.getName() + ", ";
-            ingredients = ingredients.substring(0, ingredients.length() - 2);
+        // Concatena gli ingredienti selezionati in una stringa con la virgola
+        for (int i = 0; i < list_ingredients.size(); i++) {
+            ingredients += list_ingredients.get(i).getName();
+            if (i != list_ingredients.size() - 1) {
+                ingredients += ",";
+            }
         }
+
         String steps = recipeSteps.getText().toString().trim();
         String difficulty = recipeDifficulty.getText().toString().trim();
         String category = recipeCategory.getText().toString().trim();
