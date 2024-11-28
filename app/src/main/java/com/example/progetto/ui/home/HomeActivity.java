@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.PopularRecipeAdapter;
@@ -54,6 +55,7 @@ public class HomeActivity extends AppCompatActivity {
     private List<Recipe> popularRecipe = new ArrayList<>();
     private List<Recipe> newerRecipe = new ArrayList<>();
     private List<Recipe> cookableRecipe = new ArrayList<>();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,10 @@ public class HomeActivity extends AppCompatActivity {
         titleText = findViewById(R.id.title);
         titleText.setText(getString(R.string.home));
 
+        // Inizializza SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this::loadRecipes);
+
         // Verifica che le viste siano state trovate
         if (homeBackgroundCircle != null && homeButton != null) {
             // Imposta il cerchio di sfondo solo per il pulsante Home
@@ -99,7 +105,6 @@ public class HomeActivity extends AppCompatActivity {
         cookableRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterCookable = new RecipeAdapter(cookableRecipe, null, this);
         cookableRecyclerView.setAdapter(adapterCookable);
-
 
         // Configura pulsanti
         configureNavigation();
@@ -171,8 +176,10 @@ public class HomeActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette: " + e.getMessage()));
         loadCookedRecipes(FirebaseAuth.getInstance().getUid());
-    }
 
+        // Stop the refreshing animation
+        swipeRefreshLayout.setRefreshing(false);
+    }
 
     private void loadCookedRecipes(String userId) {
         // Load user products
@@ -231,4 +238,3 @@ public class HomeActivity extends AppCompatActivity {
         void onFridgeItemsLoaded(List<String> fridgeItems);
     }
 }
-
