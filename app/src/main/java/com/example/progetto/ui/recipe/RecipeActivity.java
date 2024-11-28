@@ -130,7 +130,7 @@ public class RecipeActivity extends AppCompatActivity {
             } else {
                 removeRecipeFromUserCollection(recipe); // Rimuovi la ricetta
             }
-        }, this);
+        }, this, false);
 
         recyclerView.setAdapter(adapter);
     }

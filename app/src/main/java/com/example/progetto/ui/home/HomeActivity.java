@@ -95,15 +95,15 @@ public class HomeActivity extends AppCompatActivity {
         // Configura RecyclerView
         popularRecyclerView = findViewById(R.id.popularRecyclerView);
         popularRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterPopular = new RecipeAdapter(popularRecipe, null,this);
+        adapterPopular = new RecipeAdapter(popularRecipe, null,this, true);
         popularRecyclerView.setAdapter(adapterPopular);
         newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
         newerRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterNewer = new RecipeAdapter(newerRecipe,null, this);
+        adapterNewer = new RecipeAdapter(newerRecipe,null, this, true);
         newerRecyclerView.setAdapter(adapterNewer);
         cookableRecyclerView = findViewById(R.id.cookableRecyclerView);
         cookableRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterCookable = new RecipeAdapter(cookableRecipe, null, this);
+        adapterCookable = new RecipeAdapter(cookableRecipe, null, this, true);
         cookableRecyclerView.setAdapter(adapterCookable);
 
         // Configura pulsanti

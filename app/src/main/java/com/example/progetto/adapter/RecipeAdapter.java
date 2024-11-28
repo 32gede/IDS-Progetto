@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.data.model.Recipe;
+import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.recipe.RecipeFocusActivity;
 import java.util.HashSet;
 import java.util.List;
@@ -24,16 +26,19 @@ import java.util.Set;
     private Set<String> savedRecipeIds;
     private final OnBookmarkClickListener bookmarkClickListener;
     private final Context context;
+    private boolean isHomeActivity;
+    private ImageButton bookmarkButton;
 
     public interface OnBookmarkClickListener {
         void onBookmarkClick(Recipe recipe, boolean isSaved);
     }
 
-    public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener, Context context) {
+    public RecipeAdapter(List<Recipe> recipes, OnBookmarkClickListener bookmarkClickListener, Context context, boolean isHomeActivity) {
         this.recipes = recipes;
         this.bookmarkClickListener = bookmarkClickListener;
         this.savedRecipeIds = new HashSet<>();
         this.context = context;
+        this.isHomeActivity = isHomeActivity;
     }
 
     public void setRecipes(List<Recipe> recipes) {
@@ -68,13 +73,14 @@ import java.util.Set;
             private final TextView recipeTitle;
             private final ImageButton bookmarkButton;
             private final ImageView recipeImage;
+            private FrameLayout container;
 
             RecipeViewHolder(View itemView) {
                 super(itemView);
                 recipeTitle = itemView.findViewById(R.id.titleTextView);
                 bookmarkButton = itemView.findViewById(R.id.bookmarkButton);
                 recipeImage = itemView.findViewById(R.id.recipeImageView); // Associa l'ImageView
-
+                container = itemView.findViewById(R.id.cart_icon_container);
                 itemView.setOnClickListener(v -> {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
@@ -95,6 +101,9 @@ import java.util.Set;
                         .error(R.drawable.baseline_error_24) // Immagine mostrata in caso di errore
                         .into(recipeImage);
 
+                if (isHomeActivity) {
+                    container.setVisibility(View.GONE);
+                }
                 boolean isCurrentlySaved = savedRecipeIds.contains(recipe.getId());
                 bookmarkButton.setImageResource(isCurrentlySaved ?
                         R.drawable.baseline_bookmark_24 :
