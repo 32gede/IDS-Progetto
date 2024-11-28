@@ -226,7 +226,7 @@ public class HomeActivity extends AppCompatActivity {
                             cookableRecipe.add(recipe);
                         }
                     }
-                    Log.d("HomeActivity", "Cooked recipes: " + cookableRecipe.size());
+                    Log.d("HomeActivity", "Cooked recipes size: " + cookableRecipe.size());
                     adapterCookable.setRecipes(cookableRecipe);
 
                 })
