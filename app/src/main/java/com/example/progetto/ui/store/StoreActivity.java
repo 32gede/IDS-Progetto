@@ -95,6 +95,7 @@ public class StoreActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewStore);
         tabLayout = findViewById(R.id.tabLayoutStore);
         addButton = findViewById(R.id.addButtonStore);
+        addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
 
         titleText.setText(getString(R.string.search));
     }
@@ -118,8 +119,8 @@ public class StoreActivity extends AppCompatActivity {
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     adapter.setStores(savedStores);
-                    addButton.setImageResource(R.drawable.baseline_add_24);
                     addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
+                    addButton.setImageResource(R.drawable.baseline_add_24);
                 } else {
                     adapter.setStores(globalStores);
                     addButton.setImageResource(R.drawable.baseline_shopping_basket_24);
