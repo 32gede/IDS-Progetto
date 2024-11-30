@@ -1,12 +1,8 @@
-// StoreActivity.java
 package com.example.progetto.ui.store;
-
-import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,11 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.R;
 import com.example.progetto.adapter.StoreAdapter;
 import com.example.progetto.data.model.StoreUtils;
-import com.example.progetto.ui.Notification.NotificationActivity;
-import com.example.progetto.ui.fridge.FridgeActivity;
-import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.ui.recipe.RecipeActivity;
+import com.example.progetto.data.model.BottomNavigationHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,8 +33,6 @@ public class StoreActivity extends AppCompatActivity {
     private static final String TAG = "StoreActivity";
 
     // UI components
-    private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, profileButtonTop, fridgeButton, recipeButton, notificationButton;
     private TextView titleText;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
@@ -61,6 +53,13 @@ public class StoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.store);
 
+        // Setup BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.store_button);
+            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+        }
+
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -72,42 +71,28 @@ public class StoreActivity extends AppCompatActivity {
         setupSwipeRefresh();
         validateUserStores();
         loadStores();
-
-        // Set navigation selection
-        updateNavSelection(R.id.storeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
-
-        // Setup button listeners
-        setupNavigationListeners();
     }
 
     private void initializeViews() {
-        profileButtonTop = findViewById(R.id.profileButtonTop);
-        homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
-        searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
-        fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
-        recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
-        homeButton = findViewById(R.id.homeButton);
-        fridgeButton = findViewById(R.id.fridgeButton);
-        recipeButton = findViewById(R.id.recipeButton);
         titleText = findViewById(R.id.title);
-        notificationButton = findViewById(R.id.notificationButton);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutStore);
         recyclerView = findViewById(R.id.recyclerViewStore);
         tabLayout = findViewById(R.id.tabLayoutStore);
         addButton = findViewById(R.id.addButtonStore);
-        addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
 
         titleText.setText(getString(R.string.search));
+        addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
+
+        ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
+        if (profileButtonTop != null) {
+            profileButtonTop.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+        }
     }
 
     private void setupRecyclerView() {
         adapter = new StoreAdapter(new ArrayList<>(), this, tabLayout.getSelectedTabPosition(), false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-    }
-
-    private void handleStoreClick(StoreUtils store) {
-        Log.d(TAG, "Store clicked: " + store.getName());
     }
 
     private void setupTabLayout() {
@@ -144,14 +129,6 @@ public class StoreActivity extends AppCompatActivity {
             loadStores();
             swipeRefreshLayout.setRefreshing(false);
         });
-    }
-
-    private void setupNavigationListeners() {
-        profileButtonTop.setOnClickListener(v -> navigateTo(ProfileActivity.class));
-        homeButton.setOnClickListener(v -> navigateTo(HomeActivity.class));
-        fridgeButton.setOnClickListener(v -> navigateTo(FridgeActivity.class));
-        recipeButton.setOnClickListener(v -> navigateTo(RecipeActivity.class));
-        notificationButton.setOnClickListener(v -> navigateTo(NotificationActivity.class));
     }
 
     private void navigateTo(Class<?> activityClass) {

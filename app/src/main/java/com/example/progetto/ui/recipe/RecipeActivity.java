@@ -1,11 +1,8 @@
 package com.example.progetto.ui.recipe;
 
-import static com.example.progetto.data.model.NavigationUtils.updateNavSelection;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -20,10 +17,13 @@ import com.example.progetto.data.model.Recipe;
 import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.data.model.UserRecipeUtils;
 import com.example.progetto.ui.Notification.NotificationActivity;
-import com.example.progetto.ui.fridge.FridgeActivity;
-import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.ui.store.StoreActivity;
+import com.example.progetto.data.model.BottomNavigationHelper;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,16 +36,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.JustifyContent;
-
 public class RecipeActivity extends AppCompatActivity {
 
     // UI Components
-    private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, notificationButton;
     private FloatingActionButton addButton;
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
@@ -65,6 +58,13 @@ public class RecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
+        // Setup BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.recipe_button);
+            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+        }
+
         // Initialize UI components
         initializeViews();
 
@@ -75,49 +75,25 @@ public class RecipeActivity extends AppCompatActivity {
         loadRecipesFromFirestore();
         setupTabLayout();
 
-        // Setup navigation buttons
-        setNavigationListeners();
-
         // Setup SwipeRefreshLayout
         setupSwipeRefresh();
-
-        // Update navigation UI
-        updateNavSelection(
-                R.id.recipeButton,
-                homeBackgroundCircle,
-                searchBackgroundCircle,
-                fridgeBackgroundCircle,
-                recipeBackgroundCircle
-        );
     }
 
     private void initializeViews() {
         tabLayout = findViewById(R.id.tabLayoutRecipe);
         recyclerView = findViewById(R.id.recyclerViewRecipes);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutRecipe);
-        homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
-        searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
-        fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
-        recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
-        homeButton = findViewById(R.id.homeButton);
-        storeButton = findViewById(R.id.storeButton);
-        fridgeButton = findViewById(R.id.fridgeButton);
-        recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButtonRecipe);
-        notificationButton = findViewById(R.id.notificationButtonRecipe);
 
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
         if (profileButtonTop != null) {
             profileButtonTop.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         }
+
+        addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
     }
 
     private void setupRecyclerView() {
-        if (recyclerView == null) {
-            Log.e("RecipeActivity", "RecyclerView is null. Check R.id.recyclerViewRecipes in recipe.xml.");
-            return;
-        }
-
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setFlexWrap(FlexWrap.WRAP);
@@ -126,9 +102,9 @@ public class RecipeActivity extends AppCompatActivity {
 
         adapter = new RecipeAdapter(new ArrayList<>(), (recipe, isSaved) -> {
             if (isSaved) {
-                saveRecipeToUserCollection(recipe); // Salva la ricetta
+                saveRecipeToUserCollection(recipe);
             } else {
-                removeRecipeFromUserCollection(recipe); // Rimuovi la ricetta
+                removeRecipeFromUserCollection(recipe);
             }
         }, this, false);
 
@@ -144,10 +120,9 @@ public class RecipeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
-        // Insieme per tracciare gli ID delle ricette salvate
         Set<String> savedRecipeIds = new HashSet<>();
 
-        // Carica le ricette globali
+        // Load global recipes
         firestore.collection("recipes")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -163,7 +138,7 @@ public class RecipeActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load global recipes: " + e.getMessage()));
 
-        // Carica le ricette salvate dall'utente
+        // Load user-saved recipes
         if (userId != null) {
             firestore.collection("recipes_user")
                     .whereEqualTo("userId", userId)
@@ -174,18 +149,14 @@ public class RecipeActivity extends AppCompatActivity {
                             UserRecipeUtils userRecipe = document.toObject(UserRecipeUtils.class);
                             userRecipe.setId(document.getId());
                             savedRecipes.add(userRecipe);
-
-                            // Aggiungi l'ID al Set degli ID salvati
                             savedRecipeIds.add(userRecipe.getId());
                         }
-                        // Aggiorna l'adapter con i nuovi dati
-                        adapter.setSavedRecipeIds(savedRecipeIds);
 
+                        adapter.setSavedRecipeIds(savedRecipeIds);
                         if (tabLayout.getSelectedTabPosition() == 0) {
                             adapter.setRecipes(new ArrayList<>(savedRecipes));
                         }
 
-                        // Carica le ricette che l'utente può cucinare
                         loadCookedRecipes(userId);
                     })
                     .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage()));
@@ -198,33 +169,21 @@ public class RecipeActivity extends AppCompatActivity {
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    userIngredients.clear(); // Clear current product list
-
-                    // Populate the list with product names
+                    userIngredients.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String productName = document.getString("name");
                         if (productName != null) {
                             userIngredients.add(productName);
                         }
                     }
-                    for (String ingredient : userIngredients) {
-                        Log.d("RecipeActivity", "User ingredient: " + ingredient);
-                    }
-                    Log.d("RecipeActivity", "User ingredients: " + userIngredients.size());
-                    // Filter recipes based on user ingredients
+
                     cookedRecipes.clear();
                     for (Recipe recipe : globalRecipes) {
-                        Log.d("RecipeActivity", "Checking recipe: " + recipe.getName());
-                        Log.d("RecipeActivity", "Checking recipe: " + recipe.getIngredients());
                         List<String> recipeIngredients = Arrays.asList(recipe.getIngredients().split(","));
-                        for (int i = 0; i < recipeIngredients.size(); i++) {
-                            Log.d("RecipeActivity", "Ingredient: " + recipeIngredients.get(i));
-                        }
                         if (userIngredients.containsAll(recipeIngredients)) {
                             cookedRecipes.add(recipe);
                         }
                     }
-                    Log.d("RecipeActivity", "Cooked recipes: " + cookedRecipes.size());
                     if (tabLayout.getSelectedTabPosition() == 2) {
                         adapter.setRecipes(cookedRecipes);
                     }
@@ -236,25 +195,13 @@ public class RecipeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
-        if (recipe == null || recipe.getId() == null) {
-            Log.e("RecipeActivity", "Recipe o ID della ricetta è nullo. Salvataggio annullato.");
-            Toast.makeText(this, "Errore: la ricetta non è valida.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (userId != null) {
+        if (userId != null && recipe != null && recipe.getId() != null) {
             UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
             firestore.collection("recipes_user")
-                    .document(recipe.getId()) // Usa l'ID della ricetta come nome del documento
+                    .document(recipe.getId())
                     .set(userRecipe)
                     .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta salvata con successo!", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> {
-                        Log.e("RecipeActivity", "Errore nel salvataggio: " + e.getMessage());
-                        Toast.makeText(this, "Errore nel salvataggio: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            Log.e("RecipeActivity", "Utente non autenticato!");
-            Toast.makeText(this, "Utente non autenticato!", Toast.LENGTH_SHORT).show();
+                    .addOnFailureListener(e -> Log.e("RecipeActivity", "Errore nel salvataggio: " + e.getMessage()));
         }
     }
 
@@ -263,27 +210,17 @@ public class RecipeActivity extends AppCompatActivity {
                 .document(recipe.getId())
                 .delete()
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Ricetta rimossa con successo!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> {
-                    Log.e("RecipeActivity", "Errore nella rimozione: " + e.getMessage());
-                    Toast.makeText(this, "Errore nella rimozione: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Log.e("RecipeActivity", "Errore nella rimozione: " + e.getMessage()));
     }
 
     private void setupTabLayout() {
         tabLayout.addTab(tabLayout.newTab().setText("Saved Recipes"));
         tabLayout.addTab(tabLayout.newTab().setText("Global Recipes"));
         tabLayout.addTab(tabLayout.newTab().setText("Cooked Recipes"));
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
-                loadRecipesFromFirestore(); // Reload recipes from Firestore
-
-                Set<String> savedRecipeIds = new HashSet<>();
-                for (UserRecipeUtils userRecipe : savedRecipes) {
-                    savedRecipeIds.add(userRecipe.getId());
-                }
-                adapter.setSavedRecipeIds(savedRecipeIds);
-
                 if (tab.getPosition() == 0) {
                     adapter.setRecipes(new ArrayList<>(savedRecipes));
                 } else if (tab.getPosition() == 1) {
@@ -303,12 +240,6 @@ public class RecipeActivity extends AppCompatActivity {
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
-        Set<String> savedRecipeIds = new HashSet<>();
-        for (UserRecipeUtils userRecipe : savedRecipes) {
-            savedRecipeIds.add(userRecipe.getId());
-        }
-        adapter.setSavedRecipeIds(savedRecipeIds);
-        adapter.setRecipes(new ArrayList<>(savedRecipes));
     }
 
     private void setupSwipeRefresh() {
@@ -316,23 +247,5 @@ public class RecipeActivity extends AppCompatActivity {
             loadRecipesFromFirestore();
             swipeRefreshLayout.setRefreshing(false);
         });
-    }
-
-    private void setNavigationListeners() {
-        homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
-        fridgeButton.setOnClickListener(v -> navigateToActivity(FridgeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(StoreActivity.class));
-        addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
-        notificationButton.setOnClickListener(v -> {
-            Log.d("RecipeActivity", "Notification button clicked");
-            navigateToActivity(NotificationActivity.class);
-        });
-    }
-
-    private void navigateToActivity(Class<?> targetActivity) {
-        Intent intent = new Intent(this, targetActivity);
-        startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        finish();
     }
 }
