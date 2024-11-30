@@ -1,13 +1,18 @@
 package com.example.progetto.ui.recipe;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,6 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +73,38 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         // Listener per salvare la ricetta
         btnSubmitRecipe.setOnClickListener(v -> saveRecipe());
+        // In your activity's onCreate method
+        EditText preparationTimeEditText = findViewById(R.id.recipe_preparation_time);
+        preparationTimeEditText.setOnClickListener(v -> {
+            Dialog timePickerDialog = new Dialog(this);
+            timePickerDialog.setContentView(R.layout.dialog_duration_picker);
+
+            NumberPicker hourPicker = timePickerDialog.findViewById(R.id.hour_picker);
+            NumberPicker minutePicker = timePickerDialog.findViewById(R.id.minute_picker);
+
+            // Configura il NumberPicker per le ore (0-23)
+            hourPicker.setMinValue(0);
+            hourPicker.setMaxValue(23);
+
+            // Configura il NumberPicker per i minuti (0-59)
+            minutePicker.setMinValue(0);
+            minutePicker.setMaxValue(59);
+
+            // Pulsante per confermare
+            timePickerDialog.findViewById(R.id.btn_confirm).setOnClickListener(view -> {
+                int hours = hourPicker.getValue();
+                int minutes = minutePicker.getValue();
+
+                // Imposta il tempo selezionato nell'EditText
+                String selectedTime = String.format("%02d:%02d", hours, minutes);
+                preparationTimeEditText.setText(selectedTime);
+                timePickerDialog.dismiss();
+            });
+
+            // Mostra il Dialog
+            timePickerDialog.show();
+        });
+
     }
 
     private void setupIngredientsRecyclerView() {
@@ -108,6 +146,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipeCategory = findViewById(R.id.recipe_category);
         recipePreparationTime = findViewById(R.id.recipe_preparation_time);
         btnSubmitRecipe = findViewById(R.id.btn_submit_recipe);
+        recipeDifficulty.setFilters(new InputFilter[]{new InputFilterMinMax(0, 9)});
         progressBar = findViewById(R.id.progressBar);
     }
 
@@ -252,3 +291,4 @@ public class AddRecipeActivity extends AppCompatActivity {
         }
     }
 }
+
