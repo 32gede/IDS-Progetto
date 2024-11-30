@@ -84,15 +84,21 @@ public class UserRepository {
 
 
     private void saveUserToFirestore(FirebaseUser user) {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("uid", user.getUid());
-        userMap.put("email", user.getEmail());
+        // Creazione di un oggetto UserProfile
+        UserProfile userProfile = new UserProfile(
+                user.getUid(),
+                user.getEmail(),
+                "", // Phone number vuoto per ora
+                ""  // Date of birth vuoto per ora
+        );
 
+        // Salvataggio nel documento Firestore
         db.collection("users").document(user.getUid())
-                .set(userMap)
-                .addOnSuccessListener(aVoid -> Log.d("UserRepository", "User added to Firestore"))
-                .addOnFailureListener(e -> Log.w("UserRepository", "Error adding user to Firestore", e));
+                .set(userProfile)
+                .addOnSuccessListener(aVoid -> Log.d("UserRepository", "User profile added to Firestore"))
+                .addOnFailureListener(e -> Log.w("UserRepository", "Error adding user profile to Firestore", e));
     }
+
 
     public void logout() {
         mAuth.signOut();
@@ -113,4 +119,66 @@ public class UserRepository {
         editor.putString("email", user.getEmail());
         editor.apply();
     }
+
+    public void updateUserProfile(String phoneNumber, String dateOfBirth) {
+        FirebaseUser user = mAuth.getCurrentUser(); // Ottieni l'utente attualmente loggato
+
+        if (user != null) {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("phoneNumber", phoneNumber);
+            updates.put("dateOfBirth", dateOfBirth);
+
+            db.collection("users").document(user.getUid())
+                    .update(updates)
+                    .addOnSuccessListener(aVoid -> Log.d("UserRepository", "User profile updated successfully"))
+                    .addOnFailureListener(e -> Log.e("UserRepository", "Error updating user profile", e));
+        } else {
+            Log.e("UserRepository", "No authenticated user to update");
+        }
+    }
+
+    public interface UserProfileCallback {
+        void onUserProfileLoaded(UserProfile userProfile);
+    }
+
+    public void getUserProfile(UserProfileCallback callback) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            db.collection("users").document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            UserProfile userProfile = documentSnapshot.toObject(UserProfile.class);
+                            callback.onUserProfileLoaded(userProfile);
+                        } else {
+                            Log.d("UserRepository", "getUserProfile: No profile found");
+                            callback.onUserProfileLoaded(null);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("UserRepository", "getUserProfile: Error fetching user profile", e);
+                        callback.onUserProfileLoaded(null);
+                    });
+        } else {
+            Log.e("UserRepository", "getUserProfile: No authenticated user");
+            callback.onUserProfileLoaded(null);
+        }
+    }
+
+    public void updateProfileImage(String imageUrl) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("profileImageUrl", imageUrl);
+
+            db.collection("users").document(user.getUid())
+                    .update(updates)
+                    .addOnSuccessListener(aVoid -> Log.d("UserRepository", "updateProfileImage: Profile image updated"))
+                    .addOnFailureListener(e -> Log.e("UserRepository", "updateProfileImage: Error updating profile image", e));
+        } else {
+            Log.e("UserRepository", "updateProfileImage: No authenticated user");
+        }
+    }
+
+
 }
