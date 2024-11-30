@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.adapter.UserProductAdapter;
+import com.example.progetto.data.model.BaseBottomNavigationActivity;
 import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.R;
 import com.example.progetto.ui.Notification.NotificationActivity;
@@ -22,6 +23,7 @@ import com.example.progetto.ui.home.HomeActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.store.StoreActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,11 +31,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FridgeActivity extends AppCompatActivity {
+public class FridgeActivity extends BaseBottomNavigationActivity {
 
-    private View homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle;
-    private ImageButton homeButton, storeButton, fridgeButton, recipeButton, addButton, notificationButton;
+    private ImageButton  addButton, notificationButton;
     private TextView titleText;
+    BottomNavigationView bottomNavigationView;
 
     // Firebase Firestore and Authentication
     private FirebaseFirestore firestore;
@@ -69,7 +71,7 @@ public class FridgeActivity extends AppCompatActivity {
         initializeViews();
 
         // Highlight "fridge" button in the navbar
-        updateNavSelection(R.id.fridgeButton, homeBackgroundCircle, searchBackgroundCircle, fridgeBackgroundCircle, recipeBackgroundCircle);
+
 
         // Set navigation listeners
         setNavigationListeners();
@@ -81,16 +83,13 @@ public class FridgeActivity extends AppCompatActivity {
         loadItemsFromFirestore();
     }
 
+    @Override
+    protected int getCurrentMenuItemId() {
+        return R.id.fridge_button;
+    }
+
     private void initializeViews() {
         ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
-        homeBackgroundCircle = findViewById(R.id.homeBackgroundCircle);
-        searchBackgroundCircle = findViewById(R.id.searchBackgroundCircle);
-        fridgeBackgroundCircle = findViewById(R.id.fridgeBackgroundCircle);
-        recipeBackgroundCircle = findViewById(R.id.recipeBackgroundCircle);
-        homeButton = findViewById(R.id.homeButton);
-        storeButton = findViewById(R.id.storeButton);
-        fridgeButton = findViewById(R.id.fridgeButton);
-        recipeButton = findViewById(R.id.recipeButton);
         addButton = findViewById(R.id.addButton);
         titleText = findViewById(R.id.title);
         titleText.setText(getString(R.string.fridge));
@@ -99,9 +98,6 @@ public class FridgeActivity extends AppCompatActivity {
 
     private void setNavigationListeners() {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
-        homeButton.setOnClickListener(v -> navigateToActivity(HomeActivity.class));
-        recipeButton.setOnClickListener(v -> navigateToActivity(RecipeActivity.class));
-        storeButton.setOnClickListener(v -> navigateToActivity(StoreActivity.class));
         notificationButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, NotificationActivity.class)));
     }
 

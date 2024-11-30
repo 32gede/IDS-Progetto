@@ -5,6 +5,8 @@
     <color name="purple_700">#512DA8</color>
     <color name="purple_light">#D1C4E9</color>
     <color name="purple_dark">#311B92</color>
+    <color name="primary">#6200EE</color>
+
 
     <!-- Neutral Colors -->
     <color name="black">#000000</color>
