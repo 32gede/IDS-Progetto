@@ -65,6 +65,7 @@ public class NavigationHelper {
     private static void navigateTo(Activity currentActivity, Class<?> targetActivity) {
         if (!currentActivity.getClass().equals(targetActivity)) {
             Intent intent = new Intent(currentActivity, targetActivity);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             currentActivity.startActivity(intent);
             currentActivity.overridePendingTransition(0, 0); // Disabilita transizioni
         }
