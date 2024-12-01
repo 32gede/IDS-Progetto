@@ -14,12 +14,10 @@
     <item
         android:id="@+id/fridge_button"
         android:icon="@drawable/fridge__1_"
-        android:title="List" />
+        android:title="Fridge" />
 
     <item
         android:id="@+id/recipe_button"
         android:icon="@drawable/baseline_library_books_24"
         android:title="Profile" />
-
-
 </menu>
