@@ -2,15 +2,18 @@ package com.example.progetto.data.model;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.widget.ImageButton;
 
 import com.example.progetto.R;
+import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.fridge.FridgeActivity;
 import com.example.progetto.ui.home.HomeActivity;
+import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.ui.recipe.RecipeActivity;
 import com.example.progetto.ui.store.StoreActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class BottomNavigationHelper {
+public class NavigationHelper {
 
     /**
      * Imposta il listener per la navigazione nel BottomNavigationView.
@@ -43,6 +46,15 @@ public class BottomNavigationHelper {
             });
         }
     }
+    public static void setupToolbar(ImageButton profileButtonTop, ImageButton notificationButtonTop, Activity activity) {
+        profileButtonTop.setOnClickListener(v -> {
+            navigateTo(activity, ProfileActivity.class);
+        });
+
+        notificationButtonTop.setOnClickListener(v -> {
+            navigateTo(activity, NotificationActivity.class);
+        });
+    }
 
     /**
      * Naviga all'activity target senza animazioni di transizione.
@@ -55,7 +67,6 @@ public class BottomNavigationHelper {
             Intent intent = new Intent(currentActivity, targetActivity);
             currentActivity.startActivity(intent);
             currentActivity.overridePendingTransition(0, 0); // Disabilita transizioni
-            currentActivity.finish();
         }
     }
 }

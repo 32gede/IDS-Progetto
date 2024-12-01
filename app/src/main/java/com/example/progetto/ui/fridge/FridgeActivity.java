@@ -3,12 +3,9 @@ package com.example.progetto.ui.fridge;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +16,7 @@ import com.example.progetto.adapter.UserProductAdapter;
 import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.data.model.BottomNavigationHelper;
+import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,7 +49,7 @@ public class FridgeActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.fridge_button);
-            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+            NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
         // Inizializza Firestore e Auth
@@ -80,17 +77,13 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
+        NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
         addButton = findViewById(R.id.addButton);
-        notificationButton = findViewById(R.id.notificationButton);
         titleText = findViewById(R.id.title);
-        titleText.setText(getString(R.string.fridge));
-        profileButtonTop.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, ProfileActivity.class)));
-    }
+        titleText.setText(getString(R.string.fridge));}
 
     private void setNavigationListeners() {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
-        notificationButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, NotificationActivity.class)));
     }
 
     private void loadItemsFromFirestore() {

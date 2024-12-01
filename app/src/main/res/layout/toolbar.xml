@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="77dp"
+    android:background="?attr/colorPrimary"
+    android:elevation="4dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:titleTextColor="@android:color/white">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/poppins_bold"
+        android:letterSpacing="0.15"
+        android:padding="8dp"
+        android:text="@string/recipe"
+        android:textColor="#4B0082"
+        android:textSize="40sp" />
+
+    <!-- Icone (Search, Notifications, Profile) -->
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="8dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:src="@drawable/baseline_person_24" />
+
+    <ImageButton
+        android:id="@+id/notificationButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="8dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:src="@drawable/baseline_notifications_24" />
+
+    <ImageButton
+        android:id="@+id/searchButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="8dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:contentDescription="@string/search"
+        android:src="@drawable/baseline_search_24" />
+
+</androidx.appcompat.widget.Toolbar>

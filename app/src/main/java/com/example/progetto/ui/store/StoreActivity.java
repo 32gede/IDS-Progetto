@@ -16,7 +16,7 @@ import com.example.progetto.R;
 import com.example.progetto.adapter.StoreAdapter;
 import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.data.model.BottomNavigationHelper;
+import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -57,7 +57,7 @@ public class StoreActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.store_button);
-            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+            NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
         // Initialize Firebase
@@ -74,19 +74,15 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
+        NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
         titleText = findViewById(R.id.title);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutStore);
         recyclerView = findViewById(R.id.recyclerViewStore);
         tabLayout = findViewById(R.id.tabLayoutStore);
         addButton = findViewById(R.id.addButtonStore);
-
         titleText.setText(getString(R.string.search));
         addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
 
-        ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
-        if (profileButtonTop != null) {
-            profileButtonTop.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
-        }
     }
 
     private void setupRecyclerView() {

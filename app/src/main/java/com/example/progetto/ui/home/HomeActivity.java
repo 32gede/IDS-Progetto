@@ -1,5 +1,6 @@
 package com.example.progetto.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -13,7 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
-import com.example.progetto.data.model.BottomNavigationHelper;
+import com.example.progetto.data.model.NavigationHelper;
+import com.example.progetto.ui.profile.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -59,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.home_button);
-            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+            NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
         // Initialize Firestore
@@ -91,6 +93,8 @@ public class HomeActivity extends AppCompatActivity {
         popularRecyclerView = findViewById(R.id.popularRecyclerView);
         newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
         cookableRecyclerView = findViewById(R.id.cookableRecyclerView);
+
+        NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
 
         adapterPopular = new RecipeAdapter(popularRecipe, null, this, true);
         adapterNewer = new RecipeAdapter(newerRecipe, null, this, true);

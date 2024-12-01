@@ -14,11 +14,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
-import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.data.model.UserRecipeUtils;
-import com.example.progetto.ui.Notification.NotificationActivity;
 import com.example.progetto.ui.profile.ProfileActivity;
-import com.example.progetto.data.model.BottomNavigationHelper;
+import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -62,7 +60,7 @@ public class RecipeActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.recipe_button);
-            BottomNavigationHelper.setupNavigation(this, bottomNavigationView);
+            NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
         // Initialize UI components
@@ -80,16 +78,11 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
+        NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
         tabLayout = findViewById(R.id.tabLayoutRecipe);
         recyclerView = findViewById(R.id.recyclerViewRecipes);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutRecipe);
         addButton = findViewById(R.id.addButtonRecipe);
-
-        ImageButton profileButtonTop = findViewById(R.id.profileButtonTop);
-        if (profileButtonTop != null) {
-            profileButtonTop.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
-        }
-
         addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
     }
 
