@@ -63,10 +63,11 @@
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:src="@drawable/selected_nav_item_background"
-            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutStore"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Add button on top right of the circle -->
+        <!-- Add button on bottom right of the circle -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addButtonStore"
             android:layout_width="wrap_content"
@@ -75,8 +76,9 @@
             android:contentDescription="Aggiungi"
             android:src="@drawable/baseline_add_24"
             app:backgroundTint="#4B0082"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/swipeRefreshLayoutStore" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- NavBar ancorata al fondo -->
         <com.google.android.material.bottomnavigation.BottomNavigationView

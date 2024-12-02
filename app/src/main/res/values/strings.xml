@@ -15,7 +15,7 @@
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="title_activity_registration" translatable="false">RegistrationActivity</string>
     <string name="registration_failed">Registration failed</string>
-    <string name="fridge">Fridge</string>
+    <string name="fridge">Pantry</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
     <string name="recipe">Recipe</string>

@@ -9,7 +9,6 @@
     tools:context=".ui.recipe.RecipeActivity">
 
     <!-- Main content layout -->
-    <!-- Main content layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content_recipe"
         android:layout_width="match_parent"
@@ -22,7 +21,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
 
         <!-- TabLayout sopra il RecyclerView -->
         <com.google.android.material.tabs.TabLayout
@@ -65,8 +63,9 @@
             android:contentDescription="Aggiungi"
             android:src="@drawable/baseline_add_24"
             app:backgroundTint="#4B0082"
-            app:layout_constraintTop_toBottomOf="@id/tabLayoutRecipe"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
 
         <!-- Bottom Navbar anchored at the bottom -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -84,7 +83,6 @@
             app:itemTextColor="@color/nav_item_color"
             app:backgroundTint="#FFFFFF" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
