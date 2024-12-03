@@ -119,7 +119,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:itemIconTint="@color/nav_item_color"
                 app:itemTextColor="@color/nav_item_color"
-                app:backgroundTint="#FFFFFF" />
+                app:backgroundTint="#e0e0e0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

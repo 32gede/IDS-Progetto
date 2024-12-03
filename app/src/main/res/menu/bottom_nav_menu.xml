@@ -14,7 +14,7 @@
     <item
         android:id="@+id/fridge_button"
         android:icon="@drawable/fridge__1_"
-        android:title="Fridge" />
+        android:title="@string/fridge" />
 
 
     <item
