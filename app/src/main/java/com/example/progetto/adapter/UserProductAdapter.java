@@ -21,8 +21,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.progetto.R;
-import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.UserProductUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,22 +32,26 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
     private final Context context;
     private final List<UserProductUtils> userProducts;
     private final OnUserProductSelectedListener listener;
+    private final OnRemoveButtonClickListener removeListener;
 
-    // Define the listener interface for item selection
+    // Listener per il pulsante di rimozione
+    public interface OnRemoveButtonClickListener {
+        void onRemoveButtonClick(UserProductUtils userProduct);
+    }
+
+    // Listener per selezione normale
     public interface OnUserProductSelectedListener {
         void onUserProductSelected(UserProductUtils userProduct);
     }
 
-    // Modify constructor to accept the listener
-    public UserProductAdapter(Context context, List<UserProductUtils> userProducts, OnUserProductSelectedListener listener) {
+    // Modifica il costruttore per accettare entrambi i listener
+    public UserProductAdapter(Context context, List<UserProductUtils> userProducts,
+                              OnUserProductSelectedListener listener,
+                              OnRemoveButtonClickListener removeListener) {
         this.context = context;
         this.userProducts = new ArrayList<>(userProducts);
         this.listener = listener;
-    }
-    public void updateProductList(List<UserProductUtils> newProducts) {
-        userProducts.clear();
-        userProducts.addAll(newProducts);
-        notifyDataSetChanged();
+        this.removeListener = removeListener;
     }
 
     @NonNull
@@ -61,12 +65,12 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
     public void onBindViewHolder(@NonNull UserProductViewHolder holder, int position) {
         UserProductUtils userProduct = userProducts.get(position);
 
-        // Set the product name and other fields
+        // Imposta i dati del prodotto
         holder.productName.setText(userProduct.getName());
         holder.expiryDate.setText(userProduct.getExpiryDate());
         holder.quantity.setText(String.valueOf(userProduct.getQuantity()));
 
-        // Load product image with Glide
+        // Carica l'immagine del prodotto con Glide
         Glide.with(context)
                 .load(userProduct.getUrl())
                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
@@ -74,7 +78,7 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         Log.e("Glide", "Error loading image", e);
-                        return false; // Let Glide handle the error
+                        return false; // Lascia che Glide gestisca l'errore
                     }
 
                     @Override
@@ -84,10 +88,17 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
                 })
                 .into(holder.productImage);
 
-        // Set click listener on each item
+        // Imposta il listener per la selezione normale
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onUserProductSelected(userProduct);
+            }
+        });
+
+        // Imposta il listener per il pulsante di rimozione
+        holder.removeButton.setOnClickListener(v -> {
+            if (removeListener != null) {
+                removeListener.onRemoveButtonClick(userProduct);
             }
         });
     }
@@ -97,16 +108,16 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
         return userProducts.size();
     }
 
-    // Method to update the user product list dynamically
-    public void updateUserProductList(List<UserProductUtils> newUserProducts) {
+    public void updateProductList(List<UserProductUtils> newProducts) {
         userProducts.clear();
-        userProducts.addAll(newUserProducts);
+        userProducts.addAll(newProducts);
         notifyDataSetChanged();
     }
 
     public static class UserProductViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName, expiryDate, quantity;
+        FloatingActionButton removeButton; // Aggiunto il pulsante di rimozione
 
         public UserProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -114,6 +125,7 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
             productName = itemView.findViewById(R.id.product_name);
             expiryDate = itemView.findViewById(R.id.expiry_date);
             quantity = itemView.findViewById(R.id.quantity);
+            removeButton = itemView.findViewById(R.id.remove_button); // Collegamento al layout
         }
     }
 }

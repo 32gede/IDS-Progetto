@@ -5,6 +5,7 @@ public class UserProductUtils  {
     private String expiryDate;
     private int quantity;
     private String name,url;
+    private String productId;
 
     // Constructor
     public UserProductUtils() {
@@ -17,6 +18,15 @@ public class UserProductUtils  {
         this.expiryDate = expiryDate;
         this.userId = userId;
         this.quantity = quantity;
+        this.productId = productId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getUserId() {

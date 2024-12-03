@@ -30,7 +30,7 @@ public class FridgeActivity extends AppCompatActivity {
     private ImageButton addButton, notificationButton;
     private TextView titleText;
 
-    private FirebaseFirestore    firestore;
+    private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
 
     private RecyclerView recyclerViewFridge;
@@ -60,7 +60,14 @@ public class FridgeActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         recyclerViewFridge = findViewById(R.id.recyclerViewFridge);
         recyclerViewFridge.setLayoutManager(new GridLayoutManager(this, 2));
-        productAdapter = new UserProductAdapter(this, fridgeProductList, null);
+
+        // Configura l'adapter con i listener
+        productAdapter = new UserProductAdapter(
+                this,
+                fridgeProductList,
+                this::onProductSelected,
+                this::onProductRemoved
+        );
         recyclerViewFridge.setAdapter(productAdapter);
 
         // Inizializza le viste
@@ -80,7 +87,8 @@ public class FridgeActivity extends AppCompatActivity {
         NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
         addButton = findViewById(R.id.addButton);
         titleText = findViewById(R.id.title);
-        titleText.setText(getString(R.string.fridge));}
+        titleText.setText(getString(R.string.fridge));
+    }
 
     private void setNavigationListeners() {
         addButton.setOnClickListener(v -> startActivity(new Intent(FridgeActivity.this, AddProductActivity.class)));
@@ -106,6 +114,7 @@ public class FridgeActivity extends AppCompatActivity {
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         UserProductUtils userProduct = document.toObject(UserProductUtils.class);
+                        userProduct.setProductId(document.getId());
                         fridgeProductList.add(userProduct);
                     }
 
@@ -120,6 +129,26 @@ public class FridgeActivity extends AppCompatActivity {
                     Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage());
                     swipeRefreshLayout.setRefreshing(false);
                 });
+    }
+
+    private void onProductSelected(UserProductUtils userProduct) {
+        Log.d("FridgeActivity", "Selected product: " + userProduct.getName());
+        // Puoi gestire altre azioni per il prodotto selezionato
+    }
+
+    private void onProductRemoved(UserProductUtils userProduct) {
+        Log.d("FridgeActivity", "Removing product: " + userProduct.getName());
+
+        firestore.collection("user_products")
+                .document(userProduct.getProductId()) // Assumendo che `userProduct` abbia un campo `id` con il documento Firestore
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    fridgeProductList.remove(userProduct);
+                    filteredList.remove(userProduct);
+                    productAdapter.updateProductList(filteredList);
+                    Log.d("FridgeActivity", "Product removed successfully from Firestore.");
+                })
+                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to remove product: " + e.getMessage()));
     }
 
     public List<String> getFridgeItems() {
