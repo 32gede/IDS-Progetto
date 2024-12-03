@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.ui.store.StoreActivity;
+import com.example.progetto.ui.store.StoreFocusActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -106,7 +107,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && stores != null && position < stores.size()) {
                     StoreUtils store = stores.get(position);
-                    Intent intent = new Intent(context, StoreActivity.class);
+                    Intent intent = new Intent(context, StoreFocusActivity.class);
                     intent.putExtra("store", store);
                     context.startActivity(intent);
                 } else {

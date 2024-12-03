@@ -32,4 +32,6 @@
     <string name="aggiungi_ricetta" translatable="false">Aggiungi Ricetta</string>
     <string name="gif" translatable="false">gs://device-streaming-b22f1c9d.appspot.com/decepcao-pensativo.gif</string>
     <string name="seleziona_immagine">Select Image</string>
+    <string name="store_image" />
+    <string name="rate_store" />
 </resources>
