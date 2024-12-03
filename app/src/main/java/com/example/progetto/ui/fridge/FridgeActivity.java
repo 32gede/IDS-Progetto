@@ -30,7 +30,7 @@ public class FridgeActivity extends AppCompatActivity {
     private ImageButton addButton, notificationButton;
     private TextView titleText;
 
-    private FirebaseFirestore firestore;
+    private FirebaseFirestore    firestore;
     private FirebaseAuth mAuth;
 
     private RecyclerView recyclerViewFridge;
