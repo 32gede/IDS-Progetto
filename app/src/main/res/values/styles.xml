@@ -11,5 +11,10 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- Stile per la barra di navigazione -->
         <item name="android:navigationBarColor">@color/light_gray</item>
+
+    </style>
+    <style name="RoundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 </resources>

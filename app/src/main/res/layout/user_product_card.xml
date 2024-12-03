@@ -6,7 +6,9 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    android:background="@drawable/dynamic_border"
+    android:id="@+id/card_view">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="150dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/product_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/remove_button"
@@ -67,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Qty: -"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/black"
                 android:textSize="14sp"
                 android:gravity="center" />
         </LinearLayout>
