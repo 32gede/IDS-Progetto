@@ -76,18 +76,21 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
         // Set product data
         holder.productName.setText(userProduct.getName());
         holder.expiryDate.setText(userProduct.getExpiryDate());
-        holder.quantity.setText(String.valueOf(userProduct.getQuantity()));
+        holder.quantity.setText(String.valueOf("Qty: "+userProduct.getQuantity()));
 
         // Change border color based on expiry date
         if (isExpired(userProduct.getExpiryDate())) {
             changeBorderColor(holder.cardView, R.color.selected_nav_color); // Red border
+            holder.expiryDate.setTextColor(ContextCompat.getColor(context, R.color.selected_nav_color));
         }
         else if(staScadendo(userProduct.getExpiryDate())) {
             changeBorderColor(holder.cardView, R.color.yellow); // Yellow border
+            holder.expiryDate.setTextColor(ContextCompat.getColor(context, R.color.yellow));
 
         }
         else {
             changeBorderColor(holder.cardView, R.color.green); // Gray border
+            holder.expiryDate.setTextColor(ContextCompat.getColor(context, R.color.green));
         }
 
         // Load product image with Glide
