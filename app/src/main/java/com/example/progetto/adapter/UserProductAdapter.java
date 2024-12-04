@@ -186,4 +186,5 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
             return false; // Tratta come non scaduto in caso di errore
         }
     }
+
 }
