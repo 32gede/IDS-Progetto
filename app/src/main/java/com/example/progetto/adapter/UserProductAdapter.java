@@ -132,7 +132,7 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
             Date today = new Date();
             long diff = expiry.getTime() - today.getTime();
             long days = diff / (24 * 60 * 60 * 1000);
-            return days <= 7;
+            return days <= 6;
         } catch (ParseException e) {
             Log.e("UserProductAdapter", "Invalid date format: " + expiryDate, e);
             return false; // Tratta come non scaduto in caso di errore
