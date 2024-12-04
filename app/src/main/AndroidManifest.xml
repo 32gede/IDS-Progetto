@@ -6,14 +6,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Android 13+ -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" /> <!-- For Android 12 and below -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28"/> <!-- For Android 9 and below -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" /> <!-- For Android 9 and below -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Camera hardware feature (optional) -->
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -31,45 +35,45 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true">
-        </provider>
+            android:grantUriPermissions="true"></provider>
 
         <!-- Activity Definitions -->
         <activity
             android:name=".ui.registration.RegistrationActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"
-            android:label="@string/title_activity_registration" />
+            android:label="@string/title_activity_registration"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.fridge.FridgeActivity"
             android:exported="false"
 
-            android:theme="@style/AppTheme"
-            android:label="@string/fridge" />
+            android:label="@string/fridge"
+            android:theme="@style/AppTheme" />
 
-        <activity android:name=".ui.fridge.CreateProductActivity"
-            android:theme="@style/AppTheme"
-            android:exported="false"/>
+        <activity
+            android:name=".ui.fridge.CreateProductActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
 
 
         <activity
             android:name=".ui.recipe.RecipeFocusActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.store.StoreActivity"
             android:exported="false"
 
-            android:theme="@style/AppTheme"
-            android:label="@string/search" />
+            android:label="@string/search"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.fridge.AddProductActivity"
@@ -77,21 +81,21 @@
 
         <activity
             android:name=".ui.recipe.RecipeActivity"
-            android:theme="@style/AppTheme"
             android:exported="false"
-            android:label="@string/recipe" />
+            android:label="@string/recipe"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.home.HomeActivity"
-            android:theme="@style/AppTheme"
             android:exported="false"
-            android:label="@string/home" />
+            android:label="@string/home"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ui.Notification.NotificationActivity"
-            android:theme="@style/AppTheme"
             android:exported="false"
-            android:label="Notification" />
+            android:label="Notification"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.store.CartActivity"
             android:exported="false"
@@ -101,8 +105,8 @@
         <activity
             android:name=".MainActivity"
 
-            android:theme="@style/AppTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -113,15 +117,19 @@
         <activity
             android:name=".ui.recipe.AddRecipeActivity"
 
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.profile.ProfileActivity"
-            android:theme="@style/AppTheme"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.store.StoreFocusActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.store.AddStoreActivity"
 
-            android:exported="false"/>
+            android:exported="false" />
 
     </application>
 </manifest>

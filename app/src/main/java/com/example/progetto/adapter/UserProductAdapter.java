@@ -87,7 +87,7 @@ public class UserProductAdapter extends RecyclerView.Adapter<UserProductAdapter.
 
         }
         else {
-            changeBorderColor(holder.cardView, R.color.gray); // Gray border
+            changeBorderColor(holder.cardView, R.color.green); // Gray border
         }
 
         // Load product image with Glide
