@@ -16,10 +16,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class NavigationHelper {
 
     /**
-     * Imposta il listener per la navigazione nel BottomNavigationView.
+     * Sets up navigation for the BottomNavigationView.
      *
-     * @param activity            L'activity corrente
-     * @param bottomNavigationView Il BottomNavigationView da configurare
+     * @param activity             The current activity.
+     * @param bottomNavigationView The BottomNavigationView to configure.
      */
     public static void setupNavigation(Activity activity, BottomNavigationView bottomNavigationView) {
         if (bottomNavigationView != null) {
@@ -46,28 +46,36 @@ public class NavigationHelper {
             });
         }
     }
-    public static void setupToolbar(ImageButton profileButtonTop, ImageButton notificationButtonTop, Activity activity) {
-        profileButtonTop.setOnClickListener(v -> {
-            navigateTo(activity, ProfileActivity.class);
-        });
 
-        notificationButtonTop.setOnClickListener(v -> {
-            navigateTo(activity, NotificationActivity.class);
-        });
+    /**
+     * Sets up click listeners for toolbar buttons.
+     *
+     * @param profileButtonTop     The profile button.
+     * @param notificationButtonTop The notification button.
+     * @param activity             The current activity.
+     */
+    public static void setupToolbar(ImageButton profileButtonTop, ImageButton notificationButtonTop, Activity activity) {
+        if (profileButtonTop != null) {
+            profileButtonTop.setOnClickListener(v -> navigateTo(activity, ProfileActivity.class));
+        }
+
+        if (notificationButtonTop != null) {
+            notificationButtonTop.setOnClickListener(v -> navigateTo(activity, NotificationActivity.class));
+        }
     }
 
     /**
-     * Naviga all'activity target senza animazioni di transizione.
+     * Navigates to the target activity.
      *
-     * @param currentActivity L'activity corrente
-     * @param targetActivity  L'activity di destinazione
+     * @param currentActivity The current activity.
+     * @param targetActivity  The activity to navigate to.
      */
     private static void navigateTo(Activity currentActivity, Class<?> targetActivity) {
         if (!currentActivity.getClass().equals(targetActivity)) {
             Intent intent = new Intent(currentActivity, targetActivity);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             currentActivity.startActivity(intent);
-            currentActivity.overridePendingTransition(0, 0); // Disabilita transizioni
+            currentActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 }
