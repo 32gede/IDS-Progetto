@@ -6,14 +6,14 @@ public class StoreUtils implements Serializable{
     private String id;
     private String name;
     private String description;
-    private String price;
+    private Double price;
     private String image;
     private String products;
 
     public StoreUtils() {
     }
 
-    public StoreUtils(String id, String userId, String products, String description, String name, String prezzo, String image) {
+    public StoreUtils(String id, String userId, String products, String description, String name, Double prezzo, String image) {
         this.id = id;
         this.userId = userId;
         this.products = products;
@@ -55,11 +55,11 @@ public class StoreUtils implements Serializable{
         this.image = image;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

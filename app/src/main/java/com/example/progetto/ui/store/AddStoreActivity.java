@@ -134,7 +134,7 @@ public class AddStoreActivity extends AppCompatActivity {
     private void saveStore() {
         String name = storeName.getText().toString().trim();
         String description = storeDescription.getText().toString().trim();
-        String prezzo = storePrezzo.getText().toString().trim();
+        String prezzoStr = storePrezzo.getText().toString().trim();
         List<ItemUtils> selectedProducts = ingredientsAdapter.getSelectedIngredients();
         StringBuilder products = new StringBuilder();
         for (ItemUtils product : selectedProducts) {
@@ -144,9 +144,18 @@ public class AddStoreActivity extends AppCompatActivity {
             products.setLength(products.length() - 2); // Remove the last comma and space
         }
 
-        if (name.isEmpty() || description.isEmpty() || prezzo.isEmpty() || products.toString().isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty() || products.toString().isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Validation failed: Some fields are empty");
+            return;
+        }
+
+        double prezzo;
+        try {
+            prezzo = Double.parseDouble(prezzoStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Inserire un numero valido per il prezzo!", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Price conversion failed: Invalid number format");
             return;
         }
 
@@ -159,7 +168,8 @@ public class AddStoreActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadImageAndSaveStore(String name, String description, String prezzo, String products) {
+
+    private void uploadImageAndSaveStore(String name, String description, double prezzo, String products) {
         StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
         fileRef.putFile(selectedImageUri)
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -174,7 +184,7 @@ public class AddStoreActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveStoreToFirestore(String name, String description, String prezzo, String products, @Nullable String imageUrl) {
+    private void saveStoreToFirestore(String name, String description, double prezzo, String products, @Nullable String imageUrl) {
         String storeId = db.collection("stores").document().getId();
         mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
@@ -183,7 +193,7 @@ public class AddStoreActivity extends AppCompatActivity {
         store.put("id", storeId);
         store.put("name", name);
         store.put("description", description);
-        store.put("prezzo", prezzo);
+        store.put("price", prezzo); // Adesso è un numero
         store.put("products", products);
         store.put("image", imageUrl);
         store.put("userId", userId);
@@ -202,4 +212,5 @@ public class AddStoreActivity extends AppCompatActivity {
                     Log.e(TAG, "Error adding store: " + e.getMessage());
                 });
     }
+
 }

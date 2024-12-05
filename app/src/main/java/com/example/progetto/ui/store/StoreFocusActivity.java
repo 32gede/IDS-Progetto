@@ -52,6 +52,14 @@ public class StoreFocusActivity extends AppCompatActivity {
         Glide.with(this).load(store.getImage()).into(imageView);
         nameTextView.setText(store.getName());
         descriptionTextView.setText(store.getDescription());
-        priceTextView.setText(store.getPrice());
+
+        // Format the price
+        if (store.getPrice() != null) {
+            String formattedPrice = String.format("€%.2f", store.getPrice());
+            priceTextView.setText(formattedPrice);
+        } else {
+            priceTextView.setText("€0.00"); // Default value for null price
+        }
     }
+
 }

@@ -8,14 +8,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.StoreAdapter;
 import com.example.progetto.data.model.StoreUtils;
-import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -82,12 +81,11 @@ public class StoreActivity extends AppCompatActivity {
         addButton = findViewById(R.id.addButtonStore);
         titleText.setText(getString(R.string.search));
         addButton.setOnClickListener(v -> navigateTo(AddStoreActivity.class));
-
     }
 
     private void setupRecyclerView() {
         adapter = new StoreAdapter(new ArrayList<>(), this, tabLayout.getSelectedTabPosition(), false);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // Set GridLayoutManager with 2 columns
         recyclerView.setAdapter(adapter);
     }
 

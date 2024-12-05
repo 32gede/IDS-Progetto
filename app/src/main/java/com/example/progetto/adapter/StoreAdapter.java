@@ -162,13 +162,19 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             if (store != null) {
                 storeName.setText(store.getName());
                 storeDescription.setText(store.getDescription());
-                storePrice.setText(store.getPrice());
+
+                if (store.getPrice() != null) {
+                    storePrice.setText(String.format("€%.2f", store.getPrice()));
+                } else {
+                    storePrice.setText("€0.00"); // Fallback value
+                }
 
                 Glide.with(context)
                         .load(store.getImage())
                         .error(R.drawable.baseline_error_24)
                         .into(storeImage);
 
+                // Configure the icon based on the context
                 if (isCartActivity) {
                     actionIcon.setImageResource(R.drawable.baseline_remove_shopping_cart_24);
                 } else if (selectedTabPosition == 1) {
@@ -180,6 +186,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                 Log.e(TAG, "Store object is null in bind method");
             }
         }
+
+
 
         private void addToUserStore(StoreUtils store) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
