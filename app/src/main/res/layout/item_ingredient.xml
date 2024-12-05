@@ -3,11 +3,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:background="@drawable/rounded_ingredient_selector"
-    android:clickable="true"
+    android:background="@drawable/rounded_ingredient_selector" android:clickable="true"
     android:focusable="true">
 
-    <!-- Nome dell'ingrediente -->
     <TextView
         android:id="@+id/ingredient_name"
         android:layout_width="0dp"
@@ -18,17 +16,17 @@
         android:textSize="16sp"
         android:textColor="@android:color/black" />
 
-    <!-- Campo per la quantità -->
     <EditText
         android:id="@+id/ingredient_quantity"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:hint="Qty"
+        android:hint="@string/qty"
         android:inputType="number"
         android:padding="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:enabled="false"  />
 
 </LinearLayout>

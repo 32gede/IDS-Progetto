@@ -34,4 +34,5 @@
     <string name="seleziona_immagine">Select Image</string>
     <string name="store_image" />
     <string name="rate_store" />
+    <string name="qty">Qty</string>
 </resources>
