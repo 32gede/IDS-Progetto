@@ -171,12 +171,12 @@ public class RecipeActivity extends AppCompatActivity {
                     }
 
                     cookedRecipes.clear();
-                    for (Recipe recipe : globalRecipes) {
-                        List<String> recipeIngredients = Arrays.asList(recipe.getIngredients().split(","));
+                   /* for (Recipe recipe : globalRecipes) {
+                        List<String> recipeIngredients = Arrays.asList(recipe.().split(","));
                         if (userIngredients.containsAll(recipeIngredients)) {
                             cookedRecipes.add(recipe);
                         }
-                    }
+                    }*/
                     if (tabLayout.getSelectedTabPosition() == 2) {
                         adapter.setRecipes(cookedRecipes);
                     }

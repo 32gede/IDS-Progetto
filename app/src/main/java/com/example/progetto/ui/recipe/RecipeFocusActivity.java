@@ -69,7 +69,6 @@ public class RecipeFocusActivity extends AppCompatActivity {
         difficultyTextView.setText(recipe.getDifficulty());
         categoryTextView.setText(recipe.getCategory());
         preparationTimeTextView.setText(recipe.getPreparationTime());
-        ingredientsTextView.setText(recipe.getIngredients());
         stepsTextView.setText(recipe.getSteps());
 
         // Carica l'immagine utilizzando Glide

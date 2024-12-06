@@ -3,6 +3,7 @@ package com.example.progetto.adapter;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +18,22 @@ import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
 
     private final List<ItemUtils> ingredientsList;
-    private final List<SelectedIngredientUtils> selectedIngredients;
+    private final Map<String, SelectedIngredientUtils> selectedIngredients;
 
     public IngredientsAdapter(List<ItemUtils> ingredients) {
         this.ingredientsList = ingredients;
-        this.selectedIngredients = new ArrayList<>();
+        this.selectedIngredients = new HashMap<>();
     }
 
     public List<SelectedIngredientUtils> getSelectedIngredients() {
-        return selectedIngredients;
+        return new ArrayList<>(selectedIngredients.values());
     }
 
     @NonNull
@@ -48,8 +51,8 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         // Set ingredient name
         holder.ingredientName.setText(ingredient.getName());
 
-        // Check if ingredient is already selected
-        SelectedIngredientUtils existingSelection = findSelectedIngredientByName(ingredient.getProductId());
+        // Check if ingredient is selected
+        SelectedIngredientUtils existingSelection = selectedIngredients.get(ingredient.getName());
         boolean isSelected = existingSelection != null;
 
         // Update UI based on selection
@@ -57,26 +60,18 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         holder.ingredientName.setTextColor(isSelected ? Color.MAGENTA : Color.BLACK);
         holder.ingredientQuantity.setEnabled(isSelected);
 
+        // Avoid re-adding TextWatchers during recycling
+        holder.ingredientQuantity.removeTextChangedListener(holder.textWatcher);
+
+        // Set quantity if selected
         if (isSelected) {
             holder.ingredientQuantity.setText(String.valueOf(existingSelection.getQuantity()));
         } else {
             holder.ingredientQuantity.setText(""); // Reset quantity for non-selected items
         }
 
-        // Handle item click
-        holder.itemView.setOnClickListener(v -> {
-            if (isSelected) {
-                // Remove from selected
-                selectedIngredients.remove(existingSelection);
-            } else {
-                // Add to selected
-                selectedIngredients.add(new SelectedIngredientUtils(ingredient.getProductId(), parseQuantity(holder.ingredientQuantity.getText().toString())));
-            }
-            notifyItemChanged(position);
-        });
-
-        // Update quantity in real-time
-        holder.ingredientQuantity.addTextChangedListener(new TextWatcher() {
+        // Add TextWatcher to update quantity in real-time
+        holder.textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -87,9 +82,31 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
             public void afterTextChanged(Editable s) {
                 if (isSelected) {
                     int quantity = parseQuantity(s.toString());
-                    existingSelection.setQuantity(quantity);
+                    if (existingSelection != null) {
+                        existingSelection.setQuantity(quantity);
+                        selectedIngredients.put(ingredient.getName(), existingSelection);
+                        Log.d("IngredientsAdapter", "Updated ingredient quantity: " + quantity);
+                    }
                 }
             }
+        };
+        holder.ingredientQuantity.addTextChangedListener(holder.textWatcher);
+
+        // Handle item click to select or deselect ingredients
+        holder.itemView.setOnClickListener(v -> {
+            if (isSelected) {
+                // Remove from selected
+                selectedIngredients.remove(ingredient.getName());
+            } else {
+                // Add to selected
+                int quantity = parseQuantity(holder.ingredientQuantity.getText().toString());
+                SelectedIngredientUtils newSelection = new SelectedIngredientUtils(ingredient.getName(), quantity);
+                selectedIngredients.put(ingredient.getName(), newSelection);
+            }
+
+            // Notify adapter to refresh UI
+            notifyItemChanged(position);
+            Log.d("IngredientsAdapter", "Selected ingredients: " + selectedIngredients.size());
         });
     }
 
@@ -107,20 +124,11 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         }
     }
 
-    // Helper method to find a SelectedIngredient object by name
-    private SelectedIngredientUtils findSelectedIngredientByName(String name) {
-        for (SelectedIngredientUtils selected : selectedIngredients) {
-            if (selected.getName().equals(name)) {
-                return selected;
-            }
-        }
-        return null;
-    }
-
     // ViewHolder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView ingredientName;
         public final EditText ingredientQuantity;
+        public TextWatcher textWatcher;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -129,6 +137,3 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         }
     }
 }
-
-// SelectedIngredient class
-

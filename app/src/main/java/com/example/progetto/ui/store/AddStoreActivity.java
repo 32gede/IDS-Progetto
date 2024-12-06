@@ -20,6 +20,9 @@ import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.adapter.IngredientsAdapter;
 import com.example.progetto.data.model.ItemUtils;
+import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
+import com.example.progetto.data.model.SelectedIngredientStoreUtils;
+import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -135,16 +138,10 @@ public class AddStoreActivity extends AppCompatActivity {
         String name = storeName.getText().toString().trim();
         String description = storeDescription.getText().toString().trim();
         String prezzoStr = storePrezzo.getText().toString().trim();
-        List<ItemUtils> selectedProducts = ingredientsAdapter.getSelectedIngredients();
-        StringBuilder products = new StringBuilder();
-        for (ItemUtils product : selectedProducts) {
-            products.append(product.getName()).append(", ");
-        }
-        if (products.length() > 0) {
-            products.setLength(products.length() - 2); // Remove the last comma and space
-        }
+        ;
 
-        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty() || products.toString().isEmpty()) {
+
+        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Validation failed: Some fields are empty");
             return;
@@ -162,19 +159,19 @@ public class AddStoreActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         if (selectedImageUri != null) {
-            uploadImageAndSaveStore(name, description, prezzo, products.toString());
+            uploadImageAndSaveStore(name, description, prezzo);
         } else {
-            saveStoreToFirestore(name, description, prezzo, products.toString(), null);
+            saveStoreToFirestore(name, description, prezzo, null);
         }
     }
 
 
-    private void uploadImageAndSaveStore(String name, String description, double prezzo, String products) {
+    private void uploadImageAndSaveStore(String name, String description, double prezzo) {
         StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
         fileRef.putFile(selectedImageUri)
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String imageUrl = uri.toString();
-                    saveStoreToFirestore(name, description, prezzo, products, imageUrl);
+                    saveStoreToFirestore(name, description, prezzo, imageUrl);
                     Log.d(TAG, "Image uploaded successfully: " + imageUrl);
                 }))
                 .addOnFailureListener(e -> {
@@ -184,7 +181,7 @@ public class AddStoreActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveStoreToFirestore(String name, String description, double prezzo, String products, @Nullable String imageUrl) {
+    private void saveStoreToFirestore(String name, String description, double prezzo, @Nullable String imageUrl) {
         String storeId = db.collection("stores").document().getId();
         mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
@@ -194,7 +191,6 @@ public class AddStoreActivity extends AppCompatActivity {
         store.put("name", name);
         store.put("description", description);
         store.put("price", prezzo); // Adesso è un numero
-        store.put("products", products);
         store.put("image", imageUrl);
         store.put("userId", userId);
 
@@ -211,6 +207,20 @@ public class AddStoreActivity extends AppCompatActivity {
                     Toast.makeText(this, "Errore nell'aggiunta dello store: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Error adding store: " + e.getMessage());
                 });
+        List<SelectedIngredientStoreUtils> selectedProducts = new ArrayList<>();
+        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
+            selectedProducts.add(new SelectedIngredientStoreUtils(ingredient.getName(), ingredient.getQuantity(), storeId));
+        }
+        for (SelectedIngredientStoreUtils ingredient : selectedProducts) {
+            db.collection("SelectedIngredient").add(ingredient)
+                    .addOnSuccessListener(aVoid -> {
+                        // Success
+                    })
+                    .addOnFailureListener(e -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 
 }

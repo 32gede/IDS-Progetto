@@ -15,7 +15,9 @@ import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
 import com.example.progetto.data.model.NavigationHelper;
+import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.ui.profile.ProfileActivity;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -24,7 +26,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,6 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         titleText.setText(getString(R.string.home));
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
+            Log.d(TAG, "Swipe to refresh triggered");
             loadRecipes();
             swipeRefreshLayout.setRefreshing(false);
         });
@@ -111,12 +113,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void loadRecipes() {
+        Log.d(TAG, "Loading recipes");
         loadPopularRecipes();
         loadNewerRecipes();
         loadCookableRecipes(FirebaseAuth.getInstance().getUid());
     }
 
     private void loadPopularRecipes() {
+        Log.d(TAG, "Loading popular recipes");
         firestore.collection("recipes")
                 .orderBy("averageRating", Query.Direction.DESCENDING)
                 .limit(5)
@@ -130,12 +134,13 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     }
                     adapterPopular.notifyDataSetChanged();
-                    Log.d(TAG, "Top 5 ricette caricate con successo.");
+                    Log.d(TAG, "Top 5 popular recipes loaded successfully.");
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette popolari: " + e.getMessage()));
+                .addOnFailureListener(e -> Log.e(TAG, "Error loading popular recipes: " + e.getMessage()));
     }
 
     private void loadNewerRecipes() {
+        Log.d(TAG, "Loading newer recipes");
         firestore.collection("recipes")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .limit(5)
@@ -149,9 +154,9 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     }
                     adapterNewer.notifyDataSetChanged();
-                    Log.d(TAG, "Ultime 5 ricette caricate con successo.");
+                    Log.d(TAG, "Latest 5 recipes loaded successfully.");
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette più recenti: " + e.getMessage()));
+                .addOnFailureListener(e -> Log.e(TAG, "Error loading newer recipes: " + e.getMessage()));
     }
 
     private void loadCookableRecipes(String userId) {
@@ -160,7 +165,7 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Load global recipes first
+        Log.d(TAG, "Loading global recipes");
         firestore.collection("recipes")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -174,33 +179,84 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "Global recipes loaded: " + globalRecipes.size());
                     filterCookableRecipes(userId);
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento delle ricette globali: " + e.getMessage()));
+                .addOnFailureListener(e -> Log.e(TAG, "Error loading global recipes: " + e.getMessage()));
     }
 
     private void filterCookableRecipes(String userId) {
-        firestore.collection("user_products")
-                .whereEqualTo("userId", userId)
+        Log.d(TAG, "Filtering cookable recipes for user: " + userId);
+        ritorna().addOnSuccessListener(recipeIngredients -> {
+            firestore.collection("user_products")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        Set<String> userIngredients = new HashSet<>();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            String productName = document.getString("name");
+                            if (productName != null) {
+                                userIngredients.add(productName);
+                            }
+                        }
+
+                        cookableRecipe.clear();
+                        for (Recipe recipe : globalRecipes) {
+                            Log.d(TAG, "Checking recipe: " + recipe.getName());
+                            boolean canCook = true;
+
+                            for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
+                                if (ingredient.getRecipeId().equals(recipe.getId())) {
+                                    Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
+
+                                    boolean hasIngredient = false;
+                                    for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
+                                        String userIngredientName = userIngredientDoc.getString("name");
+                                        Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
+
+                                        if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
+                                            Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
+
+                                            // Check if the user has enough quantity
+                                            if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
+                                                hasIngredient = true;
+                                            }
+                                            break; // No need to check further if ingredient matches
+                                        }
+                                    }
+
+                                    if (!hasIngredient) {
+                                        canCook = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (canCook) {
+                                cookableRecipe.add(recipe);
+                            }
+                        }
+                        adapterCookable.notifyDataSetChanged();
+                        Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
+                    })
+                    .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
+        }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
+    }
+
+    public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
+        Log.d(TAG, "Loading selected ingredients");
+        return firestore.collection("SelectedIngredient")
+                .whereEqualTo("position", 1)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Set<String> userIngredients = new HashSet<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String productName = document.getString("name");
-                        if (productName != null) {
-                            userIngredients.add(productName);
+                .continueWith(task -> {
+                    List<SelectedIngredientRecipeUtils> selectedIngredients = new ArrayList<>();
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            SelectedIngredientRecipeUtils ingredient = document.toObject(SelectedIngredientRecipeUtils.class);
+                            if (ingredient != null) {
+                                selectedIngredients.add(ingredient);
+                            }
                         }
                     }
-
-                    cookableRecipe.clear();
-                    for (Recipe recipe : globalRecipes) {
-                        List<String> recipeIngredients = Arrays.asList(recipe.getIngredients().split(","));
-                        if (userIngredients.containsAll(recipeIngredients)) {
-                            cookableRecipe.add(recipe);
-                        }
-                    }
-
-                    adapterCookable.notifyDataSetChanged();
-                    Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Errore nel caricamento degli ingredienti dell'utente: " + e.getMessage()));
+                    Log.d(TAG, "Selected ingredients loaded: " + selectedIngredients.size());
+                    return selectedIngredients;
+                });
     }
 }

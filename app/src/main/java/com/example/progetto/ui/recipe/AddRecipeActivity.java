@@ -224,6 +224,7 @@ private void saveRecipeToFirestore(String name, String description, String steps
     recipe.put("steps", steps);
     recipe.put("image", imageUrl);
     recipe.put("difficulty", difficulty);
+    recipe.put("ingredients", "Cocco");
     recipe.put("category", category);
     recipe.put("preparationTime", preparationTime);
     recipe.put("createdAt", FieldValue.serverTimestamp());

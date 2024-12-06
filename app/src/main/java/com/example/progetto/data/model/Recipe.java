@@ -7,7 +7,6 @@ public class Recipe implements Serializable {
     private String name;
     private String description;
     private String image;
-    private String ingredients;
     private String steps;
     private String difficulty;
     private String category;
@@ -23,14 +22,14 @@ public class Recipe implements Serializable {
     }
 
     // No-argument constructor required for Firestore
-    public Recipe() {}
+    public Recipe() {
+    }
 
-    public Recipe(String id, String name, String description, String image, String ingredients, String difficulty, String steps, String category, String preparationTime, float rating) {
+    public Recipe(String id, String name, String description, String image, String difficulty, String steps, String category, String preparationTime, float rating) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
-        this.ingredients = ingredients;
         this.difficulty = difficulty;
         this.steps = steps;
         this.category = category;
@@ -69,14 +68,6 @@ public class Recipe implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public String getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
     }
 
     public String getSteps() {

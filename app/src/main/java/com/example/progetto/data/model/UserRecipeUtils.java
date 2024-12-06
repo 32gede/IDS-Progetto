@@ -8,8 +8,7 @@ public class UserRecipeUtils extends Recipe {
 
     // Constructor that accepts a Recipe object and a userId
     public UserRecipeUtils(Recipe recipe, String userId) {
-        super(recipe.getId(), recipe.getName(), recipe.getDescription(), recipe.getImage(),
-                recipe.getIngredients(), recipe.getSteps(), recipe.getDifficulty(),
+        super(recipe.getId(), recipe.getName(), recipe.getDescription(), recipe.getImage(), recipe.getSteps(), recipe.getDifficulty(),
                 recipe.getCategory(), recipe.getPreparationTime(), recipe.getAverageRating());
         this.userId = userId;
     }
@@ -17,7 +16,7 @@ public class UserRecipeUtils extends Recipe {
     // Full constructor with all fields
     public UserRecipeUtils(String id, String name, String description, String image, String ingredients,
                            String steps, String difficulty, String category, String preparationTime, String userId) {
-        super(id, name, description, image, ingredients, steps, difficulty, category, preparationTime,5);
+        super(id, name, description, image, steps, difficulty, category, preparationTime,5);
         this.userId = userId;
     }
 

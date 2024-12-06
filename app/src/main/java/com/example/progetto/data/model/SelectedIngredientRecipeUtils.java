@@ -3,6 +3,8 @@ package com.example.progetto.data.model;
 public class SelectedIngredientRecipeUtils extends SelectedIngredientUtils {
     private String recipeId;
 
+    public SelectedIngredientRecipeUtils() {
+    }
     public SelectedIngredientRecipeUtils(String name, int quantity, String recipeId) {
         super(name, quantity);
         this.recipeId = recipeId;
