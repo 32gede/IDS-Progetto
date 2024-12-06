@@ -255,6 +255,7 @@ public class HomeActivity extends AppCompatActivity {
                             }
                         }
                     }
+
                     Log.d(TAG, "Selected ingredients loaded: " + selectedIngredients.size());
                     return selectedIngredients;
                 });
