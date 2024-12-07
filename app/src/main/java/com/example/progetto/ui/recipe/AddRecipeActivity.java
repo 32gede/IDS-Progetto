@@ -2,12 +2,10 @@ package com.example.progetto.ui.recipe;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
-import com.example.progetto.adapter.IngredientsAdapter;
+import com.example.progetto.adapter.SelectedIngredientsAdapter;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
@@ -37,7 +35,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +52,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private ProgressBar progressBar;
-    private IngredientsAdapter ingredientsAdapter;
+    private SelectedIngredientsAdapter ingredientsAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,7 +130,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         flexboxLayoutManager.setAlignItems(AlignItems.FLEX_START); // Allinea gli elementi in alto
 
         // Imposta l'adattatore e il layout manager
-        ingredientsAdapter = new IngredientsAdapter(ingredients);
+        ingredientsAdapter = new SelectedIngredientsAdapter(ingredients);
         recipeIngredients.setLayoutManager(flexboxLayoutManager);
         recipeIngredients.setAdapter(ingredientsAdapter);
     }

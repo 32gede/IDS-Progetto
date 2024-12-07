@@ -116,13 +116,11 @@
                 android:textColor="@color/black"
                 android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:id="@+id/recipe_ingredients"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recipe_ingredients_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:lineSpacingExtra="4dp"
-                android:textColor="@color/white" />
+                android:layout_marginBottom="16dp" />
         </LinearLayout>
 
         <!-- Sezione Passaggi -->

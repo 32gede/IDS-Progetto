@@ -18,9 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
-import com.example.progetto.adapter.IngredientsAdapter;
+import com.example.progetto.adapter.SelectedIngredientsAdapter;
 import com.example.progetto.data.model.ItemUtils;
-import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientStoreUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.google.android.flexbox.AlignItems;
@@ -48,7 +47,7 @@ public class AddStoreActivity extends AppCompatActivity {
     private Button btnSelectImage, btnSubmitStore;
     private ProgressBar progressBar;
     private Uri selectedImageUri;
-    private IngredientsAdapter ingredientsAdapter;
+    private SelectedIngredientsAdapter ingredientsAdapter;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -108,7 +107,7 @@ public class AddStoreActivity extends AppCompatActivity {
         flexboxLayoutManager.setAlignItems(AlignItems.FLEX_START); // Allinea gli elementi in alto
 
         // Imposta l'adattatore e il layout manager
-        ingredientsAdapter = new IngredientsAdapter(ingredients);
+        ingredientsAdapter = new SelectedIngredientsAdapter(ingredients);
         productsRecyclerView.setLayoutManager(flexboxLayoutManager);
         productsRecyclerView.setAdapter(ingredientsAdapter);
     }
