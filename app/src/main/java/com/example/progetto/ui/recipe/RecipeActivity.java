@@ -1,9 +1,10 @@
 package com.example.progetto.ui.recipe;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,13 +15,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Recipe;
+import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.UserRecipeUtils;
-import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -29,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class RecipeActivity extends AppCompatActivity {
     // Recipe Data
     private List<Recipe> globalRecipes;
     private List<UserRecipeUtils> savedRecipes;
-    private List<Recipe> cookedRecipes;
+    private List<Recipe> cookableRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void loadRecipesFromFirestore() {
         globalRecipes = new ArrayList<>();
         savedRecipes = new ArrayList<>();
-        cookedRecipes = new ArrayList<>();
+        cookableRecipe = new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -157,31 +158,82 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void loadCookedRecipes(String userId) {
-        Set<String> userIngredients = new HashSet<>();
-        firestore.collection("user_products")
-                .whereEqualTo("userId", userId)
+        Log.d(TAG, "Filtering cookable recipes for user: " + userId);
+        ritorna().addOnSuccessListener(recipeIngredients -> {
+            firestore.collection("user_products")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        Set<String> userIngredients = new HashSet<>();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            String productName = document.getString("name");
+                            if (productName != null) {
+                                userIngredients.add(productName);
+                            }
+                        }
+
+                        cookableRecipe.clear();
+                        for (Recipe recipe : globalRecipes) {
+                            Log.d(TAG, "Checking recipe: " + recipe.getName());
+                            boolean canCook = true;
+
+                            for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
+                                if (ingredient.getRecipeId().equals(recipe.getId())) {
+                                    Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
+
+                                    boolean hasIngredient = false;
+                                    for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
+                                        String userIngredientName = userIngredientDoc.getString("name");
+                                        Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
+
+                                        if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
+                                            Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
+
+                                            // Check if the user has enough quantity
+                                            if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
+                                                hasIngredient = true;
+                                            }
+                                            break; // No need to check further if ingredient matches
+                                        }
+                                    }
+
+                                    if (!hasIngredient) {
+                                        canCook = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (canCook && cookableRecipe.size() < 5) {
+                                cookableRecipe.add(recipe);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
+                    })
+                    .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
+        }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
+    }
+
+    public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
+        Log.d(TAG, "Loading selected ingredients");
+        return firestore.collection("SelectedIngredient")
+                .whereEqualTo("position", 1)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    userIngredients.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String productName = document.getString("name");
-                        if (productName != null) {
-                            userIngredients.add(productName);
+                .continueWith(task -> {
+                    List<SelectedIngredientRecipeUtils> selectedIngredients = new ArrayList<>();
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            SelectedIngredientRecipeUtils ingredient = document.toObject(SelectedIngredientRecipeUtils.class);
+                            if (ingredient != null) {
+                                selectedIngredients.add(ingredient);
+                            }
                         }
                     }
 
-                    cookedRecipes.clear();
-                   /* for (Recipe recipe : globalRecipes) {
-                        List<String> recipeIngredients = Arrays.asList(recipe.().split(","));
-                        if (userIngredients.containsAll(recipeIngredients)) {
-                            cookedRecipes.add(recipe);
-                        }
-                    }*/
-                    if (tabLayout.getSelectedTabPosition() == 2) {
-                        adapter.setRecipes(cookedRecipes);
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("RecipeActivity", "Failed to load user products: " + e.getMessage()));
+                    Log.d(TAG, "Selected ingredients loaded: " + selectedIngredients.size());
+                    return selectedIngredients;
+                });
     }
 
     private void saveRecipeToUserCollection(Recipe recipe) {
@@ -219,7 +271,7 @@ public class RecipeActivity extends AppCompatActivity {
                 } else if (tab.getPosition() == 1) {
                     adapter.setRecipes(globalRecipes);
                 } else {
-                    adapter.setRecipes(cookedRecipes);
+                    adapter.setRecipes(cookableRecipe);
                 }
             }
 

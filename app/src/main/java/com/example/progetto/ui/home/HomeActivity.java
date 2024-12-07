@@ -229,7 +229,7 @@ public class HomeActivity extends AppCompatActivity {
                                 }
                             }
 
-                            if (canCook) {
+                            if (canCook&&cookableRecipe.size()<5) {
                                 cookableRecipe.add(recipe);
                             }
                         }
