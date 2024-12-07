@@ -4,19 +4,29 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
+import com.example.progetto.adapter.IngredientsAdapter;
+import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.progetto.data.model.StoreUtils;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StoreFocusActivity extends AppCompatActivity {
     private static final String TAG = "StoreFocusActivity";
     private ImageView imageView;
     private TextView nameTextView, descriptionTextView, priceTextView;
     private FirebaseFirestore databaseReference;
+    private RecyclerView ingredientsRecyclerView;
+    private IngredientsAdapter ingredientsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,31 @@ public class StoreFocusActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "onCreate: no store data received");
         }
+        ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
+        ingredientsRecyclerView.setAdapter(ingredientsAdapter);
+        getIngredients(store.getId());
+    }
+    private void getIngredients(String recipeId) {
+        Log.d(TAG, "Fetching ingredients for recipe ID: " + recipeId);
+        databaseReference.collection("SelectedIngredient")
+                .whereEqualTo("recipeId", recipeId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<SelectedIngredientUtils> ingredients = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        SelectedIngredientUtils item = document.toObject(SelectedIngredientUtils.class);
+                        if (item != null) {
+                            ingredients.add(item);
+                        }
+                    }
+                    // Update adapter data
+                    ingredientsAdapter.updateData(ingredients);
+                    Log.d(TAG, "Ingredients loaded: " + ingredients.size());
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to fetch ingredients: " + e.getMessage());
+                    Toast.makeText(this, "Failed to fetch ingredients", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void initializeViews() {
@@ -45,6 +80,8 @@ public class StoreFocusActivity extends AppCompatActivity {
         nameTextView = findViewById(R.id.store_name);
         descriptionTextView = findViewById(R.id.store_description);
         priceTextView = findViewById(R.id.store_price);
+        ingredientsRecyclerView = findViewById(R.id.store_ingredients_recycler_view);
+
     }
 
     private void displayStoreDetails(StoreUtils store) {
