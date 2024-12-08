@@ -2,4 +2,7 @@
 <resources>
     <item name="toolbar" type="id" />
     <item name="remove_button" type="id" />
+    <item name="ingredients_recycler_view" type="id" />
+    <item name="recipe_image_view" type="id" />
+    <item name="btn_submit_recipe" type="id" />
 </resources>
