@@ -1,5 +1,6 @@
 package com.example.progetto.ui.store;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -44,13 +46,15 @@ public class StoreFocusActivity extends AppCompatActivity {
         if (store != null) {
             Log.d(TAG, "onCreate: store data received");
             displayStoreDetails(store);
+            ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
+            ingredientsRecyclerView.setAdapter(ingredientsAdapter);
+            getIngredients(store.getId());
         } else {
             Log.d(TAG, "onCreate: no store data received");
+            Toast.makeText(this, "No store data received", Toast.LENGTH_SHORT).show();
         }
-        ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
-        ingredientsRecyclerView.setAdapter(ingredientsAdapter);
-        getIngredients(store.getId());
     }
+
     private void getIngredients(String recipeId) {
         Log.d(TAG, "Fetching ingredients for recipe ID: " + recipeId);
         databaseReference.collection("SelectedIngredient")
@@ -62,11 +66,16 @@ public class StoreFocusActivity extends AppCompatActivity {
                         SelectedIngredientUtils item = document.toObject(SelectedIngredientUtils.class);
                         if (item != null) {
                             ingredients.add(item);
+                        } else {
+                            Log.w(TAG, "Null ingredient item found in document: " + document.getId());
                         }
                     }
                     // Update adapter data
                     ingredientsAdapter.updateData(ingredients);
                     Log.d(TAG, "Ingredients loaded: " + ingredients.size());
+                    if (Build.VERSION.SDK_INT >= 35) {
+                        Log.d(TAG, "Ingredients: " + ingredients.getFirst().getName()+", "+ingredients.getFirst().getQuantity());
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to fetch ingredients: " + e.getMessage());
@@ -81,7 +90,7 @@ public class StoreFocusActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.store_description);
         priceTextView = findViewById(R.id.store_price);
         ingredientsRecyclerView = findViewById(R.id.store_ingredients_recycler_view);
-
+        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void displayStoreDetails(StoreUtils store) {
@@ -98,5 +107,4 @@ public class StoreFocusActivity extends AppCompatActivity {
             priceTextView.setText("€0.00"); // Default value for null price
         }
     }
-
 }
