@@ -38,6 +38,7 @@ public class Firestore {
                     callback.onFailure(e); // Passa l'errore al chiamante
                 });
     }
+
     public void getIngredients(FirestoreCallback<List<ItemUtils>> callback) {
         db.collection("items")
                 .get()
@@ -54,6 +55,34 @@ public class Firestore {
                 .addOnFailureListener(e -> {
                     callback.onFailure(e); // Passa l'errore al chiamante
                 });
+    }
+
+    public void removeSelectedIngredient(StoreUtils store, FirestoreCallback<Void> callback) {
+        db.collection("SelectedIngredient")
+                .whereEqualTo("recipeId", store.getId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                    callback.onSuccess(null); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e); // Passa l'errore al chiamante
+                });
+    }
+
+    public void addSelectedIngredient(List<SelectedIngredientStoreUtils> ingredients, FirestoreCallback<Void> callback) {
+        for (SelectedIngredientStoreUtils ingredient : ingredients) {
+            db.collection("SelectedIngredient")
+                    .add(ingredient)
+                    .addOnSuccessListener(documentReference -> {
+                        callback.onSuccess(null); // Passa il risultato al chiamante
+                    })
+                    .addOnFailureListener(e -> {
+                        callback.onFailure(e); // Passa l'errore al chiamante
+                    });
+        }
     }
 
 }

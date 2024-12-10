@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.adapter.SelectedIngredientsAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientStoreUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
@@ -52,11 +54,13 @@ public class AddStoreActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private StorageReference storageRef;
+    private Firestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_store);
+        firestore = new Firestore();
 
         initializeViews();
         setupProductsRecyclerView();
@@ -86,19 +90,18 @@ public class AddStoreActivity extends AppCompatActivity {
         List<ItemUtils> ingredients = new ArrayList<>();
 
         // Recupera gli ingredienti da Firestore
-        db.collection("items")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                        ItemUtils item = queryDocumentSnapshots.getDocuments().get(i).toObject(ItemUtils.class);
-                        if (item != null) {
-                            ingredients.add(item);
-                        }
-                    }
-                    ingredientsAdapter.notifyDataSetChanged();
-                    Log.d(TAG, "Ingredients loaded successfully");
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Error loading ingredients: " + e.getMessage()));
+        firestore.getIngredients(new FirestoreCallback<List<ItemUtils>>() {
+            @Override
+            public void onSuccess(List<ItemUtils> result) {
+                ingredientsAdapter.updateData(result);
+                Log.d(TAG, "Ingredients loaded successfully");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Error loading ingredients: " + e.getMessage());
+            }
+        });
 
         // Inizializza il FlexboxLayoutManager
         FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);

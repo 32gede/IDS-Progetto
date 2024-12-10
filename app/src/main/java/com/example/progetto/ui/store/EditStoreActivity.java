@@ -21,6 +21,7 @@ import com.example.progetto.R;
 import com.example.progetto.data.model.Firestore;
 import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
+import com.example.progetto.data.model.SelectedIngredientStoreUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.adapter.SelectedIngredientsAdapter;
@@ -175,5 +176,31 @@ public class EditStoreActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating store", e));
+        firestore.removeSelectedIngredient(store, new FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.d(TAG, "Selected ingredients removed successfully");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to remove selected ingredients: " + e.getMessage());
+            }
+        });
+        List<SelectedIngredientStoreUtils> selectedProducts = new ArrayList<>();
+        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
+            selectedProducts.add(new SelectedIngredientStoreUtils(ingredient.getName(), ingredient.getQuantity(), store.getId()));
+        }
+        firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.d(TAG, "Selected ingredients added successfully");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to add selected ingredients: " + e.getMessage());
+            }
+        });
     }
 }
