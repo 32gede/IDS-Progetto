@@ -56,6 +56,8 @@
 
             android:label="@string/fridge"
             android:theme="@style/AppTheme" />
+        <activity android:name=".ui.store.EditStoreActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.fridge.CreateProductActivity"

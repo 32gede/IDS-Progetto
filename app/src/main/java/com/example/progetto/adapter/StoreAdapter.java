@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.data.model.StoreUtils;
+import com.example.progetto.ui.store.EditStoreActivity;
 import com.example.progetto.ui.store.StoreActivity;
 import com.example.progetto.ui.store.StoreFocusActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -122,8 +123,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                     if (selectedTabPosition == 1 && !isCartActivity) { // Global tab
                         addToUserStore(store);
                     }
-                    if (isCartActivity) {
+                    else if (isCartActivity) {
                         removeFromUserStore(store);
+                    }
+                    else  { // Saved tab
+                        Intent intent = new Intent(context, EditStoreActivity.class);
+                        intent.putExtra("store", store);
+                        context.startActivity(intent);
                     }
                 } else {
                     Log.e(TAG, "Invalid position or empty store list in actionIcon onClickListener");

@@ -87,7 +87,7 @@
                         android:id="@+id/cart_icon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
+                        android:background="@drawable/selected_nav_item_background"
                         android:src="@drawable/shopping_cart_svgrepo_com"
                         android:padding="8dp" />
                 </FrameLayout>
