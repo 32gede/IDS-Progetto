@@ -27,9 +27,19 @@ public class SelectedIngredientsAdapter extends RecyclerView.Adapter<SelectedIng
     private final List<ItemUtils> ingredientsList;
     private final Map<String, SelectedIngredientUtils> selectedIngredients;
 
+    // Constructor to initialize with ingredients list
     public SelectedIngredientsAdapter(List<ItemUtils> ingredients) {
         this.ingredientsList = ingredients;
         this.selectedIngredients = new HashMap<>();
+    }
+
+    // Constructor to initialize with ingredients list and selected ingredients
+    public SelectedIngredientsAdapter(List<ItemUtils> ingredients, List<SelectedIngredientUtils> selectedIngredients) {
+        this.ingredientsList = ingredients;
+        this.selectedIngredients = new HashMap<>();
+        for (SelectedIngredientUtils ingredient : selectedIngredients) {
+            this.selectedIngredients.put(ingredient.getName(), ingredient);
+        }
     }
 
     public List<SelectedIngredientUtils> getSelectedIngredients() {
