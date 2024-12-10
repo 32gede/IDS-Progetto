@@ -134,6 +134,14 @@ public class SelectedIngredientsAdapter extends RecyclerView.Adapter<SelectedIng
         }
     }
 
+    public void changeData(List<SelectedIngredientUtils> appo) {
+        selectedIngredients.clear();
+        for (SelectedIngredientUtils ingredient : appo) {
+            selectedIngredients.put(ingredient.getName(), ingredient);
+        }
+        notifyDataSetChanged();
+    }
+
     // ViewHolder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView ingredientName;
