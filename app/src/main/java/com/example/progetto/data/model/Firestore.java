@@ -124,17 +124,19 @@ public class Firestore {
     }
 
 
-    public void addSomething(Map<String, Object> object, String directory) {
-        String documentId = db.collection(directory).document().getId();
-        object.put("id", documentId);
-        db.collection(directory)
-                .add(object)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error adding document", e);
-                });
-    }
+    public String addSomething(Map<String, Object> object, String directory) {
+    String documentId = db.collection(directory).document().getId();
+    object.put("id", documentId);
+    db.collection(directory)
+            .document(documentId) // Use the generated document ID
+            .set(object) // Use set instead of add
+            .addOnSuccessListener(aVoid -> {
+                Log.d("Firestore", "DocumentSnapshot added with ID: " + documentId);
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error adding document", e);
+            });
+    return documentId;
+}
 }
 

@@ -114,7 +114,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadRecipes() {
         Log.d(TAG, "Loading recipes");
-        loadPopularRecipes();
+       loadPopularRecipes();
         loadNewerRecipes();
         loadCookableRecipes(FirebaseAuth.getInstance().getUid());
     }

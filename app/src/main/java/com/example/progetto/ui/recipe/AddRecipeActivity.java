@@ -56,12 +56,14 @@ public class AddRecipeActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private SelectedIngredientsAdapter ingredientsAdapter;
     private Firestore firestore;
+    private String recipeId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
 
+        firestore = new Firestore();
         // Inizializza Firebase
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference("recipe_images");
@@ -169,18 +171,17 @@ public class AddRecipeActivity extends AppCompatActivity {
         }
 
         // Generate a unique recipe ID
-        String recipeId = db.collection("recipes").document().getId();
         if (selectedImageUri != null) {
             // Upload the image to Firebase Storage
-            uploadImageAndSaveRecipe(name, description, steps, difficulty, category, preparationTime, recipeId);
+            uploadImageAndSaveRecipe(name, description, steps, difficulty, category, preparationTime);
         } else {
             // Save the recipe without an image
-            saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, null, recipeId);
+            saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, null);
         }
         // Create a list of selected ingredients with the recipe ID
         List<SelectedIngredientRecipeUtils> list_ingredients = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId,1));
+            list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId, 1));
         }
 
         firestore.addSelectedIngredient(list_ingredients, new FirestoreCallback<Void>() {
@@ -196,19 +197,17 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
-
         // Show the ProgressBar
         progressBar.setVisibility(View.VISIBLE);
-
-
     }
 
     private void uploadImageAndSaveRecipe(String name, String description, String steps,
-                                          String difficulty, String category, String preparationTime, String recipeId) {
+                                          String difficulty, String category, String preparationTime) {
+
         firestore.uploadImage(selectedImageUri, new FirestoreCallback<String>() {
             @Override
             public void onSuccess(String imageUrl) {
-                saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, imageUrl, recipeId);
+                saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, imageUrl);
             }
 
             @Override
@@ -219,11 +218,10 @@ public class AddRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private String saveRecipeToFirestore(String name, String description, String steps,
-                                       String difficulty, String category, String preparationTime, @Nullable String imageUrl, String recipeId) {
+    private void saveRecipeToFirestore(String name, String description, String steps,
+                                       String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
         // Create a map for Firestore
         Map<String, Object> recipe = new HashMap<>();
-        recipe.put("id", recipeId); // Set the ID as the document name
         recipe.put("name", name);
         recipe.put("description", description);
         recipe.put("steps", steps);
@@ -233,20 +231,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("category", category);
         recipe.put("preparationTime", preparationTime);
         recipe.put("createdAt", FieldValue.serverTimestamp());
-        firestore.addSomething(recipe,"recipes");
-
-        // Save to the main "recipes" collection
-        db.collection("recipes").document(recipeId)
-                .set(recipe)
-                .addOnSuccessListener(aVoid -> {
-                    saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
-                    saveDefaultRating(recipeId); // Call the method to save the default rating
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-        return recipeId;
+        recipeId = firestore.addSomething(recipe, "recipes");
+        saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
+        saveDefaultRating(recipeId);
     }
 
     private void saveDefaultRating(String recipeId) {
