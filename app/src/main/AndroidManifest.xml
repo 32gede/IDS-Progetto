@@ -124,6 +124,9 @@
             android:name=".ui.profile.ProfileActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
+
+        <activity android:name=".ui.profile.EditProfileActivity" />
+
         <activity
             android:name=".ui.store.StoreFocusActivity"
             android:exported="false"
