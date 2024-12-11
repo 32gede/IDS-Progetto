@@ -95,6 +95,7 @@ public class Firestore {
                     });
         }
     }
+
     public void uploadImage(Uri imageUri, FirestoreCallback<String> callback) {
         if (imageUri != null) {
             StorageReference fileReference = storageRef.child(System.currentTimeMillis() + ".jpg");
@@ -125,18 +126,54 @@ public class Firestore {
 
 
     public String addSomething(Map<String, Object> object, String directory) {
-    String documentId = db.collection(directory).document().getId();
-    object.put("id", documentId);
-    db.collection(directory)
-            .document(documentId) // Use the generated document ID
-            .set(object) // Use set instead of add
-            .addOnSuccessListener(aVoid -> {
-                Log.d("Firestore", "DocumentSnapshot added with ID: " + documentId);
-            })
-            .addOnFailureListener(e -> {
-                Log.e("Firestore", "Error adding document", e);
-            });
-    return documentId;
-}
+        String documentId = db.collection(directory).document().getId();
+        object.put("id", documentId);
+        db.collection(directory)
+                .document(documentId) // Use the generated document ID
+                .set(object) // Use set instead of add
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding document", e);
+                });
+        return documentId;
+    }
+
+    public void loadGlobalRecipes(FirestoreCallback<List<Recipe>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Recipe> recipes = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Recipe recipe = document.toObject(Recipe.class);
+                        if (recipe != null) {
+                            recipes.add(recipe);
+                        }
+                    }
+                    callback.onSuccess(recipes); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void loadUserRecipes(String userId, FirestoreCallback<List<UserRecipeUtils>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes_user")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<UserRecipeUtils> recipes = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserRecipeUtils recipe = document.toObject(UserRecipeUtils.class);
+                        if (recipe != null) {
+                            recipes.add(recipe);
+                        }
+                    }
+                    callback.onSuccess(recipes); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
 }
 
