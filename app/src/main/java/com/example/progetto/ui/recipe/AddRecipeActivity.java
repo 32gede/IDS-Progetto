@@ -178,24 +178,6 @@ public class AddRecipeActivity extends AppCompatActivity {
             // Save the recipe without an image
             saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, null);
         }
-        // Create a list of selected ingredients with the recipe ID
-        List<SelectedIngredientRecipeUtils> list_ingredients = new ArrayList<>();
-        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId, 1));
-        }
-
-        firestore.addSelectedIngredient(list_ingredients, new FirestoreCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                // Success
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(AddRecipeActivity.this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         // Show the ProgressBar
         progressBar.setVisibility(View.VISIBLE);
@@ -234,6 +216,27 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipeId = firestore.addSomething(recipe, "recipes");
         saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
         saveDefaultRating(recipeId);
+        saveSelectIngredient(recipeId);
+    }
+
+    private void saveSelectIngredient(String recipeId) {
+        List<SelectedIngredientRecipeUtils> list_ingredients = new ArrayList<>();
+        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
+            list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId, 1));
+        }
+        firestore.addSelectedIngredient(list_ingredients,
+                new FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        // Success
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(AddRecipeActivity.this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void saveDefaultRating(String recipeId) {
