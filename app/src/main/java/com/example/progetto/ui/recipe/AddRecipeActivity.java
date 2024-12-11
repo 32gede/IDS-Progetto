@@ -278,6 +278,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     }
 
+
     private void openImageChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
