@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,97 +17,128 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/baseline_account_circle_24" />
 
-    <!-- Nome Utente -->
-    <TextView
-        android:id="@+id/userNameLabel"
-        android:layout_width="0dp"
+    <!-- Change Avatar Button -->
+    <Button
+        android:id="@+id/changeAvatarButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name:"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
+        android:text="Change Profile Picture"
         app:layout_constraintTop_toBottomOf="@id/profileImage"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
 
-    <TextView
-        android:id="@+id/userName"
+    <!-- Username Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userNameLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/userNameLabel"
+        android:hint="Username"
+        app:layout_constraintTop_toBottomOf="@id/changeAvatarButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp">
 
-    <!-- Email -->
-    <TextView
-        android:id="@+id/userEmailLabel"
+        <EditText
+            android:id="@+id/userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Email Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userEmailLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Email:"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/userName"
+        android:hint="Email"
+        app:layout_constraintTop_toBottomOf="@id/userNameLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp">
 
-    <TextView
-        android:id="@+id/userEmail"
+        <EditText
+            android:id="@+id/userEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:enabled="false"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Phone Number Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userPhoneLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/userEmailLabel"
+        android:hint="Phone Number"
+        app:layout_constraintTop_toBottomOf="@id/userEmailLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp">
 
-    <!-- Numero di Telefono -->
-    <TextView
-        android:id="@+id/userPhoneLabel"
+        <EditText
+            android:id="@+id/userPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Date of Birth Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userDobLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Phone Number:"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/userEmail"
+        android:hint="Date of Birth"
+        app:layout_constraintTop_toBottomOf="@id/userPhoneLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/userPhone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/userPhoneLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <EditText
+            android:id="@+id/userDob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:focusable="false"
+            android:clickable="true"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Data di Nascita -->
-    <TextView
-        android:id="@+id/userDobLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Date of Birth:"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/userPhone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/userDob"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/userDobLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Pulsante Modifica Profilo -->
+    <!-- Save Changes Button -->
     <Button
-        android:id="@+id/editProfileButton"
+        android:id="@+id/saveChangesButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/userDob"
+        android:text="Save Changes"
+        app:layout_constraintTop_toBottomOf="@id/userDobLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Reset Password Button -->
+    <Button
+        android:id="@+id/resetPasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset Password"
+        app:layout_constraintTop_toBottomOf="@id/saveChangesButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Change Email Button -->
+    <Button
+        android:id="@+id/changeEmailButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Email"
+        app:layout_constraintTop_toBottomOf="@id/resetPasswordButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
 
     <!-- Logout Button -->
     <Button
@@ -116,8 +146,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
+        app:layout_constraintTop_toBottomOf="@id/changeEmailButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

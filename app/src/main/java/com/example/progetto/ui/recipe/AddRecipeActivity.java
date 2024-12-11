@@ -275,9 +275,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(this, "Errore: Utente non autenticato!", Toast.LENGTH_SHORT).show();
         }
-
     }
-
 
     private void openImageChooser() {
         Intent intent = new Intent();
