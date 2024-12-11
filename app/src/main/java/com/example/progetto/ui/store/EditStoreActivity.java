@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,14 +20,13 @@ import com.example.progetto.R;
 import com.example.progetto.data.model.Firestore;
 import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
-import com.example.progetto.data.model.SelectedIngredientStoreUtils;
+import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.adapter.SelectedIngredientsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -187,9 +185,9 @@ public class EditStoreActivity extends AppCompatActivity {
                 Log.e(TAG, "Failed to remove selected ingredients: " + e.getMessage());
             }
         });
-        List<SelectedIngredientStoreUtils> selectedProducts = new ArrayList<>();
+        List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            selectedProducts.add(new SelectedIngredientStoreUtils(ingredient.getName(), ingredient.getQuantity(), store.getId()));
+            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), store.getId(),2));
         }
         firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<Void>() {
             @Override

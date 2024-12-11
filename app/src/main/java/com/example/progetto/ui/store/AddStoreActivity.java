@@ -22,7 +22,7 @@ import com.example.progetto.adapter.SelectedIngredientsAdapter;
 import com.example.progetto.data.model.Firestore;
 import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
-import com.example.progetto.data.model.SelectedIngredientStoreUtils;
+import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
@@ -116,9 +116,10 @@ public class AddStoreActivity extends AppCompatActivity {
     }
 
     private void openImageChooser() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
+        Intent intent = new Intent();
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -169,18 +170,20 @@ public class AddStoreActivity extends AppCompatActivity {
 
 
     private void uploadImageAndSaveStore(String name, String description, double prezzo) {
-        StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
-        fileRef.putFile(selectedImageUri)
-                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String imageUrl = uri.toString();
-                    saveStoreToFirestore(name, description, prezzo, imageUrl);
-                    Log.d(TAG, "Image uploaded successfully: " + imageUrl);
-                }))
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Image upload failed: " + e.getMessage());
-                });
+        firestore.uploadImage(selectedImageUri, new FirestoreCallback<String>() {
+            @Override
+            public void onSuccess(String imageUrl) {
+                saveStoreToFirestore(name, description, prezzo, imageUrl);
+                Log.d(TAG, "Image uploaded successfully: " + imageUrl);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddStoreActivity.this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Image upload failed: " + e.getMessage());
+            }
+        });
     }
 
     private void saveStoreToFirestore(String name, String description, double prezzo, @Nullable String imageUrl) {
@@ -209,11 +212,11 @@ public class AddStoreActivity extends AppCompatActivity {
                     Toast.makeText(this, "Errore nell'aggiunta dello store: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Error adding store: " + e.getMessage());
                 });
-        List<SelectedIngredientStoreUtils> selectedProducts = new ArrayList<>();
+        List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            selectedProducts.add(new SelectedIngredientStoreUtils(ingredient.getName(), ingredient.getQuantity(), storeId));
+            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), storeId,2));
         }
-        for (SelectedIngredientStoreUtils ingredient : selectedProducts) {
+        for (SelectedIngredientRecipeUtils ingredient : selectedProducts) {
             db.collection("SelectedIngredient").add(ingredient)
                     .addOnSuccessListener(aVoid -> {
                         // Success

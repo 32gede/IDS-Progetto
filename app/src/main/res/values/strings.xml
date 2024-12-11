@@ -17,7 +17,7 @@
     <string name="registration_failed">Registration failed</string>
     <string name="fridge">Pantry</string>
     <string name="home">Home</string>
-    <string name="search">Search</string>
+    <string name="search">Store</string>
     <string name="recipe">Recipe</string>
     <string name="logout" translatable="false">Logout</string>
     <string name="default_web_client_id" translatable="false">69630220301-7kuoiisiqn4bn0cf55k74htn0acns9o0.apps.googleusercontent.com</string>

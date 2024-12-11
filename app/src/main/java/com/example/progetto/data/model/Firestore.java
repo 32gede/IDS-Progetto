@@ -1,5 +1,15 @@
 package com.example.progetto.data.model;
 
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
+
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -8,6 +18,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Firestore {
     private FirebaseFirestore db;
@@ -72,8 +83,8 @@ public class Firestore {
                 });
     }
 
-    public void addSelectedIngredient(List<SelectedIngredientStoreUtils> ingredients, FirestoreCallback<Void> callback) {
-        for (SelectedIngredientStoreUtils ingredient : ingredients) {
+    public void addSelectedIngredient(List<SelectedIngredientRecipeUtils> ingredients, FirestoreCallback<Void> callback) {
+        for (SelectedIngredientRecipeUtils ingredient : ingredients) {
             db.collection("SelectedIngredient")
                     .add(ingredient)
                     .addOnSuccessListener(documentReference -> {
@@ -84,6 +95,46 @@ public class Firestore {
                     });
         }
     }
+    public void uploadImage(Uri imageUri, FirestoreCallback<String> callback) {
+        if (imageUri != null) {
+            StorageReference fileReference = storageRef.child(System.currentTimeMillis() + ".jpg");
+            fileReference.putFile(imageUri)
+                    .continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return fileReference.getDownloadUrl();
+                    })
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            if (downloadUri != null) {
+                                callback.onSuccess(downloadUri.toString());
+                            } else {
+                                callback.onFailure(new Exception("Download URL is null"));
+                            }
+                        } else {
+                            callback.onFailure(task.getException());
+                        }
+                    })
+                    .addOnFailureListener(callback::onFailure);
+        } else {
+            callback.onFailure(new Exception("Image URI is null"));
+        }
+    }
 
+
+    public void addSomething(Map<String, Object> object, String directory) {
+        String documentId = db.collection(directory).document().getId();
+        object.put("id", documentId);
+        db.collection(directory)
+                .add(object)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding document", e);
+                });
+    }
 }
 

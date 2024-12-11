@@ -5,10 +5,10 @@ public class SelectedIngredientRecipeUtils extends SelectedIngredientUtils {
 
     public SelectedIngredientRecipeUtils() {
     }
-    public SelectedIngredientRecipeUtils(String name, int quantity, String recipeId) {
+    public SelectedIngredientRecipeUtils(String name, int quantity, String recipeId, int position) {
         super(name, quantity);
         this.recipeId = recipeId;
-        this.setPosition(1);
+        this.setPosition(position);
     }
     public String getRecipeId() {
         return recipeId;

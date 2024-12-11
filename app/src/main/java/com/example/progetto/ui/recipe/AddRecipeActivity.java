@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.adapter.SelectedIngredientsAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
@@ -53,6 +55,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ProgressBar progressBar;
     private SelectedIngredientsAdapter ingredientsAdapter;
+    private Firestore firestore;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,18 +113,21 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipeIngredients = findViewById(R.id.ingredients_recycler_view);
         List<ItemUtils> ingredients = new ArrayList<>();
 
-        // Recupera gli ingredienti da Firestore
-        db.collection("items")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                        ItemUtils item = queryDocumentSnapshots.getDocuments().get(i).toObject(ItemUtils.class);
-                        if (item != null) {
-                            ingredients.add(item);
-                        }
-                    }
-                    ingredientsAdapter.notifyDataSetChanged();
-                });
+
+        firestore.getIngredients(new FirestoreCallback<List<ItemUtils>>() {
+                                     @Override
+                                     public void onSuccess(List<ItemUtils> result) {
+                                         ingredients.addAll(result);
+                                         ingredientsAdapter.updateData(result);
+
+                                     }
+
+                                     @Override
+                                     public void onFailure(Exception e) {
+
+                                     }
+                                 }
+        );
 
         // Inizializza il FlexboxLayoutManager
         FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
@@ -150,94 +156,98 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void saveRecipe() {
-    String name = recipeName.getText().toString().trim();
-    String description = recipeDescription.getText().toString().trim();
-    String steps = recipeSteps.getText().toString().trim();
-    String difficulty = recipeDifficulty.getText().toString().trim();
-    String category = recipeCategory.getText().toString().trim();
-    String preparationTime = recipePreparationTime.getText().toString().trim();
+        String name = recipeName.getText().toString().trim();
+        String description = recipeDescription.getText().toString().trim();
+        String steps = recipeSteps.getText().toString().trim();
+        String difficulty = recipeDifficulty.getText().toString().trim();
+        String category = recipeCategory.getText().toString().trim();
+        String preparationTime = recipePreparationTime.getText().toString().trim();
 
-    if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()) {
-        Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
-        return;
+        if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()) {
+            Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Generate a unique recipe ID
+        String recipeId = db.collection("recipes").document().getId();
+        if (selectedImageUri != null) {
+            // Upload the image to Firebase Storage
+            uploadImageAndSaveRecipe(name, description, steps, difficulty, category, preparationTime, recipeId);
+        } else {
+            // Save the recipe without an image
+            saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, null, recipeId);
+        }
+        // Create a list of selected ingredients with the recipe ID
+        List<SelectedIngredientRecipeUtils> list_ingredients = new ArrayList<>();
+        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
+            list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId,1));
+        }
+
+        firestore.addSelectedIngredient(list_ingredients, new FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // Success
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddRecipeActivity.this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        // Show the ProgressBar
+        progressBar.setVisibility(View.VISIBLE);
+
+
     }
 
-    // Generate a unique recipe ID
-    String recipeId = db.collection("recipes").document().getId();
+    private void uploadImageAndSaveRecipe(String name, String description, String steps,
+                                          String difficulty, String category, String preparationTime, String recipeId) {
+        firestore.uploadImage(selectedImageUri, new FirestoreCallback<String>() {
+            @Override
+            public void onSuccess(String imageUrl) {
+                saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, imageUrl, recipeId);
+            }
 
-    // Create a list of selected ingredients with the recipe ID
-    List<SelectedIngredientRecipeUtils> list_ingredients = new ArrayList<>();
-    for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-        list_ingredients.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), recipeId));
+            @Override
+            public void onFailure(Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddRecipeActivity.this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // Save the selected ingredients to Firestore
-    for (SelectedIngredientRecipeUtils ingredient : list_ingredients) {
-        db.collection("SelectedIngredient").add(ingredient)
+    private String saveRecipeToFirestore(String name, String description, String steps,
+                                       String difficulty, String category, String preparationTime, @Nullable String imageUrl, String recipeId) {
+        // Create a map for Firestore
+        Map<String, Object> recipe = new HashMap<>();
+        recipe.put("id", recipeId); // Set the ID as the document name
+        recipe.put("name", name);
+        recipe.put("description", description);
+        recipe.put("steps", steps);
+        recipe.put("image", imageUrl);
+        recipe.put("difficulty", difficulty);
+        recipe.put("ingredients", "Cocco");
+        recipe.put("category", category);
+        recipe.put("preparationTime", preparationTime);
+        recipe.put("createdAt", FieldValue.serverTimestamp());
+        firestore.addSomething(recipe,"recipes");
+
+        // Save to the main "recipes" collection
+        db.collection("recipes").document(recipeId)
+                .set(recipe)
                 .addOnSuccessListener(aVoid -> {
-                    // Success
+                    saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
+                    saveDefaultRating(recipeId); // Call the method to save the default rating
                 })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+        return recipeId;
     }
-
-
-
-    // Show the ProgressBar
-    progressBar.setVisibility(View.VISIBLE);
-
-    if (selectedImageUri != null) {
-        // Upload the image to Firebase Storage
-        uploadImageAndSaveRecipe(name, description, steps, difficulty, category, preparationTime, recipeId);
-    } else {
-        // Save the recipe without an image
-        saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, null, recipeId);
-    }
-}
-
-private void uploadImageAndSaveRecipe(String name, String description, String steps,
-                                      String difficulty, String category, String preparationTime, String recipeId) {
-    StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
-    fileRef.putFile(selectedImageUri)
-            .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                String imageUrl = uri.toString();
-                saveRecipeToFirestore(name, description, steps, difficulty, category, preparationTime, imageUrl, recipeId);
-            }))
-            .addOnFailureListener(e -> {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-}
-
-private void saveRecipeToFirestore(String name, String description, String steps,
-                                   String difficulty, String category, String preparationTime, @Nullable String imageUrl, String recipeId) {
-    // Create a map for Firestore
-    Map<String, Object> recipe = new HashMap<>();
-    recipe.put("id", recipeId); // Set the ID as the document name
-    recipe.put("name", name);
-    recipe.put("description", description);
-    recipe.put("steps", steps);
-    recipe.put("image", imageUrl);
-    recipe.put("difficulty", difficulty);
-    recipe.put("ingredients", "Cocco");
-    recipe.put("category", category);
-    recipe.put("preparationTime", preparationTime);
-    recipe.put("createdAt", FieldValue.serverTimestamp());
-
-    // Save to the main "recipes" collection
-    db.collection("recipes").document(recipeId)
-            .set(recipe)
-            .addOnSuccessListener(aVoid -> {
-                saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
-                saveDefaultRating(recipeId); // Call the method to save the default rating
-            })
-            .addOnFailureListener(e -> {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(this, "Errore nell'aggiunta della ricetta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-}
 
     private void saveDefaultRating(String recipeId) {
         Map<String, Object> rating = new HashMap<>();
@@ -281,9 +291,10 @@ private void saveRecipeToFirestore(String name, String description, String steps
     }
 
     private void openImageChooser() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
+        Intent intent = new Intent();
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     @Override
