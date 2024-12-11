@@ -10,6 +10,8 @@ import com.example.progetto.data.model.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,15 +55,16 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-    // Metodo per gestire il logout
     public void logout() {
         executor.execute(() -> {
-            userRepository.logout();
+            FirebaseAuth.getInstance().signOut(); // Logout da Firebase
+            userRepository.logout(); // Se hai altre operazioni necessarie per il repository
             LoginUtils.clearLoginState(getApplication());
             logoutSuccess.postValue(true);
             Log.d(TAG, "Logout avvenuto con successo.");
         });
     }
+
 
     // Pulizia delle risorse quando il ViewModel viene distrutto
     @Override
