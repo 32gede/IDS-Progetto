@@ -51,8 +51,6 @@ public class HomeActivity extends AppCompatActivity {
             NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
-        // Initialize Firestore
-
         // Initialize Views
         initializeViews();
 
