@@ -1,7 +1,5 @@
 package com.example.progetto.ui.recipe;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,6 +39,7 @@ import java.util.Set;
 
 public class RecipeActivity extends AppCompatActivity {
 
+    private static final String TAG = "RecipeActivity";
     // UI Components
     private FloatingActionButton addButton;
     private RecyclerView recyclerView;
@@ -174,10 +173,10 @@ public class RecipeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<UserRecipeUtils> cookableRecipes) {
                 // Stampa tutte le ricette cookable
-                System.out.println("Ricette cookable trovate 1:");
                 for (UserRecipeUtils recipe : cookableRecipes) {
-                    Log.d(TAG, "Cookable recipe found: " + recipe.getName());
+                    cookableRecipe.add(recipe);
                 }
+                Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
             }
 
             @Override
@@ -186,62 +185,6 @@ public class RecipeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-
-
-        ritorna().addOnSuccessListener(recipeIngredients -> {
-                    firebase.collection("user_products")
-                            .whereEqualTo("userId", userId)
-                            .get()
-                            .addOnSuccessListener(queryDocumentSnapshots -> {
-                                Set<String> userIngredients = new HashSet<>();
-                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                    String productName = document.getString("name");
-                                    if (productName != null) {
-                                        userIngredients.add(productName);
-                                    }
-                                }
-
-                                cookableRecipe.clear();
-                                for (Recipe recipe : globalRecipes) {
-                                    Log.d(TAG, "Checking recipe: " + recipe.getName());
-                                    boolean canCook = true;
-
-                                    for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
-                                        if (ingredient.getRecipeId().equals(recipe.getId())) {
-                                            Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
-
-                                            boolean hasIngredient = false;
-                                            for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
-                                                String userIngredientName = userIngredientDoc.getString("name");
-                                                Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
-
-                                                if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
-                                                    Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
-
-                                                    // Check if the user has enough quantity
-                                                    if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
-                                                        hasIngredient = true;
-                                                    }
-                                                    break; // No need to check further if ingredient matches
-                                                }
-                                            }
-
-                                            if (!hasIngredient) {
-                                                canCook = false;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (canCook && cookableRecipe.size() < 5) {
-                                        cookableRecipe.add(recipe);
-                                    }
-                                }
-                                adapter.notifyDataSetChanged();
-                                Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
-                            })
-                            .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
-                }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
     }
 
     public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
