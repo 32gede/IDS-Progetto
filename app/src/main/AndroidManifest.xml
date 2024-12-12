@@ -87,6 +87,10 @@
             android:label="@string/recipe"
             android:theme="@style/AppTheme" />
 
+        <activity android:name=".ui.recipe.RecipeEditActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"

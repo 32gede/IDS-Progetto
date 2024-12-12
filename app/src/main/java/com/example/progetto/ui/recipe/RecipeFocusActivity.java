@@ -1,5 +1,6 @@
 package com.example.progetto.ui.recipe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,7 +35,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
     private TextView titleTextView, difficultyTextView, categoryTextView, preparationTimeTextView, stepsTextView, descriptionTextView;
     private RatingBar ratingBar;
     private RecyclerView ingredientsRecyclerView;
-    private ImageButton rateButton;
+    private ImageButton rateButton, editButton;
     private FirebaseFirestore databaseReference;
     private IngredientsAdapter ingredientsAdapter;
 
@@ -60,7 +61,22 @@ public class RecipeFocusActivity extends AppCompatActivity {
 
         // Imposta il listener per il pulsante di valutazione
         rateButton.setOnClickListener(v -> showRatingDialog(recipe));
+
+        // Imposta il listener per il pulsante di modifica
+        editButton.setOnClickListener(v -> openEditRecipeActivity(recipe));
+
+        // Recupera gli ingredienti
         getIngredients(recipe.getId());
+    }
+
+    private void openEditRecipeActivity(Recipe recipe) {
+        if (recipe != null) {
+            Intent intent = new Intent(RecipeFocusActivity.this, RecipeEditActivity.class);
+            intent.putExtra("recipe", recipe); // Passa la ricetta come extra
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Errore: ricetta non trovata", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initializeViews() {
@@ -74,12 +90,13 @@ public class RecipeFocusActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.recipe_description);
         ratingBar = findViewById(R.id.recipe_rating);
         rateButton = findViewById(R.id.rate_button);
+        editButton = findViewById(R.id.edit_button); // Pulsante per modificare
 
-        // Initialize the adapter
+        // Inizializza l'adapter per gli ingredienti
         ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
         ingredientsRecyclerView.setAdapter(ingredientsAdapter);
 
-        // Set a layout manager
+        // Imposta il layout manager per il RecyclerView
         ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -112,7 +129,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
                             ingredients.add(item);
                         }
                     }
-                    // Update adapter data
+                    // Aggiorna i dati dell'adapter
                     ingredientsAdapter.updateData(ingredients);
                     Log.d(TAG, "Ingredients loaded: " + ingredients.size());
                 })
@@ -152,12 +169,12 @@ public class RecipeFocusActivity extends AppCompatActivity {
         }
         float averageRating = sum / ratings.size();
 
-        // Update the average rating in the Recipe document
+        // Aggiorna il rating medio nel documento della ricetta
         databaseReference.collection("recipes").document(recipeId)
                 .update("averageRating", averageRating)
                 .addOnSuccessListener(aVoid -> {
                     ratingBar.setRating(averageRating);
-                    ratingBar.setIsIndicator(true); // Make the RatingBar non-interactive
+                    ratingBar.setIsIndicator(true); // Rendi il RatingBar non interattivo
                     Log.d(TAG, "Average rating updated: " + averageRating);
                 })
                 .addOnFailureListener(e -> {
