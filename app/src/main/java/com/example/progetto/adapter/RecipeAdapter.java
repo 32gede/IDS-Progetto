@@ -63,6 +63,10 @@ import java.util.Set;
         Recipe recipe = recipes.get(position);
         holder.bind(recipe, savedRecipeIds.contains(recipe.getId()));
     }
+    public void changeElements(List<Recipe> recipes) {
+        this.recipes = recipes;
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {

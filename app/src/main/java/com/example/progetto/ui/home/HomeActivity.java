@@ -1,9 +1,7 @@
 package com.example.progetto.ui.home;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +11,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.Recipe;
 import com.example.progetto.data.model.NavigationHelper;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
-import com.example.progetto.ui.profile.ProfileActivity;
+import com.example.progetto.data.model.UserRecipeUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,9 +26,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -45,7 +43,8 @@ public class HomeActivity extends AppCompatActivity {
     private TextView titleText;
 
     // Firebase
-    private FirebaseFirestore firestore;
+    private FirebaseFirestore db;
+    private Firestore firestore;
 
     // Data
     private final List<Recipe> popularRecipe = new ArrayList<>();
@@ -57,7 +56,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        firestore = FirebaseFirestore.getInstance();
+        firestore = new Firestore();
+        db = FirebaseFirestore.getInstance();
 
         // Setup BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -67,7 +67,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         // Initialize Firestore
-        firestore = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Initialize Views
         initializeViews();
@@ -115,14 +115,14 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadRecipes() {
         Log.d(TAG, "Loading recipes");
-       loadPopularRecipes();
+        loadPopularRecipes();
         loadNewerRecipes();
         loadCookableRecipes(FirebaseAuth.getInstance().getUid());
     }
 
     private void loadPopularRecipes() {
         Log.d(TAG, "Loading popular recipes");
-        firestore.collection("recipes")
+        db.collection("recipes")
                 .orderBy("averageRating", Query.Direction.DESCENDING)
                 .limit(5)
                 .get()
@@ -134,7 +134,7 @@ public class HomeActivity extends AppCompatActivity {
                             popularRecipe.add(recipe);
                         }
                     }
-                    adapterPopular.notifyDataSetChanged();
+                    adapterPopular.changeElements(popularRecipe);
                     Log.d(TAG, "Top 5 popular recipes loaded successfully.");
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error loading popular recipes: " + e.getMessage()));
@@ -142,7 +142,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadNewerRecipes() {
         Log.d(TAG, "Loading newer recipes");
-        firestore.collection("recipes")
+        db.collection("recipes")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .limit(5)
                 .get()
@@ -154,96 +154,33 @@ public class HomeActivity extends AppCompatActivity {
                             newerRecipe.add(recipe);
                         }
                     }
-                    adapterNewer.notifyDataSetChanged();
+                    adapterNewer.changeElements(newerRecipe);
                     Log.d(TAG, "Latest 5 recipes loaded successfully.");
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error loading newer recipes: " + e.getMessage()));
     }
 
     private void loadCookableRecipes(String userId) {
-        if (userId == null) {
-            Log.e(TAG, "User ID is null, cannot load cookable recipes.");
-            return;
-        }
-
-        Log.d(TAG, "Loading global recipes");
-        firestore.collection("recipes")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    globalRecipes.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        Recipe recipe = document.toObject(Recipe.class);
-                        if (recipe != null) {
-                            globalRecipes.add(recipe);
-                        }
-                    }
-                    Log.d(TAG, "Global recipes loaded: " + globalRecipes.size());
-                    filterCookableRecipes(userId);
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Error loading global recipes: " + e.getMessage()));
-    }
-
-    private void filterCookableRecipes(String userId) {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
-        ritorna().addOnSuccessListener(recipeIngredients -> {
-            firestore.collection("user_products")
-                    .whereEqualTo("userId", userId)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        Set<String> userIngredients = new HashSet<>();
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            String productName = document.getString("name");
-                            if (productName != null) {
-                                userIngredients.add(productName);
-                            }
-                        }
+        firestore.loadCookableRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
+            @Override
+            public void onSuccess(List<UserRecipeUtils> cookableRecipesAppo) {
+                // Stampa tutte le ricette cookable
+                cookableRecipe.addAll(cookableRecipesAppo);
+                Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
+                adapterCookable.changeElements(cookableRecipe);
+            }
 
-                        cookableRecipe.clear();
-                        for (Recipe recipe : globalRecipes) {
-                            Log.d(TAG, "Checking recipe: " + recipe.getName());
-                            boolean canCook = true;
-
-                            for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
-                                if (ingredient.getRecipeId().equals(recipe.getId())) {
-                                    Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
-
-                                    boolean hasIngredient = false;
-                                    for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
-                                        String userIngredientName = userIngredientDoc.getString("name");
-                                        Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
-
-                                        if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
-                                            Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
-
-                                            // Check if the user has enough quantity
-                                            if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
-                                                hasIngredient = true;
-                                            }
-                                            break; // No need to check further if ingredient matches
-                                        }
-                                    }
-
-                                    if (!hasIngredient) {
-                                        canCook = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (canCook&&cookableRecipe.size()<5) {
-                                cookableRecipe.add(recipe);
-                            }
-                        }
-                        adapterCookable.notifyDataSetChanged();
-                        Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
-                    })
-                    .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
-        }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
+            @Override
+            public void onFailure(Exception e) {
+                System.err.println("Errore durante il caricamento delle ricette cookable: " + e.getMessage());
+            }
+        });
     }
 
     public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
         Log.d(TAG, "Loading selected ingredients");
-        return firestore.collection("SelectedIngredient")
+        return db.collection("SelectedIngredient")
                 .whereEqualTo("position", 1)
                 .get()
                 .continueWith(task -> {
@@ -251,9 +188,7 @@ public class HomeActivity extends AppCompatActivity {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             SelectedIngredientRecipeUtils ingredient = document.toObject(SelectedIngredientRecipeUtils.class);
-                            if (ingredient != null) {
-                                selectedIngredients.add(ingredient);
-                            }
+                            selectedIngredients.add(ingredient);
                         }
                     }
 
