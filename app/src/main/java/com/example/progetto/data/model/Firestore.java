@@ -1,4 +1,5 @@
 package com.example.progetto.data.model;
+
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -58,10 +59,10 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void removeSelectedIngredient(StoreUtils store, FirestoreCallback<Void> callback) {
+    public void removeSelectedIngredient(String id, FirestoreCallback<Void> callback) {
         // Passa l'errore al chiamante
         db.collection("SelectedIngredient")
-                .whereEqualTo("recipeId", store.getId())
+                .whereEqualTo("recipeId", id)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
@@ -261,6 +262,7 @@ public class Firestore {
             }
         });
     }
+
     public void loadNewerRecipes(FirestoreCallback<List<Recipe>> callback) {
         // Passa l'errore al chiamante
         db.collection("recipes")
@@ -276,6 +278,7 @@ public class Firestore {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
     public void loadPopularRecipes(FirestoreCallback<List<Recipe>> callback) {
         // Passa l'errore al chiamante
         db.collection("recipes")
@@ -291,6 +294,7 @@ public class Firestore {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
     public void saveUserRecipe(UserRecipeUtils userRecipe, FirestoreCallback<Void> callback) {
         // Passa l'errore al chiamante
         db.collection("recipes_user")
@@ -301,6 +305,7 @@ public class Firestore {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
     public void removeUserRecipe(Recipe recipe, FirestoreCallback<Void> callback) {
         // Passa l'errore al chiamante
         db.collection("recipes_user")
@@ -312,6 +317,51 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public void updateRecipe(Recipe recipe, String name, String description, String steps, String difficulty, String category, String preparationTime, Uri selectedImageUri, FirestoreCallback<Void> firestoreCallback) {
+
+
+    }
+
+    public void deleteRecipe(String id, FirestoreCallback<Void> recipeEditActivity) {
+        db.collection("recipes")
+                .document(id)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    recipeEditActivity.onSuccess(null);
+                })
+                .addOnFailureListener(recipeEditActivity::onFailure);
+    }
+
+    public void updateRecipe(String id, Recipe recipe, List<SelectedIngredientRecipeUtils> appo, FirestoreCallback<Void> firestoreCallback) {
+        db.collection("recipes")
+                .document(id)
+                .set(recipe)
+                .addOnSuccessListener(aVoid -> {
+                    firestoreCallback.onSuccess(null);
+                })
+                .addOnFailureListener(firestoreCallback::onFailure);
+        this.removeSelectedIngredient(id, new FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                addSelectedIngredient(appo, new FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void data) {
+                        firestoreCallback.onSuccess(null);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        firestoreCallback.onFailure(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                firestoreCallback.onFailure(e);
+            }
+        });
+    }
 }
 
 

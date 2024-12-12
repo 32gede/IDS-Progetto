@@ -1,211 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="#414141"
     tools:context=".ui.recipe.RecipeFocusActivity">
 
-
-    <LinearLayout
+    <!-- ScrollView contenente i dettagli della ricetta -->
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:divider="?android:dividerHorizontal"
-        android:showDividers="middle"
-        android:dividerPadding="8dp">
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Immagine della ricetta -->
-        <ImageView
-            android:id="@+id/recipe_image"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginBottom="16dp"
-            android:scaleType="centerCrop" />
-
-        <!-- Titolo e descrizione -->
-        <TextView
-            android:id="@+id/recipe_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/recipe_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:layout_marginBottom="16dp"
-            android:textColor="@color/white" />
-
-        <!-- Dettagli ricetta -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="4dp">
+            android:divider="?android:dividerHorizontal"
+            android:showDividers="middle"
+            android:dividerPadding="8dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dettagli ricetta"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
+            <!-- Immagine della ricetta -->
+            <ImageView
+                android:id="@+id/recipe_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp">
+                android:layout_height="240dp"
+                android:layout_marginBottom="16dp"
+                android:scaleType="centerCrop" />
 
-                <TextView
-                    android:id="@+id/recipe_difficulty"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="start"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_dark" />
-
-                <TextView
-                    android:id="@+id/recipe_category"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_dark" />
-
-                <TextView
-                    android:id="@+id/recipe_preparation_time"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_dark" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Sezione Ingredienti -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="4dp">
-
+            <!-- Titolo e descrizione -->
             <TextView
+                android:id="@+id/recipe_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ingredienti"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="8dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recipe_ingredients_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp" />
-        </LinearLayout>
-
-        <!-- Sezione Passaggi -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:elevation="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Passaggi"
-                android:textSize="18sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginBottom="8dp" />
 
             <TextView
-                android:id="@+id/recipe_steps"
-                android:layout_width="match_parent"
+                android:id="@+id/recipe_description"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="16dp"
                 android:textColor="@color/white" />
-        </LinearLayout>
 
-        <!-- Sezione Rating -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:elevation="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Valutazione"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="8dp" />
-
+            <!-- Dettagli ricetta -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
 
-                <RatingBar
-                    android:id="@+id/recipe_rating"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:numStars="5"
-                    android:stepSize="1.0"
-                    android:rating="0"
-                    android:isIndicator="false"
+                    android:text="Dettagli ricetta"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/recipe_difficulty"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_dark" />
+
+                    <TextView
+                        android:id="@+id/recipe_category"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_dark" />
+
+                    <TextView
+                        android:id="@+id/recipe_preparation_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_dark" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Sezione Ingredienti -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ingredienti"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recipe_ingredients_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp" />
+            </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/rate_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/selected_nav_item_background"
-                    android:src="@drawable/baseline_add_24"
-                    android:contentDescription="Rate" />
+            <!-- Sezione Passaggi -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:elevation="4dp">
 
-                <!-- Pulsante per modificare -->
-                <ImageButton
-                    android:id="@+id/edit_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/selected_nav_item_background"
-                    android:src="@drawable/baseline_edit_24"
-                    android:contentDescription="Modifica"
-                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Passaggi"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/recipe_steps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="4dp"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Sezione Rating -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Valutazione"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RatingBar
+                        android:id="@+id/recipe_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="1.0"
+                        android:rating="0"
+                        android:isIndicator="false"
+                        android:layout_marginBottom="16dp" />
+                    <ImageButton
+                        android:id="@+id/rate_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/selected_nav_item_background"
+                        android:src="@drawable/baseline_add_24"
+                        android:contentDescription="Rate" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
-</ScrollView>
+    <!-- Pulsante Modifica in alto a destra -->
+    <ImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/selected_nav_item_background"
+        android:src="@drawable/baseline_edit_24"
+        android:contentDescription="Modifica"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:tint="@color/white" />
+</androidx.constraintlayout.widget.ConstraintLayout>

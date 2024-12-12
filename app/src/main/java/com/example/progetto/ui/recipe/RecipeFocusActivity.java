@@ -57,6 +57,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
         if (recipe != null) {
             displayRecipeDetails(recipe);
             fetchAndDisplayRating(recipe.getId());
+            Log.d(TAG, "Recipe ID: " + recipe.getName());
         }
 
         // Imposta il listener per il pulsante di valutazione

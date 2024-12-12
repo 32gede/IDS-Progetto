@@ -147,6 +147,7 @@ public class SelectedIngredientsAdapter extends RecyclerView.Adapter<SelectedIng
         notifyDataSetChanged();
     }
 
+
     // ViewHolder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView ingredientName;

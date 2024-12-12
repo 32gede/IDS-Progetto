@@ -199,7 +199,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
     }
-
+//codice difficile
     private void saveRecipeToFirestore(String name, String description, String steps,
                                        String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
         // Create a map for Firestore

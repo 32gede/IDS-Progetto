@@ -174,7 +174,7 @@ public class EditStoreActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating store", e));
-        firestore.removeSelectedIngredient(store, new FirestoreCallback<Void>() {
+        firestore.removeSelectedIngredient(store.getId(), new FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
                 Log.d(TAG, "Selected ingredients removed successfully");
