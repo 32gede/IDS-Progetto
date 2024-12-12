@@ -57,6 +57,7 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
     // Firestore.java
+
     public void removeUserProduct(UserProductUtils userProduct, FirestoreCallback<Void> callback) {
         if (userProduct.getProductId() == null) {
             callback.onFailure(new IllegalArgumentException("Provided document path must not be null."));
