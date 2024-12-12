@@ -13,13 +13,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.UserProductAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.UserProductUtils;
-import com.example.progetto.ui.Notification.NotificationActivity;
-import com.example.progetto.ui.profile.ProfileActivity;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -29,9 +28,8 @@ public class FridgeActivity extends AppCompatActivity {
 
     private ImageButton addButton, notificationButton;
     private TextView titleText;
-
-    private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
+    private Firestore firestore = new Firestore();
 
     private RecyclerView recyclerViewFridge;
     private UserProductAdapter productAdapter;
@@ -53,7 +51,6 @@ public class FridgeActivity extends AppCompatActivity {
         }
 
         // Inizializza Firestore e Auth
-        firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
         // Inizializza RecyclerView
@@ -106,29 +103,29 @@ public class FridgeActivity extends AppCompatActivity {
             return;
         }
 
-        firestore.collection("user_products")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    fridgeProductList.clear();
+        firestore.getUserIngredients(userId, new FirestoreCallback<List<UserProductUtils>>() {
+            @Override
+            public void onSuccess(List<UserProductUtils> userProducts) {
+                fridgeProductList.clear();
 
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserProductUtils userProduct = document.toObject(UserProductUtils.class);
-                        userProduct.setProductId(document.getId());
-                        fridgeProductList.add(userProduct);
-                    }
+                for (UserProductUtils userProduct : userProducts) {
+                    fridgeProductList.add(userProduct);
+                }
 
-                    filteredList.clear();
-                    filteredList.addAll(fridgeProductList);
-                    productAdapter.updateProductList(filteredList);
-                    Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
+                filteredList.clear();
+                filteredList.addAll(fridgeProductList);
+                productAdapter.updateProductList(filteredList);
+                Log.d("FridgeActivity", "Items loaded successfully from Firestore. Total: " + fridgeProductList.size());
 
-                    swipeRefreshLayout.setRefreshing(false);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage());
-                    swipeRefreshLayout.setRefreshing(false);
-                });
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FridgeActivity", "Failed to load user products: " + e.getMessage());
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void onProductSelected(UserProductUtils userProduct) {
@@ -139,23 +136,22 @@ public class FridgeActivity extends AppCompatActivity {
     private void onProductRemoved(UserProductUtils userProduct) {
         Log.d("FridgeActivity", "Removing product: " + userProduct.getName());
 
-        firestore.collection("user_products")
-                .document(userProduct.getProductId()) // Assumendo che `userProduct` abbia un campo `id` con il documento Firestore
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    fridgeProductList.remove(userProduct);
-                    filteredList.remove(userProduct);
-                    productAdapter.updateProductList(filteredList);
-                    Log.d("FridgeActivity", "Product removed successfully from Firestore.");
-                })
-                .addOnFailureListener(e -> Log.e("FridgeActivity", "Failed to remove product: " + e.getMessage()));
-    }
+        firestore.removeUserProduct(userProduct, new FirestoreCallback<>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("FridgeActivity", "Product removed successfully: " + userProduct.getName());
+                fridgeProductList.remove(userProduct);
+                filteredList.remove(userProduct);
+                productAdapter.updateProductList(filteredList);
+                Log.d("FridgeActivity", "Product removed successfully from Firestore.");
+            }
 
-    public List<String> getFridgeItems() {
-        List<String> fridgeItems = new ArrayList<>();
-        for (UserProductUtils product : fridgeProductList) {
-            fridgeItems.add(product.getName());
-        }
-        return fridgeItems;
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FridgeActivity", "Failed to remove product: " + e.getMessage());
+            }
+        });
     }
 }
+
+

@@ -1,7 +1,6 @@
 package com.example.progetto.data.model;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,6 +53,35 @@ public class Firestore {
                         ingredients.add(item);
                     }
                     callback.onSuccess(ingredients); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    // Firestore.java
+    public void removeUserProduct(UserProductUtils userProduct, FirestoreCallback<Void> callback) {
+        if (userProduct.getProductId() == null) {
+            callback.onFailure(new IllegalArgumentException("Provided document path must not be null."));
+            return;
+        }
+
+        db.collection("userProducts").document(userProduct.getProductId()) // Assumendo che `userProduct` abbia un campo `id` con il documento Firestore
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void getUserProducts(String id, FirestoreCallback<List<UserProductUtils>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("user_products")
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<UserProductUtils> userProducts = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserProductUtils product = document.toObject(UserProductUtils.class);
+                        userProducts.add(product);
+                    }
+                    callback.onSuccess(userProducts); // Passa il risultato al chiamante
                 })
                 .addOnFailureListener(callback::onFailure);
     }
