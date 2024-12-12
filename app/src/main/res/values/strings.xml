@@ -35,4 +35,7 @@
     <string name="store_image" />
     <string name="rate_store" />
     <string name="qty">Qty</string>
+    <string name="global_recipe">Global Recipe</string>
+    <string name="saved_recipe">Saved Recipe</string>
+    <string name="recommended_recipe">Recommended Recipes</string>
 </resources>

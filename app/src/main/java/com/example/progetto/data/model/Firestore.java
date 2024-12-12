@@ -1,6 +1,8 @@
 package com.example.progetto.data.model;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -286,6 +288,26 @@ public class Firestore {
                         recipes.add(recipe);
                     }
                     callback.onSuccess(recipes); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void saveUserRecipe(UserRecipeUtils userRecipe, FirestoreCallback<Void> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes_user")
+                .document(userRecipe.getId())
+                .set(userRecipe)
+                .addOnSuccessListener(documentReference -> {
+                    callback.onSuccess(null); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void removeUserRecipe(Recipe recipe, FirestoreCallback<Void> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes_user")
+                .document(recipe.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(null); // Passa il risultato al chiamante
                 })
                 .addOnFailureListener(callback::onFailure);
     }

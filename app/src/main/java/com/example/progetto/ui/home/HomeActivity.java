@@ -1,5 +1,4 @@
 package com.example.progetto.ui.home;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
