@@ -213,6 +213,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("category", category);
         recipe.put("preparationTime", preparationTime);
         recipe.put("createdAt", FieldValue.serverTimestamp());
+        recipe.put("averageRating", 5.0);
         recipeId = firestore.addSomething(recipe, "recipes");
         saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
         saveDefaultRating(recipeId);

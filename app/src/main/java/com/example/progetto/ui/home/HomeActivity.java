@@ -43,7 +43,6 @@ public class HomeActivity extends AppCompatActivity {
     private TextView titleText;
 
     // Firebase
-    private FirebaseFirestore db;
     private Firestore firestore;
 
     // Data
@@ -57,7 +56,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
         firestore = new Firestore();
-        db = FirebaseFirestore.getInstance();
 
         // Setup BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -67,7 +65,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         // Initialize Firestore
-        db = FirebaseFirestore.getInstance();
 
         // Initialize Views
         initializeViews();
@@ -122,42 +119,39 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadPopularRecipes() {
         Log.d(TAG, "Loading popular recipes");
-        db.collection("recipes")
-                .orderBy("averageRating", Query.Direction.DESCENDING)
-                .limit(5)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    popularRecipe.clear();
-                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        Recipe recipe = doc.toObject(Recipe.class);
-                        if (recipe != null) {
-                            popularRecipe.add(recipe);
-                        }
-                    }
-                    adapterPopular.changeElements(popularRecipe);
-                    Log.d(TAG, "Top 5 popular recipes loaded successfully.");
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Error loading popular recipes: " + e.getMessage()));
+        firestore.loadPopularRecipes(new FirestoreCallback<List<Recipe>>() {
+            @Override
+            public void onSuccess(List<Recipe> recipes) {
+                popularRecipe.clear();
+                popularRecipe.addAll(recipes.subList(0, Math.min(recipes.size(), 5)));
+                adapterPopular.changeElements(popularRecipe);
+                Log.d(TAG, "Popular recipes loaded: " + popularRecipe.size());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.err.println("Errore durante il caricamento delle ricette: " + e.getMessage());
+            }
+        });
     }
 
     private void loadNewerRecipes() {
         Log.d(TAG, "Loading newer recipes");
-        db.collection("recipes")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(5)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    newerRecipe.clear();
-                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        Recipe recipe = doc.toObject(Recipe.class);
-                        if (recipe != null) {
-                            newerRecipe.add(recipe);
-                        }
-                    }
-                    adapterNewer.changeElements(newerRecipe);
-                    Log.d(TAG, "Latest 5 recipes loaded successfully.");
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Error loading newer recipes: " + e.getMessage()));
+
+        firestore.loadNewerRecipes(new FirestoreCallback<List<Recipe>>() {
+            @Override
+            public void onSuccess(List<Recipe> recipes) {
+                newerRecipe.clear();
+                newerRecipe.addAll(recipes.subList(0, Math.min(recipes.size(), 5)));
+                adapterNewer.changeElements(newerRecipe);
+                Log.d(TAG, "Newer recipes loaded: " + newerRecipe.size());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.err.println("Errore durante il caricamento delle ricette: " + e.getMessage());
+            }
+        });
     }
 
     private void loadCookableRecipes(String userId) {
@@ -166,7 +160,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<UserRecipeUtils> cookableRecipesAppo) {
                 // Stampa tutte le ricette cookable
-                cookableRecipe.addAll(cookableRecipesAppo);
+                cookableRecipe.addAll(cookableRecipesAppo.subList(0, Math.min(cookableRecipesAppo.size(), 5)));
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
                 adapterCookable.changeElements(cookableRecipe);
             }
@@ -176,24 +170,5 @@ public class HomeActivity extends AppCompatActivity {
                 System.err.println("Errore durante il caricamento delle ricette cookable: " + e.getMessage());
             }
         });
-    }
-
-    public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
-        Log.d(TAG, "Loading selected ingredients");
-        return db.collection("SelectedIngredient")
-                .whereEqualTo("position", 1)
-                .get()
-                .continueWith(task -> {
-                    List<SelectedIngredientRecipeUtils> selectedIngredients = new ArrayList<>();
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            SelectedIngredientRecipeUtils ingredient = document.toObject(SelectedIngredientRecipeUtils.class);
-                            selectedIngredients.add(ingredient);
-                        }
-                    }
-
-                    Log.d(TAG, "Selected ingredients loaded: " + selectedIngredients.size());
-                    return selectedIngredients;
-                });
     }
 }

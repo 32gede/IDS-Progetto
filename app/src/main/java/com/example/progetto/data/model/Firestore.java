@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -288,7 +289,36 @@ public class Firestore {
             }
         });
     }
-
+    public void loadNewerRecipes(FirestoreCallback<List<Recipe>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Recipe> recipes = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Recipe recipe = document.toObject(Recipe.class);
+                        recipes.add(recipe);
+                    }
+                    callback.onSuccess(recipes); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void loadPopularRecipes(FirestoreCallback<List<Recipe>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes")
+                .orderBy("averageRating", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Recipe> recipes = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Recipe recipe = document.toObject(Recipe.class);
+                        recipes.add(recipe);
+                    }
+                    callback.onSuccess(recipes); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 
 }
 
