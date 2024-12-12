@@ -205,6 +205,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+
     private void saveRatingToFirestore(String recipeId, float rating) {
         String ratingId = databaseReference.collection("ratings").document().getId();
         Rating ratingObj = new Rating(recipeId, rating);
