@@ -11,6 +11,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,12 +32,17 @@ public class RecipeFocusActivity extends AppCompatActivity {
 
     private static final String TAG = "RecipeFocusActivity";
 
+    // UI Components
     private ImageView imageView;
     private TextView titleTextView, difficultyTextView, categoryTextView, preparationTimeTextView, stepsTextView, descriptionTextView;
     private RatingBar ratingBar;
     private RecyclerView ingredientsRecyclerView;
     private ImageButton rateButton, editButton;
+
+    // Firebase
     private FirebaseFirestore databaseReference;
+
+    // Adapters
     private IngredientsAdapter ingredientsAdapter;
 
     @Override
@@ -44,41 +50,30 @@ public class RecipeFocusActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_focus);
 
-        // Inizializza le viste
+        // Initialize views and Firebase
         initializeViews();
-
-        // Inizializza Firebase
         databaseReference = FirebaseFirestore.getInstance();
 
-        // Recupera la ricetta passata dall'activity precedente
+        // Retrieve recipe data
         Recipe recipe = (Recipe) getIntent().getSerializableExtra("recipe");
-
-        // Mostra i dettagli della ricetta
-        if (recipe != null) {
-            displayRecipeDetails(recipe);
-            fetchAndDisplayRating(recipe.getId());
-            Log.d(TAG, "Recipe ID: " + recipe.getName());
+        if (recipe == null) {
+            Toast.makeText(this, "Errore: ricetta non trovata!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
-        // Imposta il listener per il pulsante di valutazione
-        rateButton.setOnClickListener(v -> showRatingDialog(recipe));
+        // Display recipe details
+        displayRecipeDetails(recipe);
 
-        // Imposta il listener per il pulsante di modifica
-        editButton.setOnClickListener(v -> openEditRecipeActivity(recipe));
+        // Set click listeners
+        setupClickListeners(recipe);
 
-        // Recupera gli ingredienti
-        getIngredients(recipe.getId());
+        // Fetch additional data (ingredients and ratings)
+        fetchIngredients(recipe.getId());
+        fetchAndDisplayRatings(recipe.getId());
     }
 
-    private void openEditRecipeActivity(Recipe recipe) {
-        if (recipe != null) {
-            Intent intent = new Intent(RecipeFocusActivity.this, RecipeEditActivity.class);
-            intent.putExtra("recipe", recipe); // Passa la ricetta come extra
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "Errore: ricetta non trovata", Toast.LENGTH_SHORT).show();
-        }
-    }
+    // --- INITIALIZATION ---
 
     private void initializeViews() {
         imageView = findViewById(R.id.recipe_image);
@@ -86,23 +81,26 @@ public class RecipeFocusActivity extends AppCompatActivity {
         difficultyTextView = findViewById(R.id.recipe_difficulty);
         categoryTextView = findViewById(R.id.recipe_category);
         preparationTimeTextView = findViewById(R.id.recipe_preparation_time);
-        ingredientsRecyclerView = findViewById(R.id.recipe_ingredients_recycler_view);
         stepsTextView = findViewById(R.id.recipe_steps);
         descriptionTextView = findViewById(R.id.recipe_description);
         ratingBar = findViewById(R.id.recipe_rating);
         rateButton = findViewById(R.id.rate_button);
-        editButton = findViewById(R.id.edit_button); // Pulsante per modificare
+        editButton = findViewById(R.id.edit_button);
+        ingredientsRecyclerView = findViewById(R.id.recipe_ingredients_recycler_view);
 
-        // Inizializza l'adapter per gli ingredienti
         ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
         ingredientsRecyclerView.setAdapter(ingredientsAdapter);
-
-        // Imposta il layout manager per il RecyclerView
         ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void displayRecipeDetails(Recipe recipe) {
-        Log.d(TAG, "Displaying recipe details for: " + recipe.getName());
+    private void setupClickListeners(@NonNull Recipe recipe) {
+        rateButton.setOnClickListener(v -> showRatingDialog(recipe));
+        editButton.setOnClickListener(v -> openEditRecipeActivity(recipe));
+    }
+
+    // --- DISPLAY DATA ---
+
+    private void displayRecipeDetails(@NonNull Recipe recipe) {
         titleTextView.setText(recipe.getName());
         descriptionTextView.setText(recipe.getDescription());
         difficultyTextView.setText(recipe.getDifficulty());
@@ -110,15 +108,20 @@ public class RecipeFocusActivity extends AppCompatActivity {
         preparationTimeTextView.setText(recipe.getPreparationTime());
         stepsTextView.setText(recipe.getSteps());
 
-        // Carica l'immagine utilizzando Glide
         Glide.with(this)
                 .load(recipe.getImage())
                 .error(R.drawable.baseline_error_24)
                 .into(imageView);
     }
 
-    private void getIngredients(String recipeId) {
-        Log.d(TAG, "Fetching ingredients for recipe ID: " + recipeId);
+    private void updateRatingBar(float averageRating) {
+        ratingBar.setRating(averageRating);
+        ratingBar.setIsIndicator(true);
+    }
+
+    // --- FETCH DATA ---
+
+    private void fetchIngredients(String recipeId) {
         databaseReference.collection("SelectedIngredient")
                 .whereEqualTo("recipeId", recipeId)
                 .get()
@@ -130,18 +133,12 @@ public class RecipeFocusActivity extends AppCompatActivity {
                             ingredients.add(item);
                         }
                     }
-                    // Aggiorna i dati dell'adapter
                     ingredientsAdapter.updateData(ingredients);
-                    Log.d(TAG, "Ingredients loaded: " + ingredients.size());
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to fetch ingredients: " + e.getMessage());
-                    Toast.makeText(this, "Failed to fetch ingredients", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nel recupero degli ingredienti: " + e.getMessage()));
     }
 
-    private void fetchAndDisplayRating(String recipeId) {
-        Log.d(TAG, "Fetching ratings for recipe ID: " + recipeId);
+    private void fetchAndDisplayRatings(String recipeId) {
         databaseReference.collection("ratings")
                 .whereEqualTo("recipeId", recipeId)
                 .get()
@@ -152,90 +149,79 @@ public class RecipeFocusActivity extends AppCompatActivity {
                         ratings.add(rating.rating);
                     }
                     if (!ratings.isEmpty()) {
-                        calculateAverageRating(recipeId, ratings);
+                        calculateAndDisplayAverageRating(recipeId, ratings);
                     }
-                    Log.d(TAG, "Ratings loaded: " + ratings.size());
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to fetch ratings: " + e.getMessage());
-                    Toast.makeText(RecipeFocusActivity.this, "Failed to fetch ratings", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nel recupero dei rating: " + e.getMessage()));
     }
 
-    private void calculateAverageRating(String recipeId, List<Float> ratings) {
-        Log.d(TAG, "Calculating average rating for recipe ID: " + recipeId);
+    private void calculateAndDisplayAverageRating(String recipeId, List<Float> ratings) {
         float sum = 0;
         for (float rating : ratings) {
             sum += rating;
         }
         float averageRating = sum / ratings.size();
-
-        // Aggiorna il rating medio nel documento della ricetta
-        databaseReference.collection("recipes").document(recipeId)
-                .update("averageRating", averageRating)
-                .addOnSuccessListener(aVoid -> {
-                    ratingBar.setRating(averageRating);
-                    ratingBar.setIsIndicator(true); // Rendi il RatingBar non interattivo
-                    Log.d(TAG, "Average rating updated: " + averageRating);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to update average rating: " + e.getMessage());
-                    Toast.makeText(RecipeFocusActivity.this, "Failed to update average rating", Toast.LENGTH_SHORT).show();
-                });
+        updateRatingInFirestore(recipeId, averageRating);
+        updateRatingBar(averageRating);
     }
 
-    private void showRatingDialog(Recipe recipe) {
-        Log.d(TAG, "Showing rating dialog for recipe: " + recipe.getName());
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Rate this recipe");
+    private void updateRatingInFirestore(String recipeId, float averageRating) {
+        databaseReference.collection("recipes").document(recipeId)
+                .update("averageRating", averageRating)
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nell'aggiornamento del rating medio: " + e.getMessage()));
+    }
 
-        // Configura il RatingBar con un LinearLayout
+    // --- INTERACTIONS ---
+
+    private void showRatingDialog(@NonNull Recipe recipe) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Valuta la ricetta");
+
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(50, 40, 50, 10);
 
-        final RatingBar ratingBar = new RatingBar(this);
-        ratingBar.setNumStars(5);
-        ratingBar.setMax(5);
-        ratingBar.setStepSize(1);
+        final RatingBar dialogRatingBar = new RatingBar(this);
+        dialogRatingBar.setNumStars(5);
+        dialogRatingBar.setStepSize(1.0f);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.gravity = Gravity.CENTER;
-        ratingBar.setLayoutParams(params);
+        dialogRatingBar.setLayoutParams(params);
 
-        layout.addView(ratingBar);
+        layout.addView(dialogRatingBar);
         builder.setView(layout);
 
-        builder.setPositiveButton("Submit", (dialog, which) -> {
-            float rating = ratingBar.getRating();
-            saveRatingToFirebase(recipe.getId(), rating);
+        builder.setPositiveButton("Invia", (dialog, which) -> {
+            float rating = dialogRatingBar.getRating();
+            saveRatingToFirestore(recipe.getId(), rating);
         });
 
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("Annulla", (dialog, which) -> dialog.dismiss());
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.create().show();
     }
 
-    private void saveRatingToFirebase(String recipeId, float rating) {
-        Log.d(TAG, "Saving rating to Firebase for recipe ID: " + recipeId);
+    private void saveRatingToFirestore(String recipeId, float rating) {
         String ratingId = databaseReference.collection("ratings").document().getId();
         Rating ratingObj = new Rating(recipeId, rating);
 
-        databaseReference.collection("ratings").document(ratingId).set(ratingObj)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Rating submitted successfully");
-                    Toast.makeText(RecipeFocusActivity.this, "Rating submitted", Toast.LENGTH_SHORT).show();
-                    recreate(); // Refresh the activity
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to submit rating: " + e.getMessage());
-                    Toast.makeText(RecipeFocusActivity.this, "Failed to submit rating", Toast.LENGTH_SHORT).show();
-                });
+        databaseReference.collection("ratings").document(ratingId)
+                .set(ratingObj)
+                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Rating inviato!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Log.e(TAG, "Errore nell'invio del rating: " + e.getMessage()));
     }
+
+    private void openEditRecipeActivity(@NonNull Recipe recipe) {
+        Intent intent = new Intent(this, RecipeEditActivity.class);
+        intent.putExtra("recipe", recipe);
+        startActivity(intent);
+    }
+
+    // --- INNER CLASSES ---
 
     public static class Rating {
         public String recipeId;
