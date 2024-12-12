@@ -1,16 +1,6 @@
 package com.example.progetto.data.model;
-
-import static android.content.ContentValues.TAG;
-import static androidx.core.app.ActivityCompat.startActivityForResult;
-
-
-import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -19,17 +9,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Firestore {
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    private StorageReference storageRef;
+    private final StorageReference storageRef;
 
     public Firestore() {
         mAuth = FirebaseAuth.getInstance();
@@ -38,6 +26,7 @@ public class Firestore {
     }
 
     public void getSelectIngredients(String id, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
+        // Passa l'errore al chiamante
         db.collection("SelectedIngredient")
                 .whereEqualTo("recipeId", id)
                 .get()
@@ -45,36 +34,30 @@ public class Firestore {
                     List<SelectedIngredientUtils> selectedIngredients = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         SelectedIngredientUtils ingredient = document.toObject(SelectedIngredientUtils.class);
-                        if (ingredient != null) {
-                            selectedIngredients.add(ingredient);
-                        }
+                        selectedIngredients.add(ingredient);
                     }
                     callback.onSuccess(selectedIngredients); // Passa il risultato al chiamante
                 })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e); // Passa l'errore al chiamante
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     public void getIngredients(FirestoreCallback<List<ItemUtils>> callback) {
+        // Passa l'errore al chiamante
         db.collection("items")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<ItemUtils> ingredients = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         ItemUtils item = document.toObject(ItemUtils.class);
-                        if (item != null) {
-                            ingredients.add(item);
-                        }
+                        ingredients.add(item);
                     }
                     callback.onSuccess(ingredients); // Passa il risultato al chiamante
                 })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e); // Passa l'errore al chiamante
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     public void removeSelectedIngredient(StoreUtils store, FirestoreCallback<Void> callback) {
+        // Passa l'errore al chiamante
         db.collection("SelectedIngredient")
                 .whereEqualTo("recipeId", store.getId())
                 .get()
@@ -84,25 +67,23 @@ public class Firestore {
                     }
                     callback.onSuccess(null); // Passa il risultato al chiamante
                 })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e); // Passa l'errore al chiamante
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     public void addSelectedIngredient(List<SelectedIngredientRecipeUtils> ingredients, FirestoreCallback<Void> callback) {
         for (SelectedIngredientRecipeUtils ingredient : ingredients) {
+            // Passa l'errore al chiamante
             db.collection("SelectedIngredient")
                     .add(ingredient)
                     .addOnSuccessListener(documentReference -> {
                         callback.onSuccess(null); // Passa il risultato al chiamante
                     })
-                    .addOnFailureListener(e -> {
-                        callback.onFailure(e); // Passa l'errore al chiamante
-                    });
+                    .addOnFailureListener(callback::onFailure);
         }
     }
 
     public void getUserIngredients(String id, FirestoreCallback<List<UserProductUtils>> callback) {
+        // Passa l'errore al chiamante
         db.collection("user_products")
                 .whereEqualTo("userId", id)
                 .get()
@@ -110,15 +91,11 @@ public class Firestore {
                     List<UserProductUtils> userIngredients = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         UserProductUtils ingredient = document.toObject(UserProductUtils.class);
-                        if (ingredient != null) {
-                            userIngredients.add(ingredient);
-                        }
+                        userIngredients.add(ingredient);
                     }
                     callback.onSuccess(userIngredients); // Passa il risultato al chiamante
                 })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e); // Passa l'errore al chiamante
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     public void uploadImage(Uri imageUri, FirestoreCallback<String> callback) {
@@ -127,7 +104,7 @@ public class Firestore {
             fileReference.putFile(imageUri)
                     .continueWithTask(task -> {
                         if (!task.isSuccessful()) {
-                            throw task.getException();
+                            throw Objects.requireNonNull(task.getException());
                         }
                         return fileReference.getDownloadUrl();
                     })
@@ -173,9 +150,7 @@ public class Firestore {
                     List<Recipe> recipes = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Recipe recipe = document.toObject(Recipe.class);
-                        if (recipe != null) {
-                            recipes.add(recipe);
-                        }
+                        recipes.add(recipe);
                     }
                     callback.onSuccess(recipes); // Passa il risultato al chiamante
                 })
@@ -191,9 +166,7 @@ public class Firestore {
                     List<UserRecipeUtils> recipes = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         UserRecipeUtils recipe = document.toObject(UserRecipeUtils.class);
-                        if (recipe != null) {
-                            recipes.add(recipe);
-                        }
+                        recipes.add(recipe);
                     }
                     callback.onSuccess(recipes); // Passa il risultato al chiamante
                 })
@@ -201,6 +174,7 @@ public class Firestore {
     }
 
     public void getIngredientsOfRecipe(String recipeId, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
+        // Passa l'errore al chiamante
         db.collection("SelectedIngredient")
                 .whereEqualTo("recipeId", recipeId)
                 .get()
@@ -208,15 +182,11 @@ public class Firestore {
                     List<SelectedIngredientUtils> ingredients = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         SelectedIngredientUtils ingredient = document.toObject(SelectedIngredientUtils.class);
-                        if (ingredient != null) {
-                            ingredients.add(ingredient);
-                        }
+                        ingredients.add(ingredient);
                     }
                     callback.onSuccess(ingredients); // Passa il risultato al chiamante
                 })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e); // Passa l'errore al chiamante
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
 
