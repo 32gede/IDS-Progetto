@@ -1,5 +1,6 @@
 package com.example.progetto.data.model;
 
+import static android.content.ContentValues.TAG;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 
@@ -17,8 +18,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Firestore {
     private FirebaseFirestore db;
@@ -31,9 +36,9 @@ public class Firestore {
         storageRef = FirebaseStorage.getInstance().getReference("store_images");
     }
 
-    public void getSelectIngredients(String storeId, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
+    public void getSelectIngredients(String id, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
         db.collection("SelectedIngredient")
-                .whereEqualTo("recipeId", storeId)
+                .whereEqualTo("recipeId", id)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<SelectedIngredientUtils> selectedIngredients = new ArrayList<>();
@@ -94,6 +99,25 @@ public class Firestore {
                         callback.onFailure(e); // Passa l'errore al chiamante
                     });
         }
+    }
+
+    public void getUserIngredients(String id, FirestoreCallback<List<UserProductUtils>> callback) {
+        db.collection("user_products")
+                .whereEqualTo("userId", id)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<UserProductUtils> userIngredients = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserProductUtils ingredient = document.toObject(UserProductUtils.class);
+                        if (ingredient != null) {
+                            userIngredients.add(ingredient);
+                        }
+                    }
+                    callback.onSuccess(userIngredients); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e); // Passa l'errore al chiamante
+                });
     }
 
     public void uploadImage(Uri imageUri, FirestoreCallback<String> callback) {
@@ -175,5 +199,97 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public void getIngredientsOfRecipe(String recipeId, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
+        db.collection("SelectedIngredient")
+                .whereEqualTo("recipeId", recipeId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<SelectedIngredientUtils> ingredients = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        SelectedIngredientUtils ingredient = document.toObject(SelectedIngredientUtils.class);
+                        if (ingredient != null) {
+                            ingredients.add(ingredient);
+                        }
+                    }
+                    callback.onSuccess(ingredients); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e); // Passa l'errore al chiamante
+                });
+    }
+
+
+    public void loadCookableRecipes(String userId, FirestoreCallback<List<UserRecipeUtils>> callback) {
+        this.getUserIngredients(userId, new FirestoreCallback<List<UserProductUtils>>() {
+            @Override
+            public void onSuccess(List<UserProductUtils> userIngredients) {
+                loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
+                    @Override
+                    public void onSuccess(List<Recipe> globalRecipes) {
+                        List<UserRecipeUtils> cookableRecipes = new ArrayList<>();
+                        AtomicInteger processedRecipes = new AtomicInteger(0); // Contatore per tracciare le ricette elaborate
+
+                        if (globalRecipes.isEmpty()) {
+                            // Se non ci sono ricette, restituisci subito una lista vuota
+                            callback.onSuccess(cookableRecipes);
+                            return;
+                        }
+
+                        for (Recipe recipe : globalRecipes) {
+                            getIngredientsOfRecipe(recipe.getId(), new FirestoreCallback<List<SelectedIngredientUtils>>() {
+                                @Override
+                                public void onSuccess(List<SelectedIngredientUtils> ingredients) {
+                                    // Verifica se l'utente ha tutti gli ingredienti richiesti
+                                    boolean isCookable = true;
+
+                                    for (SelectedIngredientUtils ingredient : ingredients) {
+                                        UserProductUtils matchingUserIngredient = userIngredients.stream()
+                                                .filter(ui -> ui.getName().equals(ingredient.getName()))
+                                                .findFirst()
+                                                .orElse(null);
+
+                                        if (matchingUserIngredient == null || matchingUserIngredient.getQuantity() < ingredient.getQuantity()) {
+                                            isCookable = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (isCookable) {
+                                        // Aggiungi la ricetta alla lista delle cookable
+                                        UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
+                                        cookableRecipes.add(userRecipe);
+                                    }
+
+                                    // Incrementa il contatore delle ricette processate
+                                    if (processedRecipes.incrementAndGet() == globalRecipes.size()) {
+                                        // Se tutte le ricette sono state processate, restituisci la lista
+                                        callback.onSuccess(cookableRecipes);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    callback.onFailure(e);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+
 }
+
 

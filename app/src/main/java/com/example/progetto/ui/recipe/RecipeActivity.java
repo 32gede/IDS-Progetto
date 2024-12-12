@@ -19,6 +19,7 @@ import com.example.progetto.data.model.Firestore;
 import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.Recipe;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
+import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.example.progetto.data.model.UserRecipeUtils;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.flexbox.FlexDirection;
@@ -162,65 +163,85 @@ public class RecipeActivity extends AppCompatActivity {
                     Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage());
                 }
             });
+
         }
     }
 
     private void loadCookedRecipes(String userId) {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
+
+        firestore.loadCookableRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
+            @Override
+            public void onSuccess(List<UserRecipeUtils> cookableRecipes) {
+                // Stampa tutte le ricette cookable
+                System.out.println("Ricette cookable trovate 1:");
+                for (UserRecipeUtils recipe : cookableRecipes) {
+                    Log.d(TAG, "Cookable recipe found: " + recipe.getName());
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.err.println("Errore durante il caricamento delle ricette cookable: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
+
         ritorna().addOnSuccessListener(recipeIngredients -> {
-            firebase.collection("user_products")
-                    .whereEqualTo("userId", userId)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        Set<String> userIngredients = new HashSet<>();
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            String productName = document.getString("name");
-                            if (productName != null) {
-                                userIngredients.add(productName);
-                            }
-                        }
+                    firebase.collection("user_products")
+                            .whereEqualTo("userId", userId)
+                            .get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                Set<String> userIngredients = new HashSet<>();
+                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                    String productName = document.getString("name");
+                                    if (productName != null) {
+                                        userIngredients.add(productName);
+                                    }
+                                }
 
-                        cookableRecipe.clear();
-                        for (Recipe recipe : globalRecipes) {
-                            Log.d(TAG, "Checking recipe: " + recipe.getName());
-                            boolean canCook = true;
+                                cookableRecipe.clear();
+                                for (Recipe recipe : globalRecipes) {
+                                    Log.d(TAG, "Checking recipe: " + recipe.getName());
+                                    boolean canCook = true;
 
-                            for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
-                                if (ingredient.getRecipeId().equals(recipe.getId())) {
-                                    Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
+                                    for (SelectedIngredientRecipeUtils ingredient : recipeIngredients) {
+                                        if (ingredient.getRecipeId().equals(recipe.getId())) {
+                                            Log.d(TAG, "Ingredient: " + ingredient.getName() + " required quantity: " + ingredient.getQuantity());
 
-                                    boolean hasIngredient = false;
-                                    for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
-                                        String userIngredientName = userIngredientDoc.getString("name");
-                                        Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
+                                            boolean hasIngredient = false;
+                                            for (QueryDocumentSnapshot userIngredientDoc : queryDocumentSnapshots) {
+                                                String userIngredientName = userIngredientDoc.getString("name");
+                                                Long userIngredientQuantity = userIngredientDoc.getLong("quantity");
 
-                                        if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
-                                            Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
+                                                if (userIngredientName != null && userIngredientName.equals(ingredient.getName())) {
+                                                    Log.d(TAG, "User has ingredient: " + userIngredientName + " with quantity: " + userIngredientQuantity);
 
-                                            // Check if the user has enough quantity
-                                            if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
-                                                hasIngredient = true;
+                                                    // Check if the user has enough quantity
+                                                    if (userIngredientQuantity != null && userIngredientQuantity >= ingredient.getQuantity()) {
+                                                        hasIngredient = true;
+                                                    }
+                                                    break; // No need to check further if ingredient matches
+                                                }
                                             }
-                                            break; // No need to check further if ingredient matches
+
+                                            if (!hasIngredient) {
+                                                canCook = false;
+                                                break;
+                                            }
                                         }
                                     }
 
-                                    if (!hasIngredient) {
-                                        canCook = false;
-                                        break;
+                                    if (canCook && cookableRecipe.size() < 5) {
+                                        cookableRecipe.add(recipe);
                                     }
                                 }
-                            }
-
-                            if (canCook && cookableRecipe.size() < 5) {
-                                cookableRecipe.add(recipe);
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                        Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
-                    })
-                    .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
-        }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
+                                adapter.notifyDataSetChanged();
+                                Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
+                            })
+                            .addOnFailureListener(e -> Log.e(TAG, "Error loading user ingredients: " + e.getMessage()));
+                }).addOnFailureListener(e -> Log.e(TAG, "Error loading selected ingredients: " + e.getMessage()));
     }
 
     public Task<List<SelectedIngredientRecipeUtils>> ritorna() {
