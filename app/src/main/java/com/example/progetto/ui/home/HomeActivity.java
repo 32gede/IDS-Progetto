@@ -32,15 +32,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
 
-    // UI Components
-    private RecyclerView popularRecyclerView;
-    private RecyclerView newerRecyclerView;
-    private RecyclerView cookableRecyclerView;
     private RecipeAdapter adapterPopular;
     private RecipeAdapter adapterNewer;
     private RecipeAdapter adapterCookable;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView titleText;
 
     // Firebase
     private Firestore firestore;
@@ -49,8 +44,6 @@ public class HomeActivity extends AppCompatActivity {
     private final List<Recipe> popularRecipe = new ArrayList<>();
     private final List<Recipe> newerRecipe = new ArrayList<>();
     private final List<Recipe> cookableRecipe = new ArrayList<>();
-    private final List<Recipe> globalRecipes = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        titleText = findViewById(R.id.title);
+        TextView titleText = findViewById(R.id.title);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         titleText.setText(getString(R.string.home));
@@ -90,9 +83,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerViews() {
-        popularRecyclerView = findViewById(R.id.popularRecyclerView);
-        newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
-        cookableRecyclerView = findViewById(R.id.cookableRecyclerView);
+        // UI Components
+        RecyclerView popularRecyclerView = findViewById(R.id.popularRecyclerView);
+        RecyclerView newerRecyclerView = findViewById(R.id.newerRecipeRecyclerView);
+        RecyclerView cookableRecyclerView = findViewById(R.id.cookableRecyclerView);
 
         NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
 
@@ -119,7 +113,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadPopularRecipes() {
         Log.d(TAG, "Loading popular recipes");
-        firestore.loadPopularRecipes(new FirestoreCallback<List<Recipe>>() {
+        firestore.loadPopularRecipes(new FirestoreCallback<>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 popularRecipe.clear();
@@ -138,7 +132,7 @@ public class HomeActivity extends AppCompatActivity {
     private void loadNewerRecipes() {
         Log.d(TAG, "Loading newer recipes");
 
-        firestore.loadNewerRecipes(new FirestoreCallback<List<Recipe>>() {
+        firestore.loadNewerRecipes(new FirestoreCallback<>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 newerRecipe.clear();
@@ -156,7 +150,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadCookableRecipes(String userId) {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
-        firestore.loadCookableRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
+        firestore.loadCookableRecipes(userId, new FirestoreCallback<>() {
             @Override
             public void onSuccess(List<UserRecipeUtils> cookableRecipesAppo) {
                 // Stampa tutte le ricette cookable
