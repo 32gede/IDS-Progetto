@@ -3,12 +3,10 @@ package com.example.progetto.ui.home;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.example.progetto.R;
 import com.example.progetto.adapter.RecipeAdapter;
 import com.example.progetto.data.model.Firestore;
@@ -18,7 +16,6 @@ import com.example.progetto.data.model.NavigationHelper;
 import com.example.progetto.data.model.UserRecipeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.ArrayList;
 import java.util.List;
 
