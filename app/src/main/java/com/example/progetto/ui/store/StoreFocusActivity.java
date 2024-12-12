@@ -64,11 +64,7 @@ public class StoreFocusActivity extends AppCompatActivity {
                     List<SelectedIngredientUtils> ingredients = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         SelectedIngredientUtils item = document.toObject(SelectedIngredientUtils.class);
-                        if (item != null) {
-                            ingredients.add(item);
-                        } else {
-                            Log.w(TAG, "Null ingredient item found in document: " + document.getId());
-                        }
+                        ingredients.add(item);
                     }
                     // Update adapter data
                     ingredientsAdapter.updateData(ingredients);
