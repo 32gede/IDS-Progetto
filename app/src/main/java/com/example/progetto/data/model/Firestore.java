@@ -208,18 +208,17 @@ public class Firestore {
     }
 
 
-    public void loadCookableRecipes(String userId, FirestoreCallback<List<UserRecipeUtils>> callback) {
-        this.getUserIngredients(userId, new FirestoreCallback<List<UserProductUtils>>() {
+    public void loadCookableRecipes(String userId, FirestoreCallback<List<Recipe>> callback) {
+        getUserIngredients(userId, new FirestoreCallback<List<UserProductUtils>>() {
             @Override
             public void onSuccess(List<UserProductUtils> userIngredients) {
                 loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
                     @Override
                     public void onSuccess(List<Recipe> globalRecipes) {
-                        List<UserRecipeUtils> cookableRecipes = new ArrayList<>();
+                        List<Recipe> cookableRecipes = new ArrayList<>();
                         AtomicInteger processedRecipes = new AtomicInteger(0); // Contatore per tracciare le ricette elaborate
 
                         if (globalRecipes.isEmpty()) {
-                            // Se non ci sono ricette, restituisci subito una lista vuota
                             callback.onSuccess(cookableRecipes);
                             return;
                         }
@@ -245,8 +244,7 @@ public class Firestore {
 
                                     if (isCookable) {
                                         // Aggiungi la ricetta alla lista delle cookable
-                                        UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
-                                        cookableRecipes.add(userRecipe);
+                                        cookableRecipes.add(recipe);
                                     }
 
                                     // Incrementa il contatore delle ricette processate
@@ -310,16 +308,6 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void saveUserRecipe(UserRecipeUtils userRecipe, FirestoreCallback<Void> callback) {
-        // Passa l'errore al chiamante
-        db.collection("recipes_user")
-                .document(userRecipe.getId())
-                .set(userRecipe)
-                .addOnSuccessListener(documentReference -> {
-                    callback.onSuccess(null); // Passa il risultato al chiamante
-                })
-                .addOnFailureListener(callback::onFailure);
-    }
 
     public void removeUserRecipe(Recipe recipe, FirestoreCallback<Void> callback) {
         // Passa l'errore al chiamante

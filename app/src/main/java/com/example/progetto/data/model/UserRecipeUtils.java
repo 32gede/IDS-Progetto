@@ -1,23 +1,18 @@
 package com.example.progetto.data.model;
 
-public class UserRecipeUtils extends Recipe {
+import java.util.Map;
+
+public class UserRecipeUtils {
     private String userId; // User-specific field
+    private String documentId; // Firestore document ID
 
     // No-argument constructor required for Firestore
     public UserRecipeUtils() {}
 
     // Constructor that accepts a Recipe object and a userId
-    public UserRecipeUtils(Recipe recipe, String userId) {
-        super(recipe.getId(), recipe.getName(), recipe.getDescription(), recipe.getImage(), recipe.getSteps(), recipe.getDifficulty(),
-                recipe.getCategory(), recipe.getPreparationTime(), recipe.getAverageRating());
+    public UserRecipeUtils(String userId,String documentId){
         this.userId = userId;
-    }
-
-    // Full constructor with all fields
-    public UserRecipeUtils(String id, String name, String description, String image, String ingredients,
-                           String steps, String difficulty, String category, String preparationTime, String userId) {
-        super(id, name, description, image, steps, difficulty, category, preparationTime,5);
-        this.userId = userId;
+        this.documentId = documentId;
     }
 
     // Getter and Setter for userId
@@ -27,5 +22,17 @@ public class UserRecipeUtils extends Recipe {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+    public String getDocumentId() {
+        return documentId;
+    }
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+    public Map<String, Object> toMap() {
+        return Map.of(
+                "userId", userId,
+                "documentId", documentId
+        );
     }
 }

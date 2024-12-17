@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class RecipeActivity extends AppCompatActivity {
@@ -37,6 +38,7 @@ public class RecipeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FirebaseAuth auth ;
 
     // Firebase and Adapter
     private Firestore firestore;
@@ -50,6 +52,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        auth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
         firestore = new Firestore();
@@ -108,12 +111,11 @@ public class RecipeActivity extends AppCompatActivity {
         savedRecipes = new ArrayList<>();
         cookableRecipe = new ArrayList<>();
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
         Set<String> savedRecipeIds = new HashSet<>();
 
-        firestore.loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
+        firestore.loadGlobalRecipes(new FirestoreCallback<>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 globalRecipes.addAll(recipes);
@@ -128,7 +130,6 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
 
-
         // Load user-saved recipes
         if (userId != null) {
             firestore.loadUserRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
@@ -137,12 +138,12 @@ public class RecipeActivity extends AppCompatActivity {
                     savedRecipes.clear();
                     savedRecipes.addAll(recipes);
                     for (UserRecipeUtils userRecipe : savedRecipes) {
-                        savedRecipeIds.add(userRecipe.getId());
+                        savedRecipeIds.add(userRecipe.getUserId());
                     }
 
                     adapter.setSavedRecipeIds(savedRecipeIds);
                     if (tabLayout.getSelectedTabPosition() == 0) {
-                        adapter.setRecipes(new ArrayList<>(savedRecipes));
+                        adapter.setRecipes(loadSavedRecipes(userId));
                     }
 
                     loadCookedRecipes(userId);
@@ -153,16 +154,27 @@ public class RecipeActivity extends AppCompatActivity {
                     Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage());
                 }
             });
-
         }
+    }
+
+    private List<Recipe> loadSavedRecipes(String userId) {
+        List<Recipe> appo = new ArrayList<>();
+        for (Recipe recipe : globalRecipes) {
+            for (UserRecipeUtils saved : savedRecipes) {
+                if (saved.getDocumentId().equals(recipe.getId())) {
+                    appo.add(recipe);
+                }
+            }
+        }
+        return appo;
     }
 
     private void loadCookedRecipes(String userId) {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
 
-        firestore.loadCookableRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
+        firestore.loadCookableRecipes(userId, new FirestoreCallback<List<Recipe>>() {
             @Override
-            public void onSuccess(List<UserRecipeUtils> cookableRecipes) {
+            public void onSuccess(List<Recipe> cookableRecipes) {
                 // Stampa tutte le ricette cookable
                 cookableRecipe.addAll(cookableRecipes);
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
@@ -180,18 +192,8 @@ public class RecipeActivity extends AppCompatActivity {
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
         if (userId != null && recipe != null && recipe.getId() != null) {
-            UserRecipeUtils userRecipe = new UserRecipeUtils(recipe, userId);
-            firestore.saveUserRecipe(userRecipe, new FirestoreCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    Toast.makeText(RecipeActivity.this, "Ricetta salvata con successo!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e("RecipeActivity", "Errore nel salvataggio: " + e.getMessage());
-                }
-            });
+            UserRecipeUtils userRecipe = new UserRecipeUtils(userId, recipe.getId());
+            firestore.addSomething(userRecipe.toMap(),"recipes_user");
         }
     }
 
@@ -219,7 +221,7 @@ public class RecipeActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    adapter.setRecipes(new ArrayList<>(savedRecipes));
+                    adapter.setRecipes(loadSavedRecipes(Objects.requireNonNull(auth.getCurrentUser()).getUid()));
                 } else if (tab.getPosition() == 1) {
                     adapter.setRecipes(globalRecipes);
                 } else {

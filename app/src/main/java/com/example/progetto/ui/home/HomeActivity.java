@@ -140,7 +140,7 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
         firestore.loadCookableRecipes(userId, new FirestoreCallback<>() {
             @Override
-            public void onSuccess(List<UserRecipeUtils> cookableRecipesAppo) {
+            public void onSuccess(List<Recipe> cookableRecipesAppo) {
                 // Stampa tutte le ricette cookable
                 cookableRecipe.addAll(cookableRecipesAppo.subList(0, Math.min(cookableRecipesAppo.size(), 5)));
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
