@@ -110,6 +110,9 @@ public class SelectedIngredientsAdapter extends RecyclerView.Adapter<SelectedIng
             } else {
                 // Add to selected
                 int quantity = parseQuantity(holder.ingredientQuantity.getText().toString());
+                if (quantity == 0) {
+                    quantity = 1; // Set minimum quantity to 1
+                }
                 SelectedIngredientUtils newSelection = new SelectedIngredientUtils(ingredient.getName(), quantity);
                 selectedIngredients.put(ingredient.getName(), newSelection);
             }
@@ -141,12 +144,12 @@ public class SelectedIngredientsAdapter extends RecyclerView.Adapter<SelectedIng
         }
         notifyDataSetChanged();
     }
+
     public void updateData(List<ItemUtils> appo) {
         ingredientsList.clear();
         ingredientsList.addAll(appo);
         notifyDataSetChanged();
     }
-
 
     // ViewHolder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
