@@ -37,7 +37,7 @@ public class EditStoreActivity extends AppCompatActivity {
     private static final String TAG = "EditStoreActivity";
     private EditText storeName, storeDescription, storePrezzo;
     private RecyclerView productsRecyclerView;
-    private ImageView storeImageView;
+    private ImageView storeImageView,backBtn;
     private Button btnSelectImage, btnSubmitStore;
     private ProgressBar progressBar;
     private Uri selectedImageUri;
@@ -124,6 +124,8 @@ public class EditStoreActivity extends AppCompatActivity {
         btnSelectImage = findViewById(R.id.btn_select_image);
         btnSubmitStore = findViewById(R.id.btn_submit_store);
         progressBar = findViewById(R.id.progressBar);
+        backBtn = findViewById(R.id.back_button);
+        backBtn.setOnClickListener(v -> finish());
 
         Log.d(TAG, "Views initialized");
     }

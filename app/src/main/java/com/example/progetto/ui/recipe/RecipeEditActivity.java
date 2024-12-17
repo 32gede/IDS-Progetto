@@ -43,7 +43,7 @@ public class RecipeEditActivity extends AppCompatActivity {
     // UI Elements
     private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
     private RecyclerView recipeIngredients;
-    private ImageView recipeImageView;
+    private ImageView recipeImageView,backBtn;
     private Button btnSubmitRecipe, btnSelectImage;
     private ProgressBar progressBar;
 
@@ -83,6 +83,8 @@ public class RecipeEditActivity extends AppCompatActivity {
         recipePreparationTime = findViewById(R.id.recipe_preparation_time);
         btnSubmitRecipe = findViewById(R.id.btn_submit_recipe);
         progressBar = findViewById(R.id.progressBar);
+        backBtn = findViewById(R.id.back_button);
+        backBtn.setOnClickListener(v -> finish());
 
         recipeDifficulty.setFilters(new InputFilter[]{new InputFilterMinMax(0, 9)});
     }
