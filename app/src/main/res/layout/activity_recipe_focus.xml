@@ -104,6 +104,45 @@
                     android:padding="8dp">
 
                     <TextView
+                        android:text="Difficoltà"
+                        android:id="@+id/txt_difficulty"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/gray" />
+
+                    <TextView
+                        android:text="Categoria"
+                        android:id="@+id/txt_category"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/gray" />
+
+                    <TextView
+                        android:text="Tempo di preparazione"
+                        android:id="@+id/txt_preparation_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/gray" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <TextView
                         android:id="@+id/recipe_difficulty"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -111,7 +150,7 @@
                         android:gravity="start"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="@color/purple_dark" />
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/recipe_category"
@@ -121,7 +160,7 @@
                         android:gravity="center"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="@color/purple_dark" />
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/recipe_preparation_time"
@@ -131,7 +170,7 @@
                         android:gravity="end"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="@color/purple_dark" />
+                        android:textColor="@color/black" />
                 </LinearLayout>
             </LinearLayout>
 

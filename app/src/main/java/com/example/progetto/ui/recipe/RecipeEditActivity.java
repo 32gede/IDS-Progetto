@@ -43,7 +43,7 @@ public class RecipeEditActivity extends AppCompatActivity {
     // UI Elements
     private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
     private RecyclerView recipeIngredients;
-    private ImageView recipeImageView,backBtn;
+    private ImageView recipeImageView, backBtn;
     private Button btnSubmitRecipe, btnSelectImage;
     private ProgressBar progressBar;
 
@@ -107,11 +107,13 @@ public class RecipeEditActivity extends AppCompatActivity {
         firestore.getIngredients(new FirestoreCallback<List<ItemUtils>>() {
             @Override
             public void onSuccess(List<ItemUtils> ingredients) {
+                Log.d(TAG, "Ingredients loaded successfully");
                 ingredientsAdapter.updateData(ingredients);
             }
 
             @Override
             public void onFailure(Exception e) {
+                Log.e(TAG, "Error loading ingredients: " + e.getMessage(), e);
                 Toast.makeText(RecipeEditActivity.this, "Errore nel caricamento degli ingredienti.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -149,12 +151,14 @@ public class RecipeEditActivity extends AppCompatActivity {
         firestore.getSelectIngredients(recipeId, new FirestoreCallback<List<SelectedIngredientUtils>>() {
             @Override
             public void onSuccess(List<SelectedIngredientUtils> data) {
+                Log.d(TAG, "Selected ingredients loaded successfully");
                 selectedIngredientsList.addAll(data);
                 ingredientsAdapter.changeData(data);
             }
 
             @Override
             public void onFailure(Exception e) {
+                Log.e(TAG, "Error loading selected ingredients: " + e.getMessage(), e);
                 Toast.makeText(RecipeEditActivity.this, "Errore nel caricamento degli ingredienti selezionati.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -215,12 +219,14 @@ public class RecipeEditActivity extends AppCompatActivity {
         firestore.uploadImage(selectedImageUri, new FirestoreCallback<String>() {
             @Override
             public void onSuccess(String imageUrl) {
+                Log.d(TAG, "Image uploaded successfully: " + imageUrl);
                 updatedRecipe.setImage(imageUrl);
                 saveRecipeToFirestore(updatedRecipe, updatedIngredients);
             }
 
             @Override
             public void onFailure(Exception e) {
+                Log.e(TAG, "Error uploading image: " + e.getMessage(), e);
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(RecipeEditActivity.this, "Errore nel caricamento dell'immagine.", Toast.LENGTH_SHORT).show();
             }
@@ -231,6 +237,7 @@ public class RecipeEditActivity extends AppCompatActivity {
         firestore.updateRecipe(updatedRecipe.getId(), updatedRecipe, updatedIngredients, new FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
+                Log.d(TAG, "Recipe updated successfully");
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(RecipeEditActivity.this, "Ricetta aggiornata con successo!", Toast.LENGTH_SHORT).show();
                 finish();
@@ -238,6 +245,7 @@ public class RecipeEditActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
+                Log.e(TAG, "Error updating recipe: " + e.getMessage(), e);
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(RecipeEditActivity.this, "Errore nell'aggiornamento della ricetta.", Toast.LENGTH_SHORT).show();
             }
@@ -258,6 +266,7 @@ public class RecipeEditActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData();
+            Log.d(TAG, "Image selected: " + selectedImageUri.toString());
             Glide.with(this).load(selectedImageUri).error(R.drawable.baseline_error_24).into(recipeImageView);
         }
     }
@@ -279,6 +288,7 @@ public class RecipeEditActivity extends AppCompatActivity {
 
             timePickerDialog.findViewById(R.id.btn_confirm).setOnClickListener(view -> {
                 String selectedTime = String.format("%02d:%02d", hourPicker.getValue(), minutePicker.getValue());
+                Log.d(TAG, "Time selected: " + selectedTime);
                 recipePreparationTime.setText(selectedTime);
                 timePickerDialog.dismiss();
             });

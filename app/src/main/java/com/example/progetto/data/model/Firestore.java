@@ -131,19 +131,34 @@ public class Firestore {
 
 
     public String addSomething(Map<String, Object> object, String directory) {
-        String documentId = db.collection(directory).document().getId();
-        object.put("id", documentId);
+        // Controlla se l'oggetto contiene già una chiave "id"
+        String documentId;
+        if (object.containsKey("id")) {
+            // Usa l'ID già esistente
+            documentId = (String) object.get("id");
+        } else {
+            // Genera un nuovo ID se non è presente
+            documentId = db.collection(directory).document().getId();
+            object.put("id", documentId);
+        }
+
+        Log.d("Firestore", "Adding/Updating document in " + directory + " with ID: " + documentId);
+        Log.d("Firestore", "Document: " + object);
+
+        // Usa set con il documentId corretto per creare o aggiornare il documento
         db.collection(directory)
-                .document(documentId) // Use the generated document ID
-                .set(object) // Use set instead of add
+                .document(documentId) // Usa l'ID specificato
+                .set(object) // Salva l'oggetto Firestore, sovrascrivendo se esiste già
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentId);
+                    Log.d("Firestore", "DocumentSnapshot successfully added/updated with ID: " + documentId);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error adding document", e);
+                    Log.e("Firestore", "Error adding/updating document", e);
                 });
-        return documentId;
+
+        return documentId; // Restituisce l'ID del documento usato
     }
+
 
     public void loadGlobalRecipes(FirestoreCallback<List<Recipe>> callback) {
         // Passa l'errore al chiamante
@@ -317,10 +332,7 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void updateRecipe(Recipe recipe, String name, String description, String steps, String difficulty, String category, String preparationTime, Uri selectedImageUri, FirestoreCallback<Void> firestoreCallback) {
 
-
-    }
 
     public void deleteRecipe(String id, FirestoreCallback<Void> recipeEditActivity) {
         db.collection("recipes")
@@ -333,20 +345,27 @@ public class Firestore {
     }
 
     public void updateRecipe(String id, Recipe recipe, List<SelectedIngredientRecipeUtils> appo, FirestoreCallback<Void> firestoreCallback) {
-        db.collection("recipes")
-                .document(id)
-                .set(recipe)
-                .addOnSuccessListener(aVoid -> {
-                    firestoreCallback.onSuccess(null);
-                })
-                .addOnFailureListener(firestoreCallback::onFailure);
-        this.removeSelectedIngredient(id, new FirestoreCallback<Void>() {
+        deleteRecipe(id, new FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
-                addSelectedIngredient(appo, new FirestoreCallback<Void>() {
+                Log.d("Firestore", "Recipe deleted successfully");
+                addSomething(recipe.toMap(), "recipes");
+
+                removeSelectedIngredient(id, new FirestoreCallback<Void>() {
                     @Override
                     public void onSuccess(Void data) {
-                        firestoreCallback.onSuccess(null);
+                        Log.d("Firestore", "Selected ingredients removed successfully");
+                        addSelectedIngredient(appo, new FirestoreCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void data) {
+                                firestoreCallback.onSuccess(null);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                firestoreCallback.onFailure(e);
+                            }
+                        });
                     }
 
                     @Override

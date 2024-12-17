@@ -1,6 +1,9 @@
 package com.example.progetto.data.model;
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.util.Map;
 
 public class Recipe implements Serializable {
     private String id; // Unique identifier for the recipe
@@ -100,5 +103,29 @@ public class Recipe implements Serializable {
 
     public void setPreparationTime(String preparationTime) {
         this.preparationTime = preparationTime;
+    }
+    public Map<String, Object> toMap() {
+        Log.d("Recipe", "toMap called with id: " + id);
+        Log.d("Recipe", "toMap called with name: " + name);
+        Log.d("Recipe", "toMap called with description: " + description);
+        Log.d("Recipe", "toMap called with image: " + image);
+        Log.d("Recipe", "toMap called with steps: " + steps);
+        Log.d("Recipe", "toMap called with difficulty: " + difficulty);
+        Log.d("Recipe", "toMap called with category: " + category);
+        Log.d("Recipe", "toMap called with preparationTime: " + preparationTime);
+        Log.d("Recipe", "toMap called with averageRating: " + averageRating);
+
+
+        return Map.of(
+                "id", id,
+                "name", name,
+                "description", description,
+                "image", image != null ? image : "",
+                "steps", steps,
+                "difficulty", difficulty,
+                "category", category,
+                "preparationTime", preparationTime,
+                "averageRating", averageRating
+        );
     }
 }
