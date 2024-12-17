@@ -45,7 +45,7 @@ public class AddStoreActivity extends AppCompatActivity {
 
     private EditText storeName, storeDescription, storePrezzo;
     private RecyclerView productsRecyclerView;
-    private ImageView storeImageView;
+    private ImageView storeImageView,backBtn;
     private Button btnSelectImage, btnSubmitStore;
     private ProgressBar progressBar;
     private Uri selectedImageUri;
@@ -78,6 +78,8 @@ public class AddStoreActivity extends AppCompatActivity {
         btnSelectImage = findViewById(R.id.btn_select_image);
         btnSubmitStore = findViewById(R.id.btn_submit_store);
         progressBar = findViewById(R.id.progressBar);
+        backBtn = findViewById(R.id.back_button);
+        backBtn.setOnClickListener(v -> finish());
 
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference("store_images");

@@ -45,7 +45,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
     private RecyclerView recipeIngredients;
-    private ImageView recipeImageView;
+    private ImageView recipeImageView,backBtn;
     private Button btnSubmitRecipe, btnSelectImage;
 
     private FirebaseFirestore db;
@@ -141,6 +141,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredientsAdapter = new SelectedIngredientsAdapter(ingredients);
         recipeIngredients.setLayoutManager(flexboxLayoutManager);
         recipeIngredients.setAdapter(ingredientsAdapter);
+        backBtn.setOnClickListener(v -> finish());
     }
 
     private void initializeViews() {
@@ -155,6 +156,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         btnSubmitRecipe = findViewById(R.id.btn_submit_recipe);
         recipeDifficulty.setFilters(new InputFilter[]{new InputFilterMinMax(0, 9)});
         progressBar = findViewById(R.id.progressBar);
+        backBtn = findViewById(R.id.back_button);
     }
 
     private void saveRecipe() {
