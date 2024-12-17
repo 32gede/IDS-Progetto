@@ -221,10 +221,25 @@ public class EditStoreActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating store", e));
-        firestore.removeSelectedIngredient(store.getId(), new FirestoreCallback<Void>() {
+        firestore.removeSelectedIngredient(store.getId(), new FirestoreCallback<>() {
             @Override
             public void onSuccess(Void data) {
                 Log.d(TAG, "Selected ingredients removed successfully");
+                List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
+                for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
+                    selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), store.getId(), 2));
+                }
+                firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(Void data) {
+                        Log.d(TAG, "Selected ingredients added successfully");
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "Failed to add selected ingredients: " + e.getMessage());
+                    }
+                });
             }
 
             @Override
@@ -232,20 +247,6 @@ public class EditStoreActivity extends AppCompatActivity {
                 Log.e(TAG, "Failed to remove selected ingredients: " + e.getMessage());
             }
         });
-        List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
-        for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), store.getId(), 2));
-        }
-        firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<Void>() {
-            @Override
-            public void onSuccess(Void data) {
-                Log.d(TAG, "Selected ingredients added successfully");
-            }
 
-            @Override
-            public void onFailure(Exception e) {
-                Log.e(TAG, "Failed to add selected ingredients: " + e.getMessage());
-            }
-        });
     }
 }
