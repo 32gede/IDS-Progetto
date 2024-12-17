@@ -164,7 +164,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         String category = recipeCategory.getText().toString().trim();
         String preparationTime = recipePreparationTime.getText().toString().trim();
 
-        if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()||ingredientsAdapter.getSelectedIngredients().isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             return;
         }

@@ -143,7 +143,7 @@ public class AddStoreActivity extends AppCompatActivity {
         String prezzoStr = storePrezzo.getText().toString().trim();
 
 
-        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty()||ingredientsAdapter.getSelectedIngredients().isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Validation failed: Some fields are empty");
             return;
