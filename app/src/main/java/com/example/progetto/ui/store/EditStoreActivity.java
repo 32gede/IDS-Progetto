@@ -1,16 +1,19 @@
 package com.example.progetto.ui.store;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +40,7 @@ public class EditStoreActivity extends AppCompatActivity {
     private static final String TAG = "EditStoreActivity";
     private EditText storeName, storeDescription, storePrezzo;
     private RecyclerView productsRecyclerView;
-    private ImageView storeImageView,backBtn;
+    private ImageView storeImageView, backBtn;
     private Button btnSelectImage, btnSubmitStore;
     private ProgressBar progressBar;
     private Uri selectedImageUri;
@@ -49,6 +52,7 @@ public class EditStoreActivity extends AppCompatActivity {
     List<SelectedIngredientUtils> selectIngredients;
     List<ItemUtils> ingredients;
     private Firestore firestore;
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -149,7 +153,27 @@ public class EditStoreActivity extends AppCompatActivity {
     }
 
     private void selectImage() {
-        // Code to select image from gallery
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleziona immagine"), PICK_IMAGE_REQUEST);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            Glide.with(this)
+                    .load(selectedImageUri)
+                    .error(R.drawable.baseline_error_24)
+                    .into(storeImageView);
+            Log.d(TAG, "Image selected: " + selectedImageUri.toString());
+
+        } else {
+            Log.e(TAG, "Image selection failed or canceled");
+        }
     }
 
     private void submitStore() {
@@ -161,7 +185,28 @@ public class EditStoreActivity extends AppCompatActivity {
             store.setName(name);
             store.setDescription(description);
             store.setPrice(price);
-            updateStoreInFirestore(store);
+            if (selectedImageUri != null) {
+                firestore.uploadImage(selectedImageUri, new FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(String imageUrl) {
+                        selectedImageUri = Uri.parse(imageUrl);
+                        store.setImage(selectedImageUri.toString());
+                        updateStoreInFirestore(store);
+                        Log.d(TAG, "Image uploaded successfully: " + imageUrl);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        selectedImageUri = null;
+                        store.setImage(selectedImageUri.toString());
+                        progressBar.setVisibility(View.GONE);
+                        updateStoreInFirestore(store);
+                        Toast.makeText(EditStoreActivity.this, "Errore nel caricamento dell'immagine: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Image upload failed: " + e.getMessage());
+                    }
+                });
+            } else
+                updateStoreInFirestore(store);
         } else {
             Log.e(TAG, "Store object is null in submitStore");
         }
@@ -189,7 +234,7 @@ public class EditStoreActivity extends AppCompatActivity {
         });
         List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), store.getId(),2));
+            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), store.getId(), 2));
         }
         firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<Void>() {
             @Override
