@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.progetto.R;
 import com.example.progetto.adapter.IngredientsAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.SelectedIngredientUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.progetto.data.model.StoreUtils;
@@ -26,9 +28,9 @@ public class StoreFocusActivity extends AppCompatActivity {
     private static final String TAG = "StoreFocusActivity";
     private ImageView imageView, backBtn;
     private TextView nameTextView, descriptionTextView, priceTextView;
-    private FirebaseFirestore databaseReference;
     private RecyclerView ingredientsRecyclerView;
     private IngredientsAdapter ingredientsAdapter;
+    private Firestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,7 @@ public class StoreFocusActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: started");
 
         initializeViews();
-
-        databaseReference = FirebaseFirestore.getInstance();
+        firestore = new Firestore();
 
         StoreUtils store = (StoreUtils) getIntent().getSerializableExtra("store");
 
@@ -57,26 +58,22 @@ public class StoreFocusActivity extends AppCompatActivity {
 
     private void getIngredients(String recipeId) {
         Log.d(TAG, "Fetching ingredients for recipe ID: " + recipeId);
-        databaseReference.collection("SelectedIngredient")
-                .whereEqualTo("recipeId", recipeId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<SelectedIngredientUtils> ingredients = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        SelectedIngredientUtils item = document.toObject(SelectedIngredientUtils.class);
-                        ingredients.add(item);
-                    }
-                    // Update adapter data
-                    ingredientsAdapter.updateData(ingredients);
-                    Log.d(TAG, "Ingredients loaded: " + ingredients.size());
-                    if (Build.VERSION.SDK_INT >= 35) {
-                        Log.d(TAG, "Ingredients: " + ingredients.getFirst().getName()+", "+ingredients.getFirst().getQuantity());
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to fetch ingredients: " + e.getMessage());
-                    Toast.makeText(this, "Failed to fetch ingredients", Toast.LENGTH_SHORT).show();
-                });
+        firestore.getSelectIngredients(recipeId, new FirestoreCallback<List<SelectedIngredientUtils>>() {
+            @Override
+            public void onSuccess(List<SelectedIngredientUtils> ingredients) {
+                ingredientsAdapter.updateData(ingredients);
+                Log.d(TAG, "Ingredients loaded: " + ingredients.size());
+                if (Build.VERSION.SDK_INT >= 35) {
+                    Log.d(TAG, "Ingredients: " + ingredients.get(0).getName() + ", " + ingredients.get(0).getQuantity());
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to fetch ingredients: " + e.getMessage());
+                Toast.makeText(StoreFocusActivity.this, "Failed to fetch ingredients", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initializeViews() {
