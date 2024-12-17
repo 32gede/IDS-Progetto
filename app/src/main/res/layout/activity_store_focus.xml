@@ -1,67 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Toolbar superiore posizionata fuori dallo ScrollView -->
+    <include
+        android:id="@+id/top_toolbar"
+        layout="@layout/small_topbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/store_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:contentDescription="@string/store_image"
-            android:scaleType="centerCrop" />
+    <!-- ScrollView per il contenuto principale -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/store_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/store_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/gray"
-            android:textSize="16sp" />
+            <!-- Immagine principale -->
+            <ImageView
 
-        <TextView
-            android:id="@+id/store_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+                android:src="@drawable/baseline_error_24"
+                android:id="@+id/store_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="12dp"
+                android:contentDescription="@string/store_image"
+                android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/store_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            <!-- Nome del negozio -->
+            <TextView
+                android:id="@+id/store_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Nome del Negozio"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Ingredienti"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            <!-- Descrizione del negozio -->
+            <TextView
+                android:id="@+id/store_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Descrizione del negozio"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/store_ingredients_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
-    </LinearLayout>
-</ScrollView>
+            <!-- Posizione del negozio -->
+            <TextView
+                android:id="@+id/store_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Posizione: Via Roma, 123"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Prezzo -->
+            <TextView
+                android:id="@+id/store_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Prezzo: €10.99"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Titolo ingredienti -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Ingredienti"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Lista degli ingredienti -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/store_ingredients_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:padding="8dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -24,7 +24,7 @@ import java.util.List;
 
 public class StoreFocusActivity extends AppCompatActivity {
     private static final String TAG = "StoreFocusActivity";
-    private ImageView imageView;
+    private ImageView imageView, backBtn;
     private TextView nameTextView, descriptionTextView, priceTextView;
     private FirebaseFirestore databaseReference;
     private RecyclerView ingredientsRecyclerView;
@@ -87,6 +87,8 @@ public class StoreFocusActivity extends AppCompatActivity {
         priceTextView = findViewById(R.id.store_price);
         ingredientsRecyclerView = findViewById(R.id.store_ingredients_recycler_view);
         ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        backBtn = findViewById(R.id.back_button);
+        backBtn.setOnClickListener(v -> finish());
     }
 
     private void displayStoreDetails(StoreUtils store) {

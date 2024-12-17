@@ -33,11 +33,12 @@ public class RecipeFocusActivity extends AppCompatActivity {
     private static final String TAG = "RecipeFocusActivity";
 
     // UI Components
-    private ImageView imageView;
+    private ImageView imageView,backBtn;
     private TextView titleTextView, difficultyTextView, categoryTextView, preparationTimeTextView, stepsTextView, descriptionTextView;
     private RatingBar ratingBar;
     private RecyclerView ingredientsRecyclerView;
     private ImageButton rateButton, editButton;
+
 
     // Firebase
     private FirebaseFirestore databaseReference;
@@ -87,6 +88,8 @@ public class RecipeFocusActivity extends AppCompatActivity {
         rateButton = findViewById(R.id.rate_button);
         editButton = findViewById(R.id.edit_button);
         ingredientsRecyclerView = findViewById(R.id.recipe_ingredients_recycler_view);
+        backBtn = findViewById(R.id.back_button);
+        backBtn.setOnClickListener(v -> finish());
 
         ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
         ingredientsRecyclerView.setAdapter(ingredientsAdapter);

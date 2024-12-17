@@ -8,13 +8,37 @@
     android:background="#414141"
     tools:context=".ui.recipe.RecipeFocusActivity">
 
-    <!-- ScrollView contenente i dettagli della ricetta -->
+    <!-- Include per la small_topbar -->
+    <include
+        android:id="@+id/top_toolbar"
+        layout="@layout/small_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Pulsante Modifica sotto la small_topbar -->
+    <ImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/selected_nav_item_background"
+        android:src="@drawable/baseline_edit_24"
+        android:contentDescription="Modifica"
+        app:tint="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/top_toolbar"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ScrollView che inizia sotto il bottone Modifica -->
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:padding="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -33,6 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginBottom="16dp"
+                android:src="@drawable/baseline_error_24"
                 android:scaleType="centerCrop" />
 
             <!-- Titolo e descrizione -->
@@ -205,17 +230,4 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <!-- Pulsante Modifica in alto a destra -->
-    <ImageButton
-        android:id="@+id/edit_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/selected_nav_item_background"
-        android:src="@drawable/baseline_edit_24"
-        android:contentDescription="Modifica"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"
-        app:tint="@color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

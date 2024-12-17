@@ -44,19 +44,16 @@ import java.util.Map;
 public class AddRecipeActivity extends AppCompatActivity {
 
     private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
-    private RecyclerView recipeIngredients;
     private ImageView recipeImageView,backBtn;
     private Button btnSubmitRecipe, btnSelectImage;
 
     private FirebaseFirestore db;
-    private StorageReference storageRef;
     private Uri selectedImageUri;
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private ProgressBar progressBar;
     private SelectedIngredientsAdapter ingredientsAdapter;
     private Firestore firestore;
-    private String recipeId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +63,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         firestore = new Firestore();
         // Inizializza Firebase
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("recipe_images");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("recipe_images");
 
         // Trova gli elementi UI
         initializeViews();
@@ -112,7 +109,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void setupIngredientsRecyclerView() {
-        recipeIngredients = findViewById(R.id.ingredients_recycler_view);
+        RecyclerView recipeIngredients = findViewById(R.id.ingredients_recycler_view);
         List<ItemUtils> ingredients = new ArrayList<>();
 
 
@@ -216,7 +213,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("preparationTime", preparationTime);
         recipe.put("createdAt", FieldValue.serverTimestamp());
         recipe.put("averageRating", 5.0);
-        recipeId = firestore.addSomething(recipe, "recipes");
+        String recipeId = firestore.addSomething(recipe, "recipes");
         saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
         saveDefaultRating(recipeId);
         saveSelectIngredient(recipeId);
