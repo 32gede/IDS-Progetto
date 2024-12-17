@@ -362,6 +362,20 @@ public class Firestore {
             }
         });
     }
+    public void loadStores(FirestoreCallback<List<StoreUtils>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("stores")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<StoreUtils> stores = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        StoreUtils store = document.toObject(StoreUtils.class);
+                        stores.add(store);
+                    }
+                    callback.onSuccess(stores); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 }
 
 

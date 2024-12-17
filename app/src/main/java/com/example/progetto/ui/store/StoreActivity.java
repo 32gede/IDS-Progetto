@@ -14,6 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.StoreAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.StoreUtils;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -37,6 +39,7 @@ public class StoreActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
     private FloatingActionButton addButton;
+    private Firestore firestore;
 
     // Adapter and Data
     private StoreAdapter adapter;
@@ -58,6 +61,7 @@ public class StoreActivity extends AppCompatActivity {
             bottomNavigationView.setSelectedItemId(R.id.store_button);
             NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
+        firestore = new Firestore();
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
@@ -109,10 +113,12 @@ public class StoreActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
@@ -161,32 +167,31 @@ public class StoreActivity extends AppCompatActivity {
 
     private void loadStores() {
         String currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        firestore.loadStores(new FirestoreCallback<>() {
+            @Override
+            public void onSuccess(List<StoreUtils> stores) {
+                globalStores.clear();
+                savedStores.clear();
 
-        db.collection("stores")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        globalStores.clear();
-                        savedStores.clear();
-
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            StoreUtils store = document.toObject(StoreUtils.class);
-                            if (store.getUserId().equals(currentUserId)) {
-                                savedStores.add(store);
-                            } else {
-                                globalStores.add(store);
-                            }
-                        }
-
-                        if (tabLayout.getSelectedTabPosition() == 0) {
-                            adapter.setStores(savedStores);
-                        } else {
-                            adapter.setStores(globalStores);
-                        }
+                for (StoreUtils store : stores) {
+                    if (store.getUserId().equals(currentUserId)) {
+                        savedStores.add(store);
                     } else {
-                        Log.e(TAG, "Error getting stores: ", task.getException());
+                        globalStores.add(store);
                     }
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Failed to load stores: ", e));
+                }
+
+                if (tabLayout.getSelectedTabPosition() == 0) {
+                    adapter.setStores(savedStores);
+                } else {
+                    adapter.setStores(globalStores);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to load stores: ", e);
+            }
+        });
     }
 }
