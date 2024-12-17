@@ -143,7 +143,7 @@ public class AddStoreActivity extends AppCompatActivity {
         String prezzoStr = storePrezzo.getText().toString().trim();
 
 
-        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty()||ingredientsAdapter.getSelectedIngredients().isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty() || ingredientsAdapter.getSelectedIngredients().isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Validation failed: Some fields are empty");
             return;
@@ -197,23 +197,10 @@ public class AddStoreActivity extends AppCompatActivity {
         store.put("price", prezzo); // Adesso è un numero
         store.put("image", imageUrl);
         store.put("userId", userId);
-
-        db.collection("stores").document(storeId)
-                .set(store)
-                .addOnSuccessListener(aVoid -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Store aggiunto con successo!", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Store added successfully");
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Errore nell'aggiunta dello store: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Error adding store: " + e.getMessage());
-                });
+        firestore.addSomething(store,"store");
         List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
-            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), storeId,2));
+            selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), storeId, 2));
         }
         for (SelectedIngredientRecipeUtils ingredient : selectedProducts) {
             db.collection("SelectedIngredient").add(ingredient)
