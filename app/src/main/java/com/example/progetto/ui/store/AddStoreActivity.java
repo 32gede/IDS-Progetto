@@ -45,15 +45,13 @@ public class AddStoreActivity extends AppCompatActivity {
 
     private EditText storeName, storeDescription, storePrezzo;
     private RecyclerView productsRecyclerView;
-    private ImageView storeImageView,backBtn;
+    private ImageView storeImageView;
     private Button btnSelectImage, btnSubmitStore;
     private ProgressBar progressBar;
     private Uri selectedImageUri;
     private SelectedIngredientsAdapter ingredientsAdapter;
 
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
-    private StorageReference storageRef;
     private Firestore firestore;
 
     @Override
@@ -78,11 +76,11 @@ public class AddStoreActivity extends AppCompatActivity {
         btnSelectImage = findViewById(R.id.btn_select_image);
         btnSubmitStore = findViewById(R.id.btn_submit_store);
         progressBar = findViewById(R.id.progressBar);
-        backBtn = findViewById(R.id.back_button);
+        ImageView backBtn = findViewById(R.id.back_button);
         backBtn.setOnClickListener(v -> finish());
 
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("store_images");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("store_images");
 
         Log.d(TAG, "Views initialized");
     }
@@ -92,7 +90,7 @@ public class AddStoreActivity extends AppCompatActivity {
         List<ItemUtils> ingredients = new ArrayList<>();
 
         // Recupera gli ingredienti da Firestore
-        firestore.getIngredients(new FirestoreCallback<List<ItemUtils>>() {
+        firestore.getIngredients(new FirestoreCallback<>() {
             @Override
             public void onSuccess(List<ItemUtils> result) {
                 ingredientsAdapter.updateData(result);
@@ -143,7 +141,6 @@ public class AddStoreActivity extends AppCompatActivity {
         String name = storeName.getText().toString().trim();
         String description = storeDescription.getText().toString().trim();
         String prezzoStr = storePrezzo.getText().toString().trim();
-        ;
 
 
         if (name.isEmpty() || description.isEmpty() || prezzoStr.isEmpty()) {
@@ -172,7 +169,7 @@ public class AddStoreActivity extends AppCompatActivity {
 
 
     private void uploadImageAndSaveStore(String name, String description, double prezzo) {
-        firestore.uploadImage(selectedImageUri, new FirestoreCallback<String>() {
+        firestore.uploadImage(selectedImageUri, new FirestoreCallback<>() {
             @Override
             public void onSuccess(String imageUrl) {
                 saveStoreToFirestore(name, description, prezzo, imageUrl);
@@ -190,7 +187,7 @@ public class AddStoreActivity extends AppCompatActivity {
 
     private void saveStoreToFirestore(String name, String description, double prezzo, @Nullable String imageUrl) {
         String storeId = db.collection("stores").document().getId();
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
         Map<String, Object> store = new HashMap<>();
