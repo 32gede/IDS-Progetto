@@ -1,5 +1,7 @@
 package com.example.progetto.data.model;
 
+import java.util.Map;
+
 public class UserProfile {
     private String uid;
     private String email;
@@ -58,5 +60,15 @@ public class UserProfile {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public Map<String, Object> toMap() {
+        return Map.of(
+                "uid", uid,
+                "email", email,
+                "phoneNumber", phoneNumber,
+                "dateOfBirth", dateOfBirth,
+                "profileImageUrl", profileImageUrl
+        );
     }
 }
