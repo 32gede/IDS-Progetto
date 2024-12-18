@@ -76,21 +76,6 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void getUserProducts(String id, FirestoreCallback<List<UserProductUtils>> callback) {
-        // Passa l'errore al chiamante
-        db.collection("user_products")
-                .whereEqualTo("userId", id)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<UserProductUtils> userProducts = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserProductUtils product = document.toObject(UserProductUtils.class);
-                        userProducts.add(product);
-                    }
-                    callback.onSuccess(userProducts); // Passa il risultato al chiamante
-                })
-                .addOnFailureListener(callback::onFailure);
-    }
 
     public void removeSelectedIngredient(String id, FirestoreCallback<Void> callback) {
         // Passa l'errore al chiamante

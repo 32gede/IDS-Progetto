@@ -196,6 +196,7 @@ public class RecipeActivity extends AppCompatActivity {
         firestore.loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
+                globalRecipes.clear();
                 globalRecipes.addAll(recipes);
                 Log.d(TAG, "Global recipes loaded: " + globalRecipes.size());
                 loadSavedRecipes(auth.getCurrentUser().getUid());
@@ -252,6 +253,7 @@ public class RecipeActivity extends AppCompatActivity {
         firestore.loadCookableRecipes(userId, new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> cookableRecipes) {
+                cookableRecipe.clear();
                 cookableRecipe.addAll(cookableRecipes);
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
                 loadSavedRecipes(userId);

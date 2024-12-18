@@ -26,6 +26,7 @@ import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
+import com.example.progetto.data.model.UserRecipeUtils;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -44,10 +45,11 @@ import java.util.Map;
 public class AddRecipeActivity extends AppCompatActivity {
 
     private EditText recipeName, recipeDescription, recipeSteps, recipeDifficulty, recipeCategory, recipePreparationTime;
-    private ImageView recipeImageView,backBtn;
+    private ImageView recipeImageView, backBtn;
     private Button btnSubmitRecipe, btnSelectImage;
 
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
     private Uri selectedImageUri;
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -63,6 +65,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         firestore = new Firestore();
         // Inizializza Firebase
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         StorageReference storageRef = FirebaseStorage.getInstance().getReference("recipe_images");
 
         // Trova gli elementi UI
@@ -164,7 +167,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         String category = recipeCategory.getText().toString().trim();
         String preparationTime = recipePreparationTime.getText().toString().trim();
 
-        if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty()||ingredientsAdapter.getSelectedIngredients().isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || steps.isEmpty() || difficulty.isEmpty() || category.isEmpty() || preparationTime.isEmpty() || ingredientsAdapter.getSelectedIngredients().isEmpty()) {
             Toast.makeText(this, "Tutti i campi di testo sono obbligatori!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -198,7 +201,8 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
     }
-//codice difficile
+
+    //codice difficile
     private void saveRecipeToFirestore(String name, String description, String steps,
                                        String difficulty, String category, String preparationTime, @Nullable String imageUrl) {
         // Create a map for Firestore
@@ -214,7 +218,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.put("createdAt", FieldValue.serverTimestamp());
         recipe.put("averageRating", 5.0);
         String recipeId = firestore.addSomething(recipe, "recipes");
-        saveRecipeForUser(recipeId, recipe); // Call the method to save in recipes_user
+        saveRecipeForUser(recipeId, mAuth.getCurrentUser().getUid()); // Call the method to save in recipes_user
         saveDefaultRating(recipeId);
         saveSelectIngredient(recipeId);
     }
@@ -254,26 +258,18 @@ public class AddRecipeActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveRecipeForUser(String recipeId, Map<String, Object> recipe) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
-
+    private void saveRecipeForUser(String recipeId, String userId) {
         if (userId != null) {
             // Aggiungi l'ID utente alla ricetta
-            recipe.put("userId", userId);
+            Map<String, Object> userRecipe = new HashMap<>();
+            userRecipe.put("documentId", recipeId);
+            userRecipe.put("userId", userId);
 
-            // Salva nella collezione "recipes_user"
-            db.collection("recipes_user").document(recipeId)
-                    .set(recipe)
-                    .addOnSuccessListener(aVoid -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(this, "Errore nell'aggiunta della ricetta per l'utente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+
+            firestore.addSomething(userRecipe, "recipes_user");
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Ricetta aggiunta con successo!", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(this, "Errore: Utente non autenticato!", Toast.LENGTH_SHORT).show();
