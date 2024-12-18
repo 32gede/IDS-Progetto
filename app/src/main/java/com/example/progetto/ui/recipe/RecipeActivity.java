@@ -206,7 +206,9 @@ public class RecipeActivity extends AppCompatActivity {
                 savedRecipes.clear();
                 savedRecipes.addAll(recipes);
                 for (Recipe userRecipe : savedRecipes) {
-                    savedRecipeIds.add(userRecipe.getId());
+                    if (userRecipe != null && userRecipe.getId() != null) {
+                        savedRecipeIds.add(userRecipe.getId());
+                    }
                 }
                 adapter.setSavedRecipeIds(savedRecipeIds);
                 Log.d(TAG, "Saved recipes loaded: " + savedRecipes.size());
