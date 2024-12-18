@@ -34,6 +34,8 @@ import java.util.Set;
 public class RecipeActivity extends AppCompatActivity {
 
     private static final String TAG = "RecipeActivity";
+
+    // UI Components
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -41,53 +43,61 @@ public class RecipeActivity extends AppCompatActivity {
 
     // Firebase and Adapter
     private Firestore firestore;
-
     private RecipeAdapter adapter;
 
     // Recipe Data
     private List<Recipe> globalRecipes;
     private List<Recipe> savedRecipes;
     private List<Recipe> cookableRecipe;
-    Set<String> savedRecipeIds;
+    private Set<String> savedRecipeIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        auth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
+
+        auth = FirebaseAuth.getInstance();
         firestore = new Firestore();
 
-        // Setup BottomNavigationView
+        initializeUI();
+        setupRecyclerView();
+        setupTabLayout();
+        setupSwipeRefresh();
+
+        loadRecipesFromFirestore();
+    }
+
+    // ======== Initialization Methods ========
+
+    /**
+     * Initialize UI components.
+     */
+    private void initializeUI() {
+        // Toolbar and navigation setup
+        NavigationHelper.setupToolbar(
+                findViewById(R.id.profileButton),
+                findViewById(R.id.notificationButton),
+                this
+        );
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.recipe_button);
             NavigationHelper.setupNavigation(this, bottomNavigationView);
         }
 
-        // Initialize UI components
-        initializeViews();
-
-        // Setup RecyclerView
-        setupRecyclerView();
-
-        // Load data and configure tabs
-        loadRecipesFromFirestore();
-        setupTabLayout();
-
-        // Setup SwipeRefreshLayout
-        setupSwipeRefresh();
-    }
-
-    private void initializeViews() {
-        NavigationHelper.setupToolbar(findViewById(R.id.profileButton), findViewById(R.id.notificationButton), this);
+        // Find views
         tabLayout = findViewById(R.id.tabLayoutRecipe);
         recyclerView = findViewById(R.id.recyclerViewRecipes);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutRecipe);
-        // UI Components
+
         FloatingActionButton addButton = findViewById(R.id.addButtonRecipe);
         addButton.setOnClickListener(v -> startActivity(new Intent(this, AddRecipeActivity.class)));
     }
 
+    /**
+     * Setup RecyclerView with Flexbox layout manager and RecipeAdapter.
+     */
     private void setupRecyclerView() {
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
@@ -106,35 +116,91 @@ public class RecipeActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Setup TabLayout for navigating between different recipe lists.
+     */
+    private void setupTabLayout() {
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.saved_recipe));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.global_recipe));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.recommended_recipe));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        adapter.setRecipes(savedRecipes);
+                        break;
+                    case 1:
+                        adapter.setRecipes(globalRecipes);
+                        break;
+                    case 2:
+                        adapter.setRecipes(cookableRecipe);
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        tabLayout.selectTab(tabLayout.getTabAt(0));
+    }
+
+    /**
+     * Setup SwipeRefreshLayout for refreshing recipe data.
+     */
+    private void setupSwipeRefresh() {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            loadRecipesFromFirestore();
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    // ======== Recipe Loading Methods ========
+
+    /**
+     * Load all recipe lists from Firestore.
+     */
     private void loadRecipesFromFirestore() {
         globalRecipes = new ArrayList<>();
         savedRecipes = new ArrayList<>();
         cookableRecipe = new ArrayList<>();
         savedRecipeIds = new HashSet<>();
         String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
-        loadGlobalRecipes();
         loadSavedRecipes(userId);
+        loadGlobalRecipes();
         loadCookedRecipes(userId);
     }
 
-    public void loadGlobalRecipes() {
+    /**
+     * Load global recipes from Firestore.
+     */
+    private void loadGlobalRecipes() {
         Log.d(TAG, "Loading global recipes");
         firestore.loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 globalRecipes.addAll(recipes);
+                Log.d(TAG, "Global recipes loaded: " + globalRecipes.size());
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.e("RecipeActivity", "Failed to load global recipes: " + e.getMessage());
+                Log.e(TAG, "Failed to load global recipes: " + e.getMessage());
             }
         });
     }
 
-    private void loadSavedRecipes(String uid) {
-        Log.d(TAG, "Loading user recipes for user: " + uid);
-        firestore.loadUserRecipes(uid, new FirestoreCallback<List<Recipe>>() {
+    /**
+     * Load user-saved recipes from Firestore.
+     */
+    private void loadSavedRecipes(String userId) {
+        Log.d(TAG, "Loading user recipes for user: " + userId);
+        firestore.loadUserRecipes(userId, new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 savedRecipes.clear();
@@ -148,32 +214,37 @@ public class RecipeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage());
+                Log.e(TAG, "Failed to load user recipes: " + e.getMessage());
             }
         });
     }
 
+    /**
+     * Load cookable recipes based on user's saved ingredients.
+     */
     private void loadCookedRecipes(String userId) {
         Log.d(TAG, "Filtering cookable recipes for user: " + userId);
-
         firestore.loadCookableRecipes(userId, new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> cookableRecipes) {
-                // Stampa tutte le ricette cookable
                 cookableRecipe.addAll(cookableRecipes);
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
             }
 
             @Override
             public void onFailure(Exception e) {
-                System.err.println("Errore durante il caricamento delle ricette cookable: " + e.getMessage());
+                Log.e(TAG, "Failed to load cookable recipes: " + e.getMessage());
             }
         });
     }
 
+    // ======== Recipe Collection Management ========
+
+    /**
+     * Save a recipe to the user's Firestore collection.
+     */
     private void saveRecipeToUserCollection(Recipe recipe) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
         if (userId != null && recipe != null && recipe.getId() != null) {
             UserRecipeUtils userRecipe = new UserRecipeUtils(userId, recipe.getId());
@@ -181,6 +252,9 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Remove a recipe from the user's Firestore collection.
+     */
     private void removeRecipeFromUserCollection(Recipe recipe) {
         firestore.removeUserRecipe(recipe, new FirestoreCallback<Void>() {
             @Override
@@ -190,45 +264,8 @@ public class RecipeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Log.e("RecipeActivity", "Errore nella rimozione: " + e.getMessage());
+                Log.e(TAG, "Errore nella rimozione: " + e.getMessage());
             }
-        });
-    }
-
-    private void setupTabLayout() {
-
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.saved_recipe));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.global_recipe));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.recommended_recipe));
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    adapter.setRecipes(savedRecipes);
-                } else if (tab.getPosition() == 1) {
-                    adapter.setRecipes(globalRecipes);
-                } else {
-                    adapter.setRecipes(cookableRecipe);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        tabLayout.selectTab(tabLayout.getTabAt(0));
-    }
-
-    private void setupSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            loadRecipesFromFirestore();
-            swipeRefreshLayout.setRefreshing(false);
         });
     }
 }
