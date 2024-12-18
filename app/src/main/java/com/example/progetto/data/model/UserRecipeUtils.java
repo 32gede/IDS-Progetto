@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class UserRecipeUtils {
     private String userId; // User-specific field
-    private String id; // Firestore document ID
+    private String documentId; // Firestore document ID
 
     // No-argument constructor required for Firestore
     public UserRecipeUtils() {}
@@ -12,7 +12,7 @@ public class UserRecipeUtils {
     // Constructor that accepts a Recipe object and a userId
     public UserRecipeUtils(String userId,String documentId){
         this.userId = userId;
-        this.id = documentId;
+        this.documentId = documentId;
     }
 
     // Getter and Setter for userId
@@ -23,16 +23,16 @@ public class UserRecipeUtils {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    public String getId() {
-        return id;
+    public String getDocumentId() {
+        return documentId;
     }
-    public void setId(String id) {
-        this.id = id;
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
     public Map<String, Object> toMap() {
         return Map.of(
                 "userId", userId,
-                "documentId", id
+                "documentId", documentId
         );
     }
 }

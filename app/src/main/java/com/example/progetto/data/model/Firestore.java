@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Firestore {
@@ -72,6 +73,7 @@ public class Firestore {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
     public void getUserProducts(String id, FirestoreCallback<List<UserProductUtils>> callback) {
         // Passa l'errore al chiamante
         db.collection("user_products")
@@ -204,21 +206,47 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void loadUserRecipes(String userId, FirestoreCallback<List<UserRecipeUtils>> callback) {
-        // Passa l'errore al chiamante
+    public void loadUserRecipes(String userId, FirestoreCallback<List<Recipe>> callback) {
         db.collection("recipes_user")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<UserRecipeUtils> recipes = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserRecipeUtils recipe = document.toObject(UserRecipeUtils.class);
-                        recipes.add(recipe);
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // No recipes found, return an empty list
+                        callback.onSuccess(new ArrayList<>());
+                        return;
                     }
-                    callback.onSuccess(recipes); // Passa il risultato al chiamante
+
+                    List<Recipe> recipes = new ArrayList<>();
+                    AtomicInteger pendingTasks = new AtomicInteger(queryDocumentSnapshots.size());
+                    AtomicBoolean hasFailureOccurred = new AtomicBoolean(false);
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserRecipeUtils recipeUtil = document.toObject(UserRecipeUtils.class);
+
+                        getRecipe(recipeUtil.getDocumentId(), new FirestoreCallback<Recipe>() {
+                            @Override
+                            public void onSuccess(Recipe data) {
+                                synchronized (recipes) {
+                                    recipes.add(data);
+                                }
+                                if (pendingTasks.decrementAndGet() == 0 && !hasFailureOccurred.get()) {
+                                    callback.onSuccess(recipes);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                hasFailureOccurred.set(true);
+                                callback.onFailure(e);
+                            }
+                        });
+                    }
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+
 
     public void getIngredientsOfRecipe(String recipeId, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
         // Passa l'errore al chiamante
@@ -232,6 +260,18 @@ public class Firestore {
                         ingredients.add(ingredient);
                     }
                     callback.onSuccess(ingredients); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void getRecipe(String recipeId, FirestoreCallback<Recipe> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes")
+                .document(recipeId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Recipe recipe = documentSnapshot.toObject(Recipe.class);
+                    callback.onSuccess(recipe); // Passa il risultato al chiamante
                 })
                 .addOnFailureListener(callback::onFailure);
     }
@@ -350,7 +390,6 @@ public class Firestore {
     }
 
 
-
     public void deleteRecipe(String id, FirestoreCallback<Void> recipeEditActivity) {
         db.collection("recipes")
                 .document(id)
@@ -398,6 +437,7 @@ public class Firestore {
             }
         });
     }
+
     public void loadStores(FirestoreCallback<List<StoreUtils>> callback) {
         // Passa l'errore al chiamante
         db.collection("stores")

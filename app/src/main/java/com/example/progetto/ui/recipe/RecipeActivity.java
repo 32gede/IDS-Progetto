@@ -46,7 +46,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     // Recipe Data
     private List<Recipe> globalRecipes;
-    private List<UserRecipeUtils> savedRecipes;
+    private List<Recipe> savedRecipes;
     private List<Recipe> cookableRecipe;
 
     @Override
@@ -131,13 +131,13 @@ public class RecipeActivity extends AppCompatActivity {
 
         // Load user-saved recipes
         if (userId != null) {
-            firestore.loadUserRecipes(userId, new FirestoreCallback<List<UserRecipeUtils>>() {
+            firestore.loadUserRecipes(userId, new FirestoreCallback<List<Recipe>>() {
                 @Override
-                public void onSuccess(List<UserRecipeUtils> recipes) {
+                public void onSuccess(List<Recipe> recipes) {
                     savedRecipes.clear();
                     savedRecipes.addAll(recipes);
-                    for (UserRecipeUtils userRecipe : savedRecipes) {
-                        savedRecipeIds.add(userRecipe.getUserId());
+                    for (Recipe userRecipe : savedRecipes) {
+                        savedRecipeIds.add(userRecipe.getId());
                     }
                     adapter.setSavedRecipeIds(savedRecipeIds);
 
@@ -162,7 +162,7 @@ public class RecipeActivity extends AppCompatActivity {
         for (Recipe recipe : globalRecipes) {
             for (UserRecipeUtils saved : savedRecipes) {
                 if (saved.getUserId().equals(uid)) {
-                    if (saved.getId().equals(recipe.getId())) {
+                    if (saved.getDocumentId().equals(recipe.getId())) {
                         appo.add(recipe);
                     }
                 }
@@ -223,7 +223,7 @@ public class RecipeActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    adapter.setRecipes(loadSavedRecipes(auth.getCurrentUser().getUid()));
+                    adapter.setRecipes(savedRecipes);
                 } else if (tab.getPosition() == 1) {
                     adapter.setRecipes(globalRecipes);
                 } else {

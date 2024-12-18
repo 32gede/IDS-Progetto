@@ -27,7 +27,6 @@ import java.util.Set;
     private final OnBookmarkClickListener bookmarkClickListener;
     private final Context context;
     private boolean isHomeActivity;
-    private ImageButton bookmarkButton;
 
     public interface OnBookmarkClickListener {
         void onBookmarkClick(Recipe recipe, boolean isSaved);
