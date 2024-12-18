@@ -214,6 +214,7 @@ public class RecipeActivity extends AppCompatActivity {
         });
     }
 
+
     /**
      * Load user-saved recipes from Firestore.
      */
