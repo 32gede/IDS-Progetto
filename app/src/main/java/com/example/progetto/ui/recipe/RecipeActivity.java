@@ -61,10 +61,10 @@ public class RecipeActivity extends AppCompatActivity {
 
         initializeUI();
         setupRecyclerView();
+        loadRecipesFromFirestore();
         setupTabLayout();
         setupSwipeRefresh();
 
-        loadRecipesFromFirestore();
     }
 
     // ======== Initialization Methods ========
@@ -130,12 +130,15 @@ public class RecipeActivity extends AppCompatActivity {
                 switch (tab.getPosition()) {
                     case 0:
                         adapter.setRecipes(savedRecipes);
+                        adapter.notifyDataSetChanged();
                         break;
                     case 1:
                         adapter.setRecipes(globalRecipes);
+                        adapter.notifyDataSetChanged();
                         break;
                     case 2:
                         adapter.setRecipes(cookableRecipe);
+                        adapter.notifyDataSetChanged();
                         break;
                 }
             }
@@ -148,6 +151,7 @@ public class RecipeActivity extends AppCompatActivity {
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -155,7 +159,13 @@ public class RecipeActivity extends AppCompatActivity {
      */
     private void setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            loadRecipesFromFirestore();
+            if(tabLayout.getSelectedTabPosition() == 0) {
+                loadSavedRecipes(auth.getCurrentUser().getUid());
+            } else if(tabLayout.getSelectedTabPosition() == 1) {
+                loadGlobalRecipes();
+            } else if(tabLayout.getSelectedTabPosition() == 2) {
+                loadCookedRecipes(auth.getCurrentUser().getUid());
+            }
             swipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -172,8 +182,10 @@ public class RecipeActivity extends AppCompatActivity {
         savedRecipeIds = new HashSet<>();
         String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
-        loadSavedRecipes(userId);loadGlobalRecipes();
+        loadSavedRecipes(userId);
+        loadGlobalRecipes();
         loadCookedRecipes(userId);
+
     }
 
     /**
@@ -186,6 +198,11 @@ public class RecipeActivity extends AppCompatActivity {
             public void onSuccess(List<Recipe> recipes) {
                 globalRecipes.addAll(recipes);
                 Log.d(TAG, "Global recipes loaded: " + globalRecipes.size());
+                loadSavedRecipes(auth.getCurrentUser().getUid());
+                if(tabLayout.getSelectedTabPosition() == 1) {
+                    adapter.setRecipes(globalRecipes);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -209,9 +226,14 @@ public class RecipeActivity extends AppCompatActivity {
                     if (userRecipe != null && userRecipe.getId() != null) {
                         savedRecipeIds.add(userRecipe.getId());
                     }
+                    if(tabLayout.getSelectedTabPosition() == 0) {
+                        adapter.setRecipes(savedRecipes);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
                 adapter.setSavedRecipeIds(savedRecipeIds);
                 Log.d(TAG, "Saved recipes loaded: " + savedRecipes.size());
+
             }
 
             @Override
@@ -231,6 +253,11 @@ public class RecipeActivity extends AppCompatActivity {
             public void onSuccess(List<Recipe> cookableRecipes) {
                 cookableRecipe.addAll(cookableRecipes);
                 Log.d(TAG, "Cookable recipes loaded: " + cookableRecipe.size());
+                loadSavedRecipes(userId);
+                if(tabLayout.getSelectedTabPosition() == 2) {
+                    adapter.setRecipes(cookableRecipe);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
