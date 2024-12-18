@@ -48,6 +48,7 @@ public class RecipeActivity extends AppCompatActivity {
     private List<Recipe> globalRecipes;
     private List<Recipe> savedRecipes;
     private List<Recipe> cookableRecipe;
+    Set<String> savedRecipeIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,66 +110,47 @@ public class RecipeActivity extends AppCompatActivity {
         globalRecipes = new ArrayList<>();
         savedRecipes = new ArrayList<>();
         cookableRecipe = new ArrayList<>();
-
+        savedRecipeIds = new HashSet<>();
         String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+        loadGlobalRecipes();
+        loadSavedRecipes(userId);
+        loadCookedRecipes(userId);
+    }
 
-        Set<String> savedRecipeIds = new HashSet<>();
-
-        firestore.loadGlobalRecipes(new FirestoreCallback<>() {
+    public void loadGlobalRecipes() {
+        Log.d(TAG, "Loading global recipes");
+        firestore.loadGlobalRecipes(new FirestoreCallback<List<Recipe>>() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 globalRecipes.addAll(recipes);
-                if (tabLayout.getSelectedTabPosition() == 1) {
-                    adapter.setRecipes(globalRecipes);
-                }
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(RecipeActivity.this, "Errore nel caricamento delle ricette Globali: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("RecipeActivity", "Failed to load global recipes: " + e.getMessage());
             }
         });
-
-        // Load user-saved recipes
-        if (userId != null) {
-            firestore.loadUserRecipes(userId, new FirestoreCallback<List<Recipe>>() {
-                @Override
-                public void onSuccess(List<Recipe> recipes) {
-                    savedRecipes.clear();
-                    savedRecipes.addAll(recipes);
-                    for (Recipe userRecipe : savedRecipes) {
-                        savedRecipeIds.add(userRecipe.getId());
-                    }
-                    adapter.setSavedRecipeIds(savedRecipeIds);
-
-                    adapter.setSavedRecipeIds(savedRecipeIds);
-                    if (tabLayout.getSelectedTabPosition() == 0) {
-                        adapter.setRecipes(loadSavedRecipes(auth.getCurrentUser().getUid()));
-                    }
-
-                    loadCookedRecipes(userId);
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage());
-                }
-            });
-        }
     }
 
-    private List<Recipe> loadSavedRecipes(String uid) {
-        List<Recipe> appo = new ArrayList<>();
-        for (Recipe recipe : globalRecipes) {
-            for (UserRecipeUtils saved : savedRecipes) {
-                if (saved.getUserId().equals(uid)) {
-                    if (saved.getDocumentId().equals(recipe.getId())) {
-                        appo.add(recipe);
-                    }
+    private void loadSavedRecipes(String uid) {
+        Log.d(TAG, "Loading user recipes for user: " + uid);
+        firestore.loadUserRecipes(uid, new FirestoreCallback<List<Recipe>>() {
+            @Override
+            public void onSuccess(List<Recipe> recipes) {
+                savedRecipes.clear();
+                savedRecipes.addAll(recipes);
+                for (Recipe userRecipe : savedRecipes) {
+                    savedRecipeIds.add(userRecipe.getId());
                 }
+                adapter.setSavedRecipeIds(savedRecipeIds);
+                Log.d(TAG, "Saved recipes loaded: " + savedRecipes.size());
             }
-        }
-        return appo;
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("RecipeActivity", "Failed to load user recipes: " + e.getMessage());
+            }
+        });
     }
 
     private void loadCookedRecipes(String userId) {

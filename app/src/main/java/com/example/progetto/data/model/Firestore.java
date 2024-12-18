@@ -11,6 +11,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -161,25 +163,30 @@ public class Firestore {
     }
 
 
+    // Firestore.java
+
     public String addSomething(Map<String, Object> object, String directory) {
-        // Controlla se l'oggetto contiene già una chiave "id"
+        // Create a mutable copy of the map
+        Map<String, Object> mutableObject = new HashMap<>(object);
+
+        // Check if the object contains an "id" key
         String documentId;
-        if (object.containsKey("id")) {
-            // Usa l'ID già esistente
-            documentId = (String) object.get("id");
+        if (mutableObject.containsKey("id")) {
+            // Use the existing ID
+            documentId = (String) mutableObject.get("id");
         } else {
-            // Genera un nuovo ID se non è presente
+            // Generate a new ID if not present
             documentId = db.collection(directory).document().getId();
-            object.put("id", documentId);
+            mutableObject.put("id", documentId);
         }
 
         Log.d("Firestore", "Adding/Updating document in " + directory + " with ID: " + documentId);
-        Log.d("Firestore", "Document: " + object);
+        Log.d("Firestore", "Document: " + mutableObject);
 
-        // Usa set con il documentId corretto per creare o aggiornare il documento
+        // Use set with the correct documentId to create or update the document
         db.collection(directory)
-                .document(documentId) // Usa l'ID specificato
-                .set(object) // Salva l'oggetto Firestore, sovrascrivendo se esiste già
+                .document(documentId) // Use the specified ID
+                .set(mutableObject) // Save the Firestore object, overwriting if it already exists
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "DocumentSnapshot successfully added/updated with ID: " + documentId);
                 })
@@ -187,7 +194,7 @@ public class Firestore {
                     Log.e("Firestore", "Error adding/updating document", e);
                 });
 
-        return documentId; // Restituisce l'ID del documento usato
+        return documentId; // Return the used document ID
     }
 
 
@@ -207,17 +214,19 @@ public class Firestore {
     }
 
     public void loadUserRecipes(String userId, FirestoreCallback<List<Recipe>> callback) {
+        Log.d("Firestore", "Loading user recipes for user: " + userId);
         db.collection("recipes_user")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
+                    if (queryDocumentSnapshots == null || queryDocumentSnapshots.isEmpty()) {
                         // No recipes found, return an empty list
                         callback.onSuccess(new ArrayList<>());
                         return;
                     }
 
-                    List<Recipe> recipes = new ArrayList<>();
+                    // Use thread-safe list to avoid synchronization issues
+                    List<Recipe> recipes = Collections.synchronizedList(new ArrayList<>());
                     AtomicInteger pendingTasks = new AtomicInteger(queryDocumentSnapshots.size());
                     AtomicBoolean hasFailureOccurred = new AtomicBoolean(false);
 
@@ -227,26 +236,36 @@ public class Firestore {
                         getRecipe(recipeUtil.getDocumentId(), new FirestoreCallback<Recipe>() {
                             @Override
                             public void onSuccess(Recipe data) {
-                                synchronized (recipes) {
-                                    recipes.add(data);
-                                }
-                                if (pendingTasks.decrementAndGet() == 0 && !hasFailureOccurred.get()) {
-                                    callback.onSuccess(recipes);
+                                if (hasFailureOccurred.get())
+                                    return; // Abort if a failure has already occurred
+
+                                recipes.add(data);
+                                if (pendingTasks.decrementAndGet() == 0) {
+                                    callback.onSuccess(recipes); // All tasks completed successfully
                                 }
                             }
 
                             @Override
                             public void onFailure(Exception e) {
-                                hasFailureOccurred.set(true);
-                                callback.onFailure(e);
+                                // Log the error when retrieving a recipe fails
+                                System.err.println("Failed to fetch recipe with ID: " + recipeUtil.getDocumentId());
+                                e.printStackTrace();
+
+                                // Ensure failure is handled only once
+                                if (hasFailureOccurred.compareAndSet(false, true)) {
+                                    callback.onFailure(e); // Invoke failure callback
+                                }
                             }
                         });
                     }
                 })
-                .addOnFailureListener(callback::onFailure);
+                .addOnFailureListener(e -> {
+                    // Log the error when the Firestore query fails
+                    System.err.println("Failed to query recipes_user collection for userId: " + userId);
+                    e.printStackTrace();
+                    callback.onFailure(e);
+                });
     }
-
-
 
     public void getIngredientsOfRecipe(String recipeId, FirestoreCallback<List<SelectedIngredientUtils>> callback) {
         // Passa l'errore al chiamante
