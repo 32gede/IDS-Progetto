@@ -171,8 +171,8 @@ public class RecipeActivity extends AppCompatActivity {
         cookableRecipe = new ArrayList<>();
         savedRecipeIds = new HashSet<>();
         String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
-        loadSavedRecipes(userId);
-        loadGlobalRecipes();
+
+        loadSavedRecipes(userId);loadGlobalRecipes();
         loadCookedRecipes(userId);
     }
 
@@ -256,7 +256,7 @@ public class RecipeActivity extends AppCompatActivity {
      * Remove a recipe from the user's Firestore collection.
      */
     private void removeRecipeFromUserCollection(Recipe recipe) {
-        firestore.removeUserRecipe(recipe, new FirestoreCallback<Void>() {
+        firestore.removeUserRecipe(recipe,auth.getCurrentUser().getUid(), new FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 Toast.makeText(RecipeActivity.this, "Ricetta rimossa con successo!", Toast.LENGTH_SHORT).show();

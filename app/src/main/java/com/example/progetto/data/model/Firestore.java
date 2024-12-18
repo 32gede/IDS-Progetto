@@ -397,16 +397,20 @@ public class Firestore {
     }
 
 
-    public void removeUserRecipe(Recipe recipe, FirestoreCallback<Void> callback) {
-        // Passa l'errore al chiamante
-        db.collection("recipes_user")
-                .document(recipe.getId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    callback.onSuccess(null); // Passa il risultato al chiamante
-                })
-                .addOnFailureListener(callback::onFailure);
-    }
+    public void removeUserRecipe(Recipe recipe,String uid, FirestoreCallback<Void> callback) {
+    // Passa l'errore al chiamante
+    db.collection("recipes_user")
+            .whereEqualTo("documentId", recipe.getId())
+            .whereEqualTo("userId", uid)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    document.getReference().delete();
+                }
+                callback.onSuccess(null); // Passa il risultato al chiamante
+            })
+            .addOnFailureListener(callback::onFailure);
+}
 
 
     public void deleteRecipe(String id, FirestoreCallback<Void> recipeEditActivity) {
