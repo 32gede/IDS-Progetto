@@ -186,6 +186,7 @@ public class Firestore {
     public void loadGlobalRecipes(FirestoreCallback<List<Recipe>> callback) {
         // Passa l'errore al chiamante
         db.collection("recipes")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Recipe> recipes = new ArrayList<>();
