@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -383,20 +384,20 @@ public class Firestore {
     }
 
 
-    public void removeUserRecipe(Recipe recipe,String uid, FirestoreCallback<Void> callback) {
-    // Passa l'errore al chiamante
-    db.collection("recipes_user")
-            .whereEqualTo("documentId", recipe.getId())
-            .whereEqualTo("userId", uid)
-            .get()
-            .addOnSuccessListener(queryDocumentSnapshots -> {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    document.getReference().delete();
-                }
-                callback.onSuccess(null); // Passa il risultato al chiamante
-            })
-            .addOnFailureListener(callback::onFailure);
-}
+    public void removeUserRecipe(Recipe recipe, String uid, FirestoreCallback<Void> callback) {
+        // Passa l'errore al chiamante
+        db.collection("recipes_user")
+                .whereEqualTo("documentId", recipe.getId())
+                .whereEqualTo("userId", uid)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                    callback.onSuccess(null); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 
 
     public void deleteRecipe(String id, FirestoreCallback<Void> recipeEditActivity) {
@@ -410,42 +411,57 @@ public class Firestore {
     }
 
     public void updateRecipe(String id, Recipe recipe, List<SelectedIngredientRecipeUtils> appo, FirestoreCallback<Void> firestoreCallback) {
-        deleteRecipe(id, new FirestoreCallback<Void>() {
-            @Override
-            public void onSuccess(Void data) {
-                Log.d("Firestore", "Recipe deleted successfully");
-                addSomething(recipe.toMap(), "recipes");
+    deleteRecipe(id, new FirestoreCallback<Void>() {
+        @Override
+        public void onSuccess(Void data) {
+            Log.d("Firestore", "Recipe deleted successfully");
+            Map<String, Object> mutableRecipe = new HashMap<>(recipe.toMap());
+            mutableRecipe.put("createdAt", FieldValue.serverTimestamp());
+            String appoId = addSomething(mutableRecipe, "recipes");
 
-                removeSelectedIngredient(id, new FirestoreCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void data) {
-                        Log.d("Firestore", "Selected ingredients removed successfully");
-                        addSelectedIngredient(appo, new FirestoreCallback<Void>() {
-                            @Override
-                            public void onSuccess(Void data) {
-                                firestoreCallback.onSuccess(null);
-                            }
+            removeSelectedIngredient(id, new FirestoreCallback<Void>() {
+                @Override
+                public void onSuccess(Void data) {
+                    Log.d("Firestore", "Selected ingredients removed successfully");
+                    addSelectedIngredient(appo, new FirestoreCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void data) {
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                firestoreCallback.onFailure(e);
-                            }
-                        });
-                    }
+                            db.collection("recipes_user")
+                                    .whereEqualTo("documentId", id)
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                            document.getReference().update("documentId", appoId);
+                                        }
+                                    });
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        firestoreCallback.onFailure(e);
-                    }
-                });
-            }
+                            firestoreCallback.onSuccess(null);
+                        }
 
-            @Override
-            public void onFailure(Exception e) {
-                firestoreCallback.onFailure(e);
-            }
-        });
-    }
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("Firestore", "Error adding selected ingredients: " + e.getMessage(), e);
+                            firestoreCallback.onFailure(e);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e("Firestore", "Error removing selected ingredients: " + e.getMessage(), e);
+                    firestoreCallback.onFailure(e);
+                }
+            });
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            Log.e("Firestore", "Error deleting recipe: " + e.getMessage(), e);
+            firestoreCallback.onFailure(e);
+        }
+    });
+}
 
     public void loadStores(FirestoreCallback<List<StoreUtils>> callback) {
         // Passa l'errore al chiamante
