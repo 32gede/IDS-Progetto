@@ -14,6 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.StoreAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.StoreUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,11 +34,13 @@ public class CartActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView back_button;
+    private Firestore firestore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+        firestore = new Firestore();
 
         recyclerView = findViewById(R.id.recyclerView);
         checkoutButton = findViewById(R.id.buy_button);
@@ -157,12 +161,22 @@ public class CartActivity extends AppCompatActivity {
         db.collection("stores").document(storeId).delete()
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Deleted from stores"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error deleting from stores", e));
+        firestore.removeSelectedIngredient(storeId, new FirestoreCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.d(TAG, "Selected ingredients removed successfully");
+                Toast.makeText(CartActivity.this, "Purchase successful!", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(CartActivity.this, "Purchase successful!", Toast.LENGTH_SHORT).show();
+                // Navigate back to StoreActivity
+                Intent intent = new Intent(CartActivity.this, StoreActivity.class);
+                startActivity(intent);
+                finish();
+            }
 
-        // Navigate back to StoreActivity
-        Intent intent = new Intent(CartActivity.this, StoreActivity.class);
-        startActivity(intent);
-        finish();
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Error removing selected ingredients: " + e.getMessage());
+            }
+        });
     }
 }
