@@ -24,6 +24,7 @@ import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.SelectedIngredientRecipeUtils;
 import com.example.progetto.data.model.SelectedIngredientUtils;
+import com.example.progetto.ui.recipe.RecipeEditActivity;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -197,21 +198,26 @@ public class AddStoreActivity extends AppCompatActivity {
         store.put("price", prezzo); // Adesso è un numero
         store.put("image", imageUrl);
         store.put("userId", userId);
-        firestore.addSomething(store,"store");
+        firestore.addSomething(store, "stores");
         List<SelectedIngredientRecipeUtils> selectedProducts = new ArrayList<>();
         for (SelectedIngredientUtils ingredient : ingredientsAdapter.getSelectedIngredients()) {
             selectedProducts.add(new SelectedIngredientRecipeUtils(ingredient.getName(), ingredient.getQuantity(), storeId, 2));
         }
-        for (SelectedIngredientRecipeUtils ingredient : selectedProducts) {
-            db.collection("SelectedIngredient").add(ingredient)
-                    .addOnSuccessListener(aVoid -> {
-                        // Success
-                    })
-                    .addOnFailureListener(e -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(this, "Errore nell'aggiunta dell'ingrediente: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
+        firestore.addSelectedIngredient(selectedProducts, new FirestoreCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.d(TAG, "Store added successfully");
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddStoreActivity.this, "Store aggiunto con successo!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Error adding selected ingredients: " + e.getMessage());
+            }
+        });
+
+    }
 }
+
