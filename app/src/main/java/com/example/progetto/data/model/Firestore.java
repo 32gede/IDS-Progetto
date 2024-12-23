@@ -63,18 +63,15 @@ public class Firestore {
     }
     // Firestore.java
 
-    public void removeUserProduct(UserProductUtils userProduct, FirestoreCallback<Void> callback) {
-        if (userProduct.getProductId() == null) {
-            callback.onFailure(new IllegalArgumentException("Provided document path must not be null."));
-            return;
-        }
-
-        db.collection("userProducts").document(userProduct.getProductId()) // Assumendo che `userProduct` abbia un campo `id` con il documento Firestore
+    public void removeUserProduct(String id, FirestoreCallback<Void> callback) {
+        db.collection("user_products")
+                .document(id)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     callback.onSuccess(null);
                 })
                 .addOnFailureListener(callback::onFailure);
+
     }
 
 

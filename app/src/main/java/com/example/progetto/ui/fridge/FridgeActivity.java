@@ -19,7 +19,6 @@ import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.data.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,9 +133,8 @@ public class FridgeActivity extends AppCompatActivity {
     }
 
     private void onProductRemoved(UserProductUtils userProduct) {
-        Log.d("FridgeActivity", "Removing product: " + userProduct.getName());
 
-        firestore.removeUserProduct(userProduct, new FirestoreCallback<>() {
+        firestore.removeUserProduct(userProduct.getId(), new FirestoreCallback<>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("FridgeActivity", "Product removed successfully: " + userProduct.getName());
@@ -151,6 +149,14 @@ public class FridgeActivity extends AppCompatActivity {
                 Log.e("FridgeActivity", "Failed to remove product: " + e.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ricarica la ricetta e aggiorna la UI=
+        loadItemsFromFirestore();
+        Log.d("FridgeActivity", "Pagina aggiornata con successo!");
     }
 }
 
