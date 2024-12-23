@@ -194,4 +194,14 @@ public class StoreActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ricarica la ricetta e aggiorna la UI
+        reloadPage();
+    }
+    private void reloadPage() {
+        loadStores();
+        Log.d(TAG, "Pagina aggiornata con successo!");
+    }
 }

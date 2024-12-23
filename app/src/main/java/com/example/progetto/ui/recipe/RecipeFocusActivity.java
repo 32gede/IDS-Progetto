@@ -126,6 +126,12 @@ public class RecipeFocusActivity extends AppCompatActivity {
                 .error(R.drawable.baseline_error_24)
                 .into(imageView);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ricarica la ricetta e aggiorna la UI
+        reloadPage();
+    }
 
     private void updateRatingBar(float averageRating) {
         ratingBar.setRating(averageRating);
