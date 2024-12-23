@@ -89,7 +89,7 @@ import java.util.Set;
                     if (position != RecyclerView.NO_POSITION) {
                         Recipe recipe = recipes.get(position);
                         Intent intent = new Intent(context, RecipeFocusActivity.class);
-                        intent.putExtra("recipe", recipe);
+                        intent.putExtra("recipeId", recipe.getId());
                         context.startActivity(intent);
                     }
                 });
