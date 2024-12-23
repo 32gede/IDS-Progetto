@@ -138,6 +138,7 @@
         <activity
             android:name=".ui.store.AddStoreActivity"
 
+            android:theme="@style/AppTheme"
             android:exported="false" />
 
     </application>

@@ -1,5 +1,7 @@
 package com.example.progetto.data.model;
 
+import java.util.Map;
+
 public class UserProductUtils  {
     private String userId;
     private String expiryDate;
@@ -68,4 +70,15 @@ public class UserProductUtils  {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public Map<String, Object> toMap() {
+        return Map.of(
+                "name", name,
+                "expiryDate", expiryDate,
+                "quantity", quantity,
+                "userId", userId,
+                "url", url
+        );
+    }
+
 }

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.ProductAdapter;
+import com.example.progetto.data.model.Firestore;
 import com.example.progetto.data.model.ItemUtils;
 import com.example.progetto.data.model.UserProductUtils;
 import com.example.progetto.data.model.Note.NotificationScheduler;
@@ -34,7 +35,8 @@ import java.util.List;
 
 public class AddProductActivity extends AppCompatActivity implements ProductAdapter.OnProductSelectedListener {
 
-    private FirebaseFirestore firestore;
+    private FirebaseFirestore database;
+    private Firestore firestore;
     private CollectionReference itemsCollection;
     private FirebaseAuth mAuth;  // Firebase Authentication instance
     private ProductAdapter productAdapter;
@@ -47,9 +49,10 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         setContentView(R.layout.add_item_fridge);
 
         // Initialize Firestore and Authentication
-        firestore = FirebaseFirestore.getInstance();
+        firestore = new Firestore();
+        database = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        itemsCollection = firestore.collection("items");
+        itemsCollection = database.collection("items");
 
         // Setup RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -72,7 +75,8 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
         EditText searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -80,7 +84,8 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Listener to open CreateProductActivity
@@ -188,32 +193,21 @@ public class AddProductActivity extends AppCompatActivity implements ProductAdap
     }
 
     private void saveProductDetailsToFirestore(UserProductUtils product) {
-        String userProductsCollectionPath = "user_products";
+        firestore.addSomething(product.toMap(), "user_products");
+        Log.d("AddProductActivity", "Product details saved successfully with user-specific details.");
 
-        firestore.collection(userProductsCollectionPath)
-                .add(product)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("AddProductActivity", "Product details saved successfully with user-specific details.");
+        // Show a success Toast notification
+        Toast.makeText(AddProductActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
 
-                    // Show a success Toast notification
-                    Toast.makeText(AddProductActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+        // Schedule the expiry notification
+        Calendar expiryDate = Calendar.getInstance();
+        // Assuming the expiry date is in the format "dd/MM/yyyy"
+        String[] dateParts = product.getExpiryDate().split("/");
+        int day = Integer.parseInt(dateParts[0]);
+        int month = Integer.parseInt(dateParts[1]) - 1; // Month is 0-based in Calendar
+        int year = Integer.parseInt(dateParts[2]);
+        expiryDate.set(year, month, day);
 
-                    // Schedule the expiry notification
-                    Calendar expiryDate = Calendar.getInstance();
-                    // Assuming the expiry date is in the format "dd/MM/yyyy"
-                    String[] dateParts = product.getExpiryDate().split("/");
-                    int day = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]) - 1; // Month is 0-based in Calendar
-                    int year = Integer.parseInt(dateParts[2]);
-                    expiryDate.set(year, month, day);
-
-                    NotificationScheduler.scheduleExpiryNotification(this, product.getName(),product.getQuantity(), expiryDate);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("AddProductActivity", "Failed to save product details: " + e.getMessage());
-
-                    // Show a failure Toast notification
-                    Toast.makeText(AddProductActivity.this, "Failed to add product. Please try again.", Toast.LENGTH_SHORT).show();
-                });
+        NotificationScheduler.scheduleExpiryNotification(this, product.getName(), product.getQuantity(), expiryDate);
     }
 }
