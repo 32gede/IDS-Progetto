@@ -66,6 +66,7 @@ public class NotificationActivity extends AppCompatActivity {
                     adapter.updateNotificationList(notificationProductList);
                 }
 
+
                 @Override
                 public void onFailure(Exception e) {
                     Log.e(TAG, "Failed to remove notification: " + notification.getId(), e);
