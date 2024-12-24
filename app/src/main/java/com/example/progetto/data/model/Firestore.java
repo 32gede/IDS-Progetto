@@ -73,6 +73,30 @@ public class Firestore {
                 .addOnFailureListener(callback::onFailure);
 
     }
+    public void getNotification(String userId,FirestoreCallback<List<NotificationItem>> callback) {
+        // Passa l'errore al chiamante
+        db.collection("Notification")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<NotificationItem> notificationItems = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        NotificationItem notificationItem = document.toObject(NotificationItem.class);
+                        notificationItems.add(notificationItem);
+                    }
+                    callback.onSuccess(notificationItems); // Passa il risultato al chiamante
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void removeNotification(String id, FirestoreCallback<Void> callback) {
+        db.collection("Notification")
+                .document(id)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 
 
     public void removeSelectedIngredient(String id, FirestoreCallback<Void> callback) {

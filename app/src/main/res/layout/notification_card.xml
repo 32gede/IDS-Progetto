@@ -8,40 +8,54 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <!-- Titolo della notifica -->
-        <TextView
-            android:id="@+id/notification_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Titolo"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:paddingBottom="4dp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Descrizione della notifica -->
-        <TextView
-            android:id="@+id/notification_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Messaggio"
-            android:textSize="14sp"
-            android:textColor="@color/gray" />
+            <!-- Titolo della notifica -->
+            <TextView
+                android:id="@+id/notification_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Titolo"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:paddingBottom="4dp" />
 
-        <!-- Timestamp -->
-        <TextView
-            android:id="@+id/notification_timestamp"
-            android:layout_width="match_parent"
+            <!-- Descrizione della notifica -->
+            <TextView
+                android:id="@+id/notification_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Messaggio"
+                android:textSize="14sp"
+                android:textColor="@color/gray" />
+
+            <!-- Timestamp -->
+            <TextView
+                android:id="@+id/notification_timestamp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ora"
+                android:textSize="12sp"
+                android:textColor="@color/gray"
+                android:gravity="end"
+                android:paddingTop="8dp" />
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/remove_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ora"
-            android:textSize="12sp"
-            android:textColor="@color/gray"
-            android:gravity="end"
-            android:paddingTop="8dp" />
-    </LinearLayout>
+            android:layout_gravity="end|top"
+            android:layout_margin="8dp"
+            app:fabSize="mini"
+            android:src="@drawable/baseline_remove_24" />
+    </FrameLayout>
 </androidx.cardview.widget.CardView>

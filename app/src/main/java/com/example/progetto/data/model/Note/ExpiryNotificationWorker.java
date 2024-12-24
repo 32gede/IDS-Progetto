@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.progetto.data.model.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -22,6 +23,7 @@ public class ExpiryNotificationWorker extends Worker {
     private static final String TAG = "ExpiryNotificationWorker";
     private static final String CHANNEL_ID = "expiry_notification_channel";
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private Firestore firestore = new Firestore();
 
     public ExpiryNotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -87,7 +89,7 @@ public class ExpiryNotificationWorker extends Worker {
     }
 
     private void saveProductDataToFirestore(String productName, int quantity, String expiryDate) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
 
         // Prepara i dati da salvare
         Map<String, Object> productData = new HashMap<>();
@@ -96,15 +98,7 @@ public class ExpiryNotificationWorker extends Worker {
         productData.put("expiryDate", expiryDate);
         productData.put("userId", mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null);
 
-        // Aggiungi i dati alla collezione "Notification" di Firestore
-        firestore.collection("Notification")
-                .add(productData)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "saveProductDataToFirestore: Dati salvati con successo su Firestore");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "saveProductDataToFirestore: Errore nel salvataggio su Firestore", e);
-                });
+        firestore.addSomething(productData, "Notification");
     }
 
 }

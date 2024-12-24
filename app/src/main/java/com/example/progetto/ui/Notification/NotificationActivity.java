@@ -11,10 +11,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.progetto.R;
 import com.example.progetto.adapter.NotificationAdapter;
+import com.example.progetto.data.model.Firestore;
+import com.example.progetto.data.model.FirestoreCallback;
 import com.example.progetto.data.model.NotificationItem;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class NotificationActivity extends AppCompatActivity {
     private List<NotificationItem> notificationList;
     private List<NotificationItem> notificationProductList = new ArrayList<>();
     private ImageView backButton;
-    private FirebaseFirestore firestore;
+    private Firestore firestore;
     private FirebaseAuth mAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -38,8 +38,8 @@ public class NotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notification);
 
         // Inizializza Firebase
-        firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        firestore = new Firestore();
 
         // Inizializza RecyclerView e SwipeRefreshLayout
         recyclerView = findViewById(R.id.recyclerView);
@@ -55,17 +55,25 @@ public class NotificationActivity extends AppCompatActivity {
 
         // Inizializza lista e adapter
         notificationList = new ArrayList<>();
-        adapter = new NotificationAdapter(notificationList);
-        recyclerView.setAdapter(adapter);
+        adapter = new NotificationAdapter(notificationList, notification -> {
+            Log.d(TAG, "Remove button clicked for notification: " + notification.getId());
+            // Rimuovi la notifica
+            firestore.removeNotification(notification.getId(), new FirestoreCallback<Void>() {
+                @Override
+                public void onSuccess(Void data) {
+                    Log.d(TAG, "Notification removed successfully: " + notification.getId());
+                    notificationProductList.remove(notification);
+                    adapter.updateNotificationList(notificationProductList);
+                }
 
-        // Configura SwipeRefreshLayout
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Log.d(TAG, "User triggered a refresh.");
-            loadItemsFromFirestore();
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e(TAG, "Failed to remove notification: " + notification.getId(), e);
+                }
+            });
         });
-
-        // Carica notifiche iniziali
-        Log.d(TAG, "Loading initial notifications from Firestore.");
+        recyclerView.setAdapter(adapter);
+        swipeRefreshLayout.setOnRefreshListener(this::loadItemsFromFirestore);
         loadItemsFromFirestore();
     }
 
@@ -83,41 +91,28 @@ public class NotificationActivity extends AppCompatActivity {
             return;
         }
 
-        // Query Firestore
-        firestore.collection("Notification")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    notificationProductList.clear(); // Pulisce la lista corrente
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        Log.w(TAG, "No notifications found for the user.");
-                    } else {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            try {
-                                NotificationItem notification = document.toObject(NotificationItem.class);
-                                notificationProductList.add(notification);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing document to NotificationItem: " + document.getId(), e);
-                            }
-                        }
-                    }
+        firestore.getNotification(userId, new FirestoreCallback<List<NotificationItem>>() {
+            @Override
+            public void onSuccess(List<NotificationItem> data) {
+                notificationProductList.clear(); // Pulisce la lista corrente
+                notificationProductList.addAll(data); // Aggiunge i nuovi dati
+                adapter.updateNotificationList(notificationProductList); // Aggiorna l'adapter
+                swipeRefreshLayout.setRefreshing(false); // Ferma l'animazione
 
-                    // Aggiorna l'adapter
-                    adapter.updateNotificationList(notificationProductList);
+                if (!notificationProductList.isEmpty()) {
+                    Log.d(TAG, "First Item: " + notificationProductList.get(0).getId());
+                } else {
+                    Log.d(TAG, "No notifications found.");
+                }
 
-                    if (!notificationProductList.isEmpty()) {
-                        Log.d(TAG, "Ecco: " + notificationProductList.get(0).getProductName());
-                    } else {
-                        Log.d(TAG, "La lista delle notifiche è vuota.");
-                    }
+                Log.d(TAG, "Items loaded successfully from Firestore. Total: " + notificationProductList.size());
+            }
 
-                    Log.d(TAG, "Items loaded successfully from Firestore. Total: " + notificationProductList.size());
-                    swipeRefreshLayout.setRefreshing(false); // Ferma l'animazione
-
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to load user notifications: " + e.getMessage(), e);
-                    swipeRefreshLayout.setRefreshing(false); // Ferma l'animazione
-                });
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to load notifications: " + e.getMessage(), e);
+                swipeRefreshLayout.setRefreshing(false); // Ferma l'animazione
+            }
+        });
     }
 }
