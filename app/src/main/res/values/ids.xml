@@ -5,4 +5,5 @@
     <item name="ingredients_recycler_view" type="id" />
     <item name="recipe_image_view" type="id" />
     <item name="btn_submit_recipe" type="id" />
+    <item name="notification_content" type="id" />
 </resources>

@@ -2,21 +2,30 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    tools:context=".MainActivity">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
+        <!-- LinearLayout che contiene i TextView -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/notification_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/remove_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <!-- Titolo della notifica -->
             <TextView
@@ -49,13 +58,17 @@
                 android:paddingTop="8dp" />
         </LinearLayout>
 
+        <!-- FloatingActionButton per rimuovere la notifica -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/remove_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
             android:layout_margin="8dp"
             app:fabSize="mini"
-            android:src="@drawable/baseline_remove_24" />
-    </FrameLayout>
+            android:src="@drawable/baseline_remove_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>
