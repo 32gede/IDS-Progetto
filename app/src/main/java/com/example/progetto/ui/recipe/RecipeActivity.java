@@ -56,6 +56,7 @@ public class RecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
+
         auth = FirebaseAuth.getInstance();
         firestore = new Firestore();
 
