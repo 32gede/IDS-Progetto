@@ -7,40 +7,67 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Profile Image -->
+    <ImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:contentDescription="Profile Image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
+        tools:srcCompat="@drawable/baseline_account_circle_24" />
+
+    <!-- Change Profile Picture Button -->
+    <Button
+        android:id="@+id/changeAvatarButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Change Profile Picture"
+        app:layout_constraintTop_toBottomOf="@id/profileImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Username EditText -->
     <EditText
         android:id="@+id/editUserName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Username"
         android:inputType="text"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/changeAvatarButton" />
 
+    <!-- Phone Number EditText -->
     <EditText
         android:id="@+id/editUserPhone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Phone Number"
         android:inputType="phone"
-        app:layout_constraintTop_toBottomOf="@id/editUserName"
-        app:layout_constraintStart_toStartOf="parent"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editUserName" />
 
+    <!-- Date of Birth EditText -->
     <EditText
         android:id="@+id/editUserDob"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Date of Birth"
-        android:focusable="false"
         android:clickable="true"
-        app:layout_constraintTop_toBottomOf="@id/editUserPhone"
-        app:layout_constraintStart_toStartOf="parent"
+        android:focusable="false"
+        android:hint="Date of Birth"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editUserPhone" />
 
+    <!-- Save Changes Button -->
     <Button
         android:id="@+id/saveChangesButton"
         android:layout_width="0dp"
@@ -51,12 +78,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp" />
 
+    <!-- Cancel Button -->
     <Button
         android:id="@+id/cancelButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Cancel"
         app:layout_constraintTop_toBottomOf="@id/saveChangesButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Change Email Button -->
+    <Button
+        android:id="@+id/changeEmailButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Change Email"
+        app:layout_constraintTop_toBottomOf="@id/cancelButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
