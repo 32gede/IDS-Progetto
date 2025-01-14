@@ -6,4 +6,5 @@
     <item name="recipe_image_view" type="id" />
     <item name="btn_submit_recipe" type="id" />
     <item name="notification_content" type="id" />
+    <item name="editProfileButton" type="id" />
 </resources>
