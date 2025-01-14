@@ -120,11 +120,12 @@ public class UserRepository {
         editor.apply();
     }
 
-    public void updateUserProfile(String phoneNumber, String dateOfBirth) {
+    public void updateUserProfile(String Username, String phoneNumber, String dateOfBirth) {
         FirebaseUser user = mAuth.getCurrentUser(); // Ottieni l'utente attualmente loggato
 
         if (user != null) {
             Map<String, Object> updates = new HashMap<>();
+            updates.put("username", Username);
             updates.put("phoneNumber", phoneNumber);
             updates.put("dateOfBirth", dateOfBirth);
 

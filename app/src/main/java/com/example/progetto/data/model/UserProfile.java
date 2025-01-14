@@ -3,7 +3,7 @@ package com.example.progetto.data.model;
 import java.util.Map;
 
 public class UserProfile {
-    private String uid;
+    private String username;
     private String email;
     private String phoneNumber;
     private String dateOfBirth;
@@ -14,20 +14,20 @@ public class UserProfile {
     }
 
     // Costruttore completo
-    public UserProfile(String uid, String email, String phoneNumber, String dateOfBirth) {
-        this.uid = uid;
+    public UserProfile(String username, String email, String phoneNumber, String dateOfBirth) {
+        this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
     }
 
     // Getter e Setter
-    public String getUid() {
-        return uid;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -64,7 +64,7 @@ public class UserProfile {
 
     public Map<String, Object> toMap() {
         return Map.of(
-                "uid", uid,
+                "username", username,
                 "email", email,
                 "phoneNumber", phoneNumber,
                 "dateOfBirth", dateOfBirth,

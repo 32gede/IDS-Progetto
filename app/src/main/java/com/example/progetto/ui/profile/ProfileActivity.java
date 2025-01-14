@@ -82,6 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
             UserRepository userRepository = new UserRepository(this);
             userRepository.getUserProfile(profile -> {
                 if (profile != null) {
+                    userNameTextView.setText(profile.getUsername());
                     userPhoneTextView.setText(profile.getPhoneNumber());
                     userDobTextView.setText(profile.getDateOfBirth());
                     Glide.with(this)

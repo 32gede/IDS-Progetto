@@ -56,7 +56,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private void loadUserProfile() {
         userRepository.getUserProfile(profile -> {
             if (profile != null) {
-                userNameEditText.setText(profile.getUid());
+                userNameEditText.setText(profile.getUsername());
                 userPhoneEditText.setText(profile.getPhoneNumber());
                 userDobEditText.setText(profile.getDateOfBirth());
 
@@ -75,7 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String newUserPhone = userPhoneEditText.getText().toString().trim();
         String newUserDob = userDobEditText.getText().toString().trim();
 
-        userRepository.updateUserProfile(newUserPhone, newUserDob);
+        userRepository.updateUserProfile(newUserName, newUserPhone, newUserDob);
         Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
         finish();
     }
