@@ -22,7 +22,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private ImageView profileImageView;
-    private EditText userNameEditText, userPhoneEditText, userDobEditText;
+    private EditText  userPhoneEditText, userDobEditText;
     private Button saveChangesButton, cancelButton, changeEmailButton, changeAvatarButton;
     private FirebaseAuth mAuth;
     private UserRepository userRepository;
@@ -36,7 +36,6 @@ public class EditProfileActivity extends AppCompatActivity {
         userRepository = new UserRepository(this);
 
         profileImageView = findViewById(R.id.profileImageView);
-        userNameEditText = findViewById(R.id.editUserName);
         userPhoneEditText = findViewById(R.id.editUserPhone);
         userDobEditText = findViewById(R.id.editUserDob);
         saveChangesButton = findViewById(R.id.saveChangesButton);
@@ -56,7 +55,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private void loadUserProfile() {
         userRepository.getUserProfile(profile -> {
             if (profile != null) {
-                userNameEditText.setText(profile.getUsername());
                 userPhoneEditText.setText(profile.getPhoneNumber());
                 userDobEditText.setText(profile.getDateOfBirth());
 
@@ -71,11 +69,10 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void updateUserProfile() {
-        String newUserName = userNameEditText.getText().toString().trim();
         String newUserPhone = userPhoneEditText.getText().toString().trim();
         String newUserDob = userDobEditText.getText().toString().trim();
 
-        userRepository.updateUserProfile(newUserName, newUserPhone, newUserDob);
+        userRepository.updateUserProfile("", newUserPhone, newUserDob);
         Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
         finish();
     }

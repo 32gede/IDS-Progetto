@@ -25,7 +25,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private MainViewModel mainViewModel;
 
-    private TextView userNameTextView, userEmailTextView, userPhoneTextView, userDobTextView;
+    private TextView  userEmailTextView, userPhoneTextView, userDobTextView;
     private ImageView profileImageView;
     private Button editProfileButton, logoutButton;
 
@@ -39,7 +39,6 @@ public class ProfileActivity extends AppCompatActivity {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         profileImageView = findViewById(R.id.profileImage);
-        userNameTextView = findViewById(R.id.userName);
         userEmailTextView = findViewById(R.id.userEmail);
         userPhoneTextView = findViewById(R.id.userPhone);
         userDobTextView = findViewById(R.id.userDob);
@@ -80,7 +79,6 @@ public class ProfileActivity extends AppCompatActivity {
             UserRepository userRepository = new UserRepository(this);
             userRepository.getUserProfile(profile -> {
                 if (profile != null) {
-                    userNameTextView.setText(profile.getUsername());
                     userPhoneTextView.setText(profile.getPhoneNumber());
                     userDobTextView.setText(profile.getDateOfBirth());
                     Glide.with(this)

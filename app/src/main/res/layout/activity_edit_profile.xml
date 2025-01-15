@@ -30,18 +30,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp" />
 
-    <!-- Username EditText -->
-    <EditText
-        android:id="@+id/editUserName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="text"
-        android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/changeAvatarButton" />
-
     <!-- Phone Number EditText -->
     <EditText
         android:id="@+id/editUserPhone"
@@ -52,7 +40,7 @@
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editUserName" />
+        app:layout_constraintTop_toBottomOf="@id/changeAvatarButton" />
 
     <!-- Date of Birth EditText -->
     <EditText
