@@ -73,10 +73,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadUserProfile() {
         if (currentUser != null) {
-            String displayName = currentUser.getDisplayName();
             String email = currentUser.getEmail();
 
-            userNameTextView.setText(displayName != null ? displayName : "No display name set");
             userEmailTextView.setText(email != null ? email : "No email set");
 
             UserRepository userRepository = new UserRepository(this);
