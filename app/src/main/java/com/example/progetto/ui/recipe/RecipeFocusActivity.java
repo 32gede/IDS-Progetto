@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,6 +63,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
     }
 
     // --- INITIALIZATION ---
+    // --- INITIALIZATION ---
     private void initializeViews() {
         imageView = findViewById(R.id.recipe_image);
         titleTextView = findViewById(R.id.recipe_title);
@@ -76,6 +78,9 @@ public class RecipeFocusActivity extends AppCompatActivity {
         ingredientsRecyclerView = findViewById(R.id.recipe_ingredients_recycler_view);
         backBtn = findViewById(R.id.back_button);
 
+        // Hide edit button by default
+        editButton.setVisibility(View.GONE);
+
         // Setup RecyclerView
         ingredientsAdapter = new IngredientsAdapter(new ArrayList<>(), this);
         ingredientsRecyclerView.setAdapter(ingredientsAdapter);
@@ -83,11 +88,6 @@ public class RecipeFocusActivity extends AppCompatActivity {
 
         // Setup Back Button
         backBtn.setOnClickListener(v -> finish());
-    }
-
-    private void setupFirestore() {
-        firestore = new Firestore();
-        databaseReference = FirebaseFirestore.getInstance();
     }
 
     // --- DATA LOADING ---
@@ -101,6 +101,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
                 setupClickListeners();
                 fetchIngredients();
                 fetchAndDisplayRatings();
+                checkIfRecipeBelongsToUser();
             }
 
             @Override
@@ -110,6 +111,28 @@ public class RecipeFocusActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    // --- CHECK RECIPE OWNERSHIP ---
+    private void checkIfRecipeBelongsToUser() {
+        firestore.checkIfRecipe(recipe.getId(), new FirestoreCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean belongsToUser) {
+                if (belongsToUser) {
+                    editButton.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Errore nel controllo della proprietà della ricetta: " + e.getMessage());
+            }
+        });
+    }
+
+    private void setupFirestore() {
+        firestore = new Firestore();
+        databaseReference = FirebaseFirestore.getInstance();
     }
 
     // --- DISPLAY DATA ---
@@ -126,6 +149,7 @@ public class RecipeFocusActivity extends AppCompatActivity {
                 .error(R.drawable.baseline_error_24)
                 .into(imageView);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
