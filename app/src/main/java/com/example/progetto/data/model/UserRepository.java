@@ -86,7 +86,7 @@ public class UserRepository {
     private void saveUserToFirestore(FirebaseUser user) {
         // Creazione di un oggetto UserProfile
         UserProfile userProfile = new UserProfile(
-                user.getUid(),
+                "",
                 user.getEmail(),
                 "", // Phone number vuoto per ora
                 ""  // Date of birth vuoto per ora
