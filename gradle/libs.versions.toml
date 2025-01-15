@@ -9,6 +9,7 @@ flexboxVersion = "3.0.0"
 glide = "4.16.0"
 googleFirebaseBom = "32.2.0"
 googleMaterial = "1.12.0"
+googlePlayServicesAuth = "19.2.0"
 guava = "31.1-android"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -55,6 +56,7 @@ material-v160 = { module = "com.google.android.material:material", version.ref =
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+play-services-auth-v1920 = { module = "com.google.android.gms:play-services-auth", version.ref = "googlePlayServicesAuth" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 

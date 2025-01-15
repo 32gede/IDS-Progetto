@@ -42,6 +42,9 @@ android {
 
 dependencies {
     // Firebase e Google Play Services
+
+    implementation (libs.play.services.auth.v1920)
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.google.firebase.firestore)
     implementation(libs.google.firebase.auth)
