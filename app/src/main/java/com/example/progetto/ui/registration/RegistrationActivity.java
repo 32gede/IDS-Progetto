@@ -85,7 +85,6 @@ public class RegistrationActivity extends AppCompatActivity {
         final EditText usernameEditText = binding.email;
         final EditText passwordEditText = binding.password;
         final Button registrationButton = binding.registration;
-        final SignInButton googleRegistrationButton = binding.googleRegistration;
         final ProgressBar loadingProgressBar = binding.loading;
 
         // Observe form state for enabling/disabling registration button
@@ -147,7 +146,6 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         // Register with Google account
-        googleRegistrationButton.setOnClickListener(v -> registerWithGoogle());
     }
 
     private void registerWithGoogle() {

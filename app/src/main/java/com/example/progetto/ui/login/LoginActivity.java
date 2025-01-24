@@ -78,8 +78,6 @@ public class LoginActivity extends AppCompatActivity {
         final ProgressBar loadingProgressBar = binding.loading;
 
         // Google sign-in button setup
-        SignInButton googleSignInButton = binding.googleSignInButton;
-        googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
         // Configure Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
